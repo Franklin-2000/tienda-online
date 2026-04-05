@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Tienda</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="pantalla-login">
+    <div class="login-ring-container">
+      <div class="animated-ring"></div>
+      <div class="login-card">
+        <h1>Bienvenido</h1>
+        <input type="email" id="inputEmailLogin" placeholder="Email" autocomplete="email">
+        <input type="password" id="inputPasswordLogin" placeholder="Contraseña" autocomplete="current-password">
+        <button class="btn-auth" id="btnRegistrarseLogin">Registrarse</button>
+        <button class="btn-auth" id="btnIniciarSesionLogin">Iniciar Sesión</button>
+        <p id="authMessageLogin" class="auth-message"></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="pantalla-registro" style="display: none;">
+    <div class="login-card">
+      <h1>Registro</h1>
+      <form id="registroForm">
+        <input type="email" id="regEmail" placeholder="Email" autocomplete="email">
+        <input type="password" id="regPassword" placeholder="Contraseña" autocomplete="new-password">
+        <button type="submit" class="btn-auth" id="btnConfirmarRegistro">Confirmar Registro</button>
+      </form>
+      <button class="btn-auth" id="btnVolverLoginRegistro">Volver al Login</button>
+      <p id="authMessageRegistro" class="auth-message"></p>
+    </div>
+  </div>
+
+  <div id="pantalla-inicio" style="display: none;">
+    <h1 class="title">INDEX</h1>
+    <div class="botones-container">
+      <a href="#" class="boton" id="btn-Inventario">INVENTARIO</a>
+    </div>
+    <button id="btnLogout" class="boton-volver">Cerrar Sesión</button>
+  </div>
+
+  <div id="pantalla-INVENTARIO" style="display: none;">
+    <h1>Añadir y Gestionar Mercancía</h1>
+    
+    <div class="inventory-header">
+        <div class="inventory-actions-group">
+            <div class="formulario-producto-nuevo">
+              <div class="tarjeta-input-producto">
+                <h2>Añadir Nuevo Producto</h2>
+                <input type="file" accept="image/*" id="inputProductoImagen">
+                <button class="btn-seleccionar-imagen" id="btnSeleccionarImagen">Seleccionar Imagen</button>
+                <img id="previewProductoImagen" src="#" alt="Vista previa de la imagen" style="display: none; max-width: 150px; margin-top: 10px;">
+
+                <label for="inputNombreProducto">Nombre:</label>
+                <input type="text" id="inputNombreProducto" placeholder="Nombre del Producto">
+
+                <label for="inputPrecioProducto">Precio:</label>
+                <input type="number" id="inputPrecioProducto" placeholder="0.00" min="0" step="1">
+
+                <label for="inputCantidadProducto">Cantidad:</label>
+                <input type="number" id="inputCantidadProducto" placeholder="1" min="1" step="1" value="1">
+
+                <button class="btn-añadir btn-limpiar-formulario" id="btnLimpiarFormulario">Limpiar</button>
+                <button class="btn-añadir" id="btnGuardarProducto">Añadir Producto</button>
+              </div>
+            </div>
+            //<!-- BÚSQUEDA Y RESUMEN -->
+            <div class="search-summary-group">
+                <div class="search-section">
+                    <h2>Buscar Producto</h2>
+                    <div class="search-input-group">
+                        <input type="text" id="inputBuscarProducto" placeholder="Nombre del Producto">
+                        <button class="btn-buscar" id="btnBuscarProducto">Buscar</button>
+                        <button class="btn-limpiar-busqueda" id="btnLimpiarBusqueda">Limpiar</button>
+                    </div>
+                </div>
+                <!-- TARJETA DE RESUMEN  -->
+                <div class="inventory-summary-card">
+                    <h2>Productos Registrados</h2>
+                    <p id="totalProductosCount" class="summary-count">0</p>
+                </div>
+            </div>
+            <!-- BOTÓN DE EXPORTAR DATOS -->
+            <div class="export-section">
+                <button id="btnExportarDatos" class="btn-exportar">Exportar Datos</button>
+            </div>
+        </div>
+    </div>
+
+    <h2 id="inventory-products-title">Productos en Inventario</h2>
+    <div class="contenedor-productos" id="contenedorProductos">
+      <!-- tarjetas de productos dinámicamente -->
+    </div>
+
+    <button id="btnVolverInicio" class="boton-volver">← Volver al Inicio</button>
+  </div>
+
+  <!-- Plantilla tarjetas de producto -->
+  <template id="template-tarjeta-producto">
+    <div class="tarjeta-producto" data-id="">
+      <img src="https://via.placeholder.com/150" alt="Imagen del Producto" class="producto-imagen">
+      <h3 class="producto-nombre">Nombre del Producto</h3>
+      <p class="producto-precio">$0</p>
+      <p class="producto-cantidad disponible">Unidades disponibles: 1</p>
+      <button class="btn-editar-producto">Editar</button>
+      <button class="btn-borrar-producto">Borrar</button>
+    </div>
+  </template>
+
+  <script src="script.js"></script>
+</body>
+</html>
