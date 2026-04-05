@@ -1,0 +1,857 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+}
+
+h1 {
+  font-size: 100px;
+  font-family:'Pacifico', cursive;
+  font-weight: bold;
+  font-style: italic;
+  color: #0c566c;
+  text-align: center;
+}
+
+#pantalla-inicio {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://img.freepik.com/vector-premium/tecnologia-digital-compras-linea-icono-sobre-fondo-azul-marketing-tiendas-linea-comercio-electronico_252172-219.jpg);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#pantalla-inicio .title {
+  margin-bottom: 30px;
+  margin-top: 3em;
+  color: #ccbbbb;
+  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.9);
+  font-size: 100px;
+  font-family:'Pacifico', cursive;
+  font-weight: bold;
+  font-style: italic;
+  line-height: 1.2;
+}
+
+#pantalla-INVENTARIO {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://image.slidesdocs.com/responsive-images/background/website-mobile-app-explore-the-world-of-virtual-shopping-with-digital-marketing-powerpoint-background_bb972eee09__960_540.jpg);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#pantalla-INVENTARIO h1 {
+    font-size: 80px;
+    color: #fafcfd;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    margin-top: 20px;
+    margin-bottom: 25px;
+    font-family:'Pacifico', cursive;
+    font-weight: bold;
+    font-style: italic;
+    line-height: 1.2;
+}
+
+#pantalla-INVENTARIO h2 {
+    color: #E0E0E0;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+#pantalla-INVENTARIO #inventory-products-title {
+    font-size: 3em;
+    color: #edefed;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+#pantalla-INVENTARIO .tarjeta-input-producto,
+#pantalla-INVENTARIO .search-section,
+#pantalla-INVENTARIO .inventory-summary-card,
+#pantalla-INVENTARIO .export-section {
+    background-color: transparent;
+    border:none;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    border-radius: 15px;
+}
+
+#pantalla-INVENTARIO .tarjeta-producto {
+    background-color: rgba(255, 255, 255, 0.5); 
+    border-color: rgba(200, 200, 200, 0.7); 
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); 
+    color: #121111; 
+    backdrop-filter: blur(5px); 
+}
+
+#pantalla-INVENTARIO .tarjeta-producto:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 18px 35px rgba(0,0,0,0.8); 
+}
+
+.tarjeta-producto img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 2px solid rgba(100, 100, 100, 0.5); 
+    display: block;
+    margin: 0 auto 10px auto;
+    border-radius: 10px;
+}
+
+.tarjeta-producto h3,
+.tarjeta-producto p {
+    color: #0d0d0d; 
+    text-shadow: none; 
+    
+}
+
+#pantalla-INVENTARIO .tarjeta-input-producto h2,
+
+#pantalla-INVENTARIO .search-section h2,
+#pantalla-INVENTARIO .inventory-summary-card h2 {
+    color: #eee2e2;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.8em;
+    width: 100%;
+    text-align: center;
+}
+
+/* Asegurar que el color de los labels dentro de la tarjeta de input sea oscuro */
+#pantalla-INVENTARIO .tarjeta-input-producto label {
+    color: #f5f1f1;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Color para el contador de productos en la tarjeta de resumen */
+#pantalla-INVENTARIO .inventory-summary-card .summary-count {
+    font-size: 3em;
+    font-weight: bold;
+    color: #8be0ff;
+    margin: 0;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+#pantalla-INVENTARIO .tarjeta-input-producto input[type="text"],
+#pantalla-INVENTARIO .tarjeta-input-producto input[type="number"],
+
+
+#pantalla-INVENTARIO .search-input-group input[type="text"] {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: #333;
+}
+
+#pantalla-INVENTARIO .inventory-header {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(204, 204, 204, 0.7);
+}
+
+
+#pantalla-INVENTARIO .boton-volver {
+    background-color: rgba(243, 107, 80, 0.85);
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    margin-top: 40px;
+}
+
+#pantalla-INVENTARIO .boton-volver:hover {
+    background-color: #e12020;
+}
+
+/* ANIMACIONES */
+@keyframes hoverBoton {
+  0% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  100% {
+    transform: translateY(-8px) scale(1.08);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
+  }
+}
+
+@keyframes clickBoton {
+  0% {
+    transform: translateY(-8px) scale(1.08);
+  }
+  100% {
+    transform: translateY(2px) scale(1.02);
+  }
+}
+
+@keyframes rotateRing {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.boton {
+  display: inline-block;
+  margin: 3%;
+  padding: 35px 25px;
+  color: rgb(33, 16, 51);
+  background-color: #7ae4d6;
+  text-decoration: none;
+  border-radius: 150em;
+  font-size: 40px;
+  font-weight: bold;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.boton:hover {
+  background-color: rgba(36, 160, 154, 0.766);
+  animation: hoverBoton 0.2s ease forwards;
+  filter: brightness(1.1);
+}
+
+.boton:active {
+  animation: clickBoton 0.1s ease forwards;
+  filter: brightness(0.95);
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.contenedor-productos {
+    background-color: transparent;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 5px;
+    padding: 10px;
+    width: 100%;
+}
+
+.tarjeta-producto {
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 220px;
+    text-align: center;
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: transparent;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tarjeta-producto:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+}
+
+
+.tarjeta-input-producto h2 {
+    color: #353937;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.8em;
+    width: 100%;
+    text-align: center;
+}
+
+.tarjeta-input-producto {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: #f9f9f9;
+    width: fit-content;
+    max-width: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border: 1px solid #ddd;
+}
+
+.tarjeta-input-producto label {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #353937;
+}
+
+.tarjeta-input-producto input[type="text"],
+.tarjeta-input-producto input[type="number"] {
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 150px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tarjeta-input-producto input[type="text"]:focus,
+.tarjeta-input-producto input[type="number"]:focus {
+    outline: none;
+    border-color: #1b1b1b;
+    box-shadow: 0 0 8px rgba(87, 107, 109, 0.5);
+}
+
+.btn-añadir {
+    background-color: #48a4aa;
+    color: rgb(18, 17, 18);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-weight: bold;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-añadir:hover {
+    opacity: 0.9;
+    background-color: #87fafa;
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    filter: brightness(1.1);
+}
+
+.btn-añadir:active {
+    transform: translateY(2px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    filter: brightness(0.95);
+}
+
+.boton-volver {
+    background-color: #e8846e;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 50px;
+    font-size: 18px;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.boton-volver:hover {
+    background-color: #5a6268;
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    filter: brightness(1.1);
+}
+
+.boton-volver:active {
+    transform: translateY(2px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    filter: brightness(0.95);
+}
+
+.btn-seleccionar-imagen {
+  display: inline-block;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  font-size: 16px;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  border: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-seleccionar-imagen:hover {
+  background-color: #0056b3;
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.1);
+}
+
+.btn-seleccionar-imagen:active {
+  transform: translateY(2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  filter: brightness(0.95);
+}
+
+.btn-limpiar-formulario {
+  background-color: #6c757d;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-limpiar-formulario:hover {
+  background-color: #5a6268;
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.1);
+}
+
+.btn-limpiar-formulario:active {
+  transform: translateY(2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  filter: brightness(0.95);
+}
+
+.btn-borrar-producto {
+  background-color: #dc3545;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-borrar-producto:hover {
+  background-color: #851924;
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.1);
+}
+
+.btn-borrar-producto:active {
+  transform: translateY(1px) scale(1.02);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  filter: brightness(0.95);
+}
+
+.btn-editar-producto {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 5px;
+  margin-right: 5px;
+  font-size: 14px;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-editar-producto:hover {
+  background-color: #294461;
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.1);
+}
+
+.btn-editar-producto:active {
+  transform: translateY(1px) scale(1.02);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  filter: brightness(0.95);
+}
+
+.inventory-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+}
+
+.inventory-actions-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
+.search-summary-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-self: flex-start;
+}
+
+.search-section {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    flex-shrink: 0;
+    align-self: flex-start;
+}
+
+.search-section h2 {
+    color: #353937;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+.search-input-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#inputBuscarProducto {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 180px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#inputBuscarProducto:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+
+.btn-buscar {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-buscar:hover {
+    background-color: #256978;
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    filter: brightness(1.1);
+}
+
+.btn-buscar:active {
+    transform: translateY(2px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    filter: brightness(0.95);
+}
+
+.btn-limpiar-busqueda {
+    background-color: #2b6292;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-limpiar-busqueda:hover {
+    background-color: #cc5c5a;
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    filter: brightness(1.1);
+}
+
+.btn-limpiar-busqueda:active {
+    transform: translateY(2px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    filter: brightness(0.95);
+}
+
+.formulario-producto-nuevo {
+    margin: 0;
+    flex-shrink: 0;
+    align-self: flex-start;
+}
+
+.inventory-summary-card {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    flex-shrink: 0;
+    align-self: flex-start;
+    text-align: center;
+    max-width: 250px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.inventory-summary-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.inventory-summary-card h2 {
+    color: #f6f7f6;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+.summary-count {
+    font-size: 3em;
+    font-weight: bold;
+    color: #fafbfc;
+    margin: 0;
+}
+
+.export-section {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    flex-shrink: 0;
+    align-self: flex-start;
+    text-align: center;
+    max-width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 150px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.export-section:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.btn-exportar {
+    background-color: #2da267;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    font-size: 1em;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-exportar:hover {
+    background-color: #22787e;
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    filter: brightness(1.1);
+}
+
+.btn-exportar:active {
+    transform: translateY(2px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    filter: brightness(0.95);
+}
+
+/* --- ESTILOS PARA LA PANTALLA DE LOGIN CON ANILLO DINÁMICO --- */
+#pantalla-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100vw;
+   background: 
+ linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.00)),
+    url(https://preview.redd.it/futuristic-city-at-dusk-4k-v0-0l8pcbaab7n51.jpg?auto=webp&s=cd5621e05c5bbe95fb4e97f685f7dedae0e41d87) 
+    center/cover no-repeat;
+  
+}
+
+.login-ring-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 700px;
+  height: 700px;
+}
+
+.animated-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 60%;
+  background: 
+    repeating-conic-gradient(
+      from 0deg,
+      #2f3031 0deg 6deg,
+      #1a3943 6deg 8deg,
+      transparent 9deg 18deg
+    );
+  animation: rotateRing 13s linear infinite;
+}
+
+.login-card {
+  position: relative;
+  z-index: 10;
+  width: 300px;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  text-align: center;
+  animation: slideIn 0.5s ease;
+  
+  /* Fondo con imagen y overlay para legibilidad */
+  background: 
+ linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.00)),
+    url(https://w0.peakpx.com/wallpaper/1011/312/HD-wallpaper-welcome-card-word-blue-black.jpg) 
+    center/cover no-repeat;
+  
+  /* Asegurar que el texto sea legible */
+  color: #fbfafc;
+}
+
+.login-card h1 {
+  font-size: 4em;
+  margin-bottom: 45px;
+  color: #d5d0dc;
+}
+
+.login-card input {
+  padding: 12px 15px;
+  border: 1px solid #f8f9f9;
+  border-radius: 5px;
+  font-size: 1em;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.login-card input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+
+.btn-auth {
+  background-color: #051a31;
+  color: rgb(253, 250, 250);
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: bold;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-auth:hover {
+  background-color: #1b528d;
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.1);
+}
+
+.btn-auth:active {
+  transform: translateY(2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  filter: brightness(0.95);
+}
+
+/* Asegurar que el mensaje de autenticación sea legible */
+.auth-message {
+  margin-top: 15px;
+  font-size: 0.9em;
+  color: #dc3545;
+  animation: fadeIn 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.auth-message.success {
+    color: #28a745;
+}
+
+.auth-message.error {
+    color: #dc3545;
+}
+
+#btnLogout {
+    margin-top: 20px;
+    background-color: #6c757d;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+#btnLogout:hover {
+    background-color: #5a6268;
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    filter: brightness(1.1);
+}
+
+#btnLogout:active {
+    transform: translateY(2px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    filter: brightness(0.95);
+}
+
+#pantalla-registro {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);
+}
