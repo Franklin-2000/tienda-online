@@ -317,16 +317,17 @@ function detenerEscaner() {
 }
 
 function onScanSuccess(decodedText, decodedResult) {
+    const codigoLimpio = decodedText.trim();
     detenerEscaner();
     
     if (objetivoEscaneo === 'inventario') {
-        inputCodigoBarras.value = decodedText;
+        inputCodigoBarras.value = codigoLimpio;
         inputCodigoBarras.dispatchEvent(new Event('input', { bubbles: true }));
         inputNombreProducto.focus(); 
     } else if (objetivoEscaneo === 'ventas') {
-        inputBuscarProductVenta.value = decodedText;
+        inputBuscarProductVenta.value = codigoLimpio;
         inputBuscarProductVenta.dispatchEvent(new Event('input', { bubbles: true }));
-        updateSalesDropdown(decodedText);
+        updateSalesDropdown(codigoLimpio);
     }
 }
 
