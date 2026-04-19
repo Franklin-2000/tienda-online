@@ -13,7 +13,7 @@ h1 {
   text-align: center;
 }
 
-#pantalla-inicio {
+#pantalla-inicio, #pantalla-menu-ventas {
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://img.freepik.com/vector-premium/tecnologia-digital-compras-linea-icono-sobre-fondo-azul-marketing-tiendas-linea-comercio-electronico_252172-219.jpg);
     background-size: cover;
     background-position: center center;
@@ -29,7 +29,7 @@ h1 {
     box-sizing: border-box;
 }
 
-#pantalla-inicio .title {
+#pantalla-inicio .title, #pantalla-menu-ventas .title {
   margin-bottom: 30px;
   margin-top: 3em;
   color: #ccbbbb;
@@ -39,6 +39,14 @@ h1 {
   font-weight: bold;
   font-style: italic;
   line-height: 1.2;
+}
+
+.botones-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
 }
 
 #pantalla-INVENTARIO {
@@ -119,11 +127,9 @@ h1 {
 .tarjeta-producto p {
     color: #0d0d0d; 
     text-shadow: none; 
-    
 }
 
 #pantalla-INVENTARIO .tarjeta-input-producto h2,
-
 #pantalla-INVENTARIO .search-section h2,
 #pantalla-INVENTARIO .inventory-summary-card h2 {
     color: #eee2e2;
@@ -135,13 +141,11 @@ h1 {
     text-align: center;
 }
 
-/* Asegurar que el color de los labels dentro de la tarjeta de input sea oscuro */
 #pantalla-INVENTARIO .tarjeta-input-producto label {
     color: #f5f1f1;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
-/* Color para el contador de productos en la tarjeta de resumen */
 #pantalla-INVENTARIO .inventory-summary-card .summary-count {
     font-size: 3em;
     font-weight: bold;
@@ -152,8 +156,6 @@ h1 {
 
 #pantalla-INVENTARIO .tarjeta-input-producto input[type="text"],
 #pantalla-INVENTARIO .tarjeta-input-producto input[type="number"],
-
-
 #pantalla-INVENTARIO .search-input-group input[type="text"] {
     background-color: rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(0, 0, 0, 0.2);
@@ -164,7 +166,6 @@ h1 {
     background-color: transparent;
     border-bottom: 1px solid rgba(204, 204, 204, 0.7);
 }
-
 
 #pantalla-INVENTARIO .boton-volver {
     background-color: rgba(243, 107, 80, 0.85);
@@ -179,57 +180,32 @@ h1 {
 
 /* ANIMACIONES */
 @keyframes hoverBoton {
-  0% {
-    transform: translateY(0) scale(1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-  100% {
-    transform: translateY(-8px) scale(1.08);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
-  }
+  0% { transform: translateY(0) scale(1); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+  100% { transform: translateY(-8px) scale(1.08); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35); }
 }
 
 @keyframes clickBoton {
-  0% {
-    transform: translateY(-8px) scale(1.08);
-  }
-  100% {
-    transform: translateY(2px) scale(1.02);
-  }
+  0% { transform: translateY(-8px) scale(1.08); }
+  100% { transform: translateY(2px) scale(1.02); }
 }
 
 @keyframes rotateRing {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @keyframes slideIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 .boton {
   display: inline-block;
-  margin: 3%;
   padding: 35px 25px;
   color: rgb(33, 16, 51);
   background-color: #7ae4d6;
@@ -287,7 +263,6 @@ input[type="file"] {
     transform: translateY(-8px) scale(1.03);
     box-shadow: 0 12px 24px rgba(0,0,0,0.25);
 }
-
 
 .tarjeta-input-producto h2 {
     color: #353937;
@@ -695,7 +670,7 @@ input[type="file"] {
     filter: brightness(0.95);
 }
 
-/* --- ESTILOS PARA LA PANTALLA DE LOGIN CON ANILLO DINÁMICO --- */
+/* --- ESTILOS PARA LA PANTALLA DE LOGIN --- */
 #pantalla-login {
   display: flex;
   justify-content: center;
@@ -706,7 +681,6 @@ input[type="file"] {
  linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.00)),
     url(https://preview.redd.it/futuristic-city-at-dusk-4k-v0-0l8pcbaab7n51.jpg?auto=webp&s=cd5621e05c5bbe95fb4e97f685f7dedae0e41d87) 
     center/cover no-repeat;
-  
 }
 
 .login-ring-container {
@@ -746,13 +720,11 @@ input[type="file"] {
   text-align: center;
   animation: slideIn 0.5s ease;
   
-  /* Fondo con imagen y overlay para legibilidad */
   background: 
  linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.00)),
     url(https://w0.peakpx.com/wallpaper/1011/312/HD-wallpaper-welcome-card-word-blue-black.jpg) 
     center/cover no-repeat;
   
-  /* Asegurar que el texto sea legible */
   color: #fbfafc;
 }
 
@@ -803,7 +775,6 @@ input[type="file"] {
   filter: brightness(0.95);
 }
 
-/* Asegurar que el mensaje de autenticación sea legible */
 .auth-message {
   margin-top: 15px;
   font-size: 0.9em;
@@ -854,4 +825,308 @@ input[type="file"] {
   min-height: 100vh;
   width: 100vw;
   background: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);
+}
+
+/* --- ESTILOS PANTALLAS DE VENTAS --- */
+#pantalla-ventas-fisicas, 
+#pantalla-ventas-online {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://www.loquequierasya.com/wp-content/uploads/2012/09/aumentar-ventas.jpg);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#pantalla-ventas-fisicas h1,
+#pantalla-ventas-online h1 {
+    font-size: 80px;
+    color: #fafcfd;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    margin-top: 20px;
+    margin-bottom: 25px;
+    font-family: 'Pacifico', cursive;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.contenedor-ventas {
+    background-color: transparent;
+    border: none;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    border-radius: 15px;
+    padding: 40px;
+    width: 90%;
+    max-width: 900px;
+    margin-top: 20px;
+    color: #333;
+}
+
+.ventas-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: space-between;
+}
+
+.formulario-venta {
+    flex: 1;
+    min-width: 300px;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.select-venta {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+    font-size: 16px;
+}
+
+.historial-ventas {
+    flex: 1.5;
+    min-width: 300px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: left;
+}
+
+.historial-ventas h2 {
+    margin-top: 0;
+    color: #353937;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+}
+
+.lista-ventas-scroll {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Ocultar flechas de inputs numéricos */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield; 
+}
+
+/* CLASES PARA EL CARRITO DE COMPRAS */
+.panel-venta-seccion {
+    background: rgba(255,255,255,0.5); 
+    padding: 15px; 
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.carrito-container {
+    max-height: 150px; 
+    overflow-y: auto; 
+    background: #fff; 
+    padding: 10px; 
+    border-radius: 5px; 
+    margin-bottom: 10px; 
+    text-align: left;
+}
+
+.carrito-item {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee;
+    padding: 5px 0;
+}
+
+.carrito-item-remover {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.total-venta-preview {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.total-venta-preview .monto {
+    font-size: 1.4em; 
+    color: #28a745;
+    font-weight: bold;
+}
+
+.botones-accion-venta {
+    display: flex; 
+    gap: 10px;
+}
+
+/* ESTILOS PARA LOS TICKETS DE VENTA DESPLEGABLES */
+.venta-ticket {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+}
+
+.venta-ticket:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.venta-ticket-header {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9f9f9;
+}
+
+.venta-ticket-header strong {
+    color: #0c566c;
+    font-size: 1.1em;
+}
+
+.fecha-venta {
+    font-size: 0.85em;
+    color: #777;
+    margin-top: 5px;
+    display: block;
+}
+
+.venta-ticket-details {
+    padding: 15px;
+    background-color: #fff;
+    border-top: 1px dashed #eee;
+    display: none; 
+    font-size: 0.95em;
+}
+
+.venta-ticket-details ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.venta-ticket-details li {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 5px 0;
+}
+
+/* --- NUEVOS ESTILOS PARA EL ESCÁNER DE CÓDIGOS --- */
+
+.btn-escanear {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0 10px;
+    font-size: 1.2em;
+    transition: all 0.2s ease;
+}
+
+.btn-escanear:hover {
+    background-color: #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.modal-contenido {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.modal-contenido h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+#lector-camara {
+    width: 100%;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #000;
+}
+
+/* --- ESTILOS PARA EL HISTORIAL ACORDEÓN Y TICKETS --- */
+.acordeon-fecha {
+    background-color: #0c566c;
+    color: white;
+    padding: 10px 15px;
+    margin-top: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.acordeon-fecha:hover {
+    background-color: #1a7b98;
+}
+
+.acordeon-contenido {
+    padding: 10px;
+    background-color: #f4f7f6;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+}
+
+.btn-eliminar-ticket {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85em;
+    margin-left: 10px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.btn-eliminar-ticket:hover {
+    background-color: #bd2130;
 }
