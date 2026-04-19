@@ -1,20 +1,15 @@
 // ==========================================
+// CONFIGURACIÓN DE SUPABASE
+// ==========================================
+const SB_URL = "https://mhnhfdtdpryrjaeaymsa.supabase.co";
+const SB_KEY = "sb_publishable_tiKyjeMyir7LD0EmFCdo8g_CqAXoM8R"; 
+const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+
+// ==========================================
 // REFERENCIAS AL DOM
 // ==========================================
 const pantallaLogin = document.querySelector("#pantalla-login");
-const inputEmailLogin = document.querySelector("#inputEmailLogin");
-const inputPasswordLogin = document.querySelector("#inputPasswordLogin");
-const btnRegistrarseLogin = document.querySelector("#btnRegistrarseLogin");
-const btnIniciarSesionLogin = document.querySelector("#btnIniciarSesionLogin");
 const authMessageLogin = document.querySelector("#authMessageLogin");
-
-const pantallaRegistro = document.querySelector("#pantalla-registro");
-const registroForm = document.querySelector("#registroForm");
-const regEmail = document.querySelector("#regEmail");
-const regPassword = document.querySelector("#regPassword");
-const btnConfirmarRegistro = document.querySelector("#btnConfirmarRegistro");
-const btnVolverLoginRegistro = document.querySelector("#btnVolverLoginRegistro");
-const authMessageRegistro = document.querySelector("#authMessageRegistro");
 
 const pantallaInicio = document.querySelector("#pantalla-inicio");
 const pantallaInventario = document.querySelector("#pantalla-INVENTARIO");
@@ -78,6 +73,8 @@ const totalProductosCountElement = document.querySelector("#totalProductosCount"
 const btnExportarDatos = document.querySelector("#btnExportarDatos");
 const btnLogout = document.querySelector("#btnLogout");
 
+const btnGoogle = document.querySelector("#btnGoogle"); // Integrado desde Supabase
+
 // Referencias Modal Scanner
 const modalEscaner = document.querySelector("#modal-escaner");
 const btnCerrarScanner = document.querySelector("#btnCerrarScanner");
@@ -96,22 +93,28 @@ let html5QrcodeScanner = null;
 let objetivoEscaneo = ''; 
 
 // ==========================================
-// FUNCIONES DE ALMACENAMIENTO (LocalStorage)
+// FUNCIONES DE NUBE SUPABASE (Reemplazan LocalStorage para Inventario)
 // ==========================================
-function saveInventory() {
-    localStorage.setItem('inventory', JSON.stringify(inventory));
-    updateProductCount(); 
-}
+async function loadInventory() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return; 
 
-function loadInventory() {
-    const storedInventory = localStorage.getItem('inventory');
-    if (storedInventory) {
-        inventory = JSON.parse(storedInventory);
-        renderProducts(); 
+    const { data, error } = await supabaseClient
+        .from('productos')
+        .select('*')
+        .eq('user_id', user.id); 
+
+    if (error) {
+        console.error("Error cargando inventario:", error);
+    } else {
+        inventory = data; 
+        renderProducts();
+        updateProductCount();
     }
-    updateProductCount(); 
 }
 
+// Ventas se mantienen en LocalStorage temporalmente como en tu original,
+// a menos que decidas migrar la tabla "sales" a Supabase después.
 function saveSales() {
     localStorage.setItem('sales', JSON.stringify(sales));
 }
@@ -124,30 +127,18 @@ function loadSales() {
     }
 }
 
-function saveUsers() {
-    localStorage.setItem('users', JSON.stringify(users));
-}
-
-function loadUsers() {
-    const storedUsers = localStorage.getItem('users');
-    if (storedUsers) {
-        users = JSON.parse(storedUsers);
-    }
-}
-
 // ==========================================
-// LÓGICA DEL ESCÁNER DE CÓDIGOS DE BARRAS
+// LÓGICA DEL ESCÁNER DE CÓDIGOS DE BARRAS (Intacta)
 // ==========================================
 function iniciarEscaner(objetivo) {
     objetivoEscaneo = objetivo;
     modalEscaner.style.display = 'flex';
     
-    // Ajustamos la configuración para que lea mejor códigos de barras físicos (formato 1D)
     html5QrcodeScanner = new Html5QrcodeScanner(
         "lector-camara", 
         { 
             fps: 10, 
-            qrbox: {width: 250, height: 100}, // Caja más horizontal para códigos de barras
+            qrbox: {width: 250, height: 100}, 
             formatsToSupport: [
                 Html5QrcodeSupportedFormats.EAN_13,
                 Html5QrcodeSupportedFormats.EAN_8,
@@ -177,12 +168,10 @@ function onScanSuccess(decodedText, decodedResult) {
     
     if (objetivoEscaneo === 'inventario') {
         inputCodigoBarras.value = decodedText;
-        // Forzamos el evento input para asegurar compatibilidad con otras funciones
         inputCodigoBarras.dispatchEvent(new Event('input', { bubbles: true }));
         inputNombreProducto.focus(); 
     } else if (objetivoEscaneo === 'ventas') {
         inputBuscarProductVenta.value = decodedText;
-        // Obligamos al navegador a detectar que se pegó el código para el salto automático
         inputBuscarProductVenta.dispatchEvent(new Event('input', { bubbles: true }));
         updateSalesDropdown(decodedText);
     }
@@ -211,18 +200,9 @@ btnCerrarScanner.addEventListener('click', (e) => {
 // ==========================================
 // FUNCIONES DE UI Y NAVEGACIÓN
 // ==========================================
-function displayAuthMessage(element, message, type = '') {
-    element.textContent = message;
-    element.className = 'auth-message'; 
-    if (type) {
-        element.classList.add(type);
-    }
-    element.style.display = message ? 'block' : 'none';
-}
 
 function showScreen(screenId, pushToHistory = true) {
     pantallaLogin.style.display = 'none';
-    pantallaRegistro.style.display = 'none';
     pantallaInicio.style.display = 'none';
     pantallaInventario.style.display = 'none';
     if(pantallaMenuVentas) pantallaMenuVentas.style.display = 'none';
@@ -232,24 +212,16 @@ function showScreen(screenId, pushToHistory = true) {
     switch (screenId) {
         case 'pantalla-login':
             pantallaLogin.style.display = 'flex'; 
-            displayAuthMessage(authMessageLogin, ''); 
-            inputEmailLogin.value = '';
-            inputPasswordLogin.value = '';
-            break;
-        case 'pantalla-registro':
-            pantallaRegistro.style.display = 'flex'; 
-            displayAuthMessage(authMessageRegistro, '');
-            regEmail.value = '';
-            regPassword.value = '';
             break;
         case 'pantalla-inicio':
-            pantallaInicio.style.display = ''; 
+            pantallaInicio.style.display = 'block'; 
             clearSearch(); 
             resetFormAndMode();
             break;
         case 'pantalla-INVENTARIO':
-            pantallaInventario.style.display = ''; 
+            pantallaInventario.style.display = 'block'; 
             resetFormAndMode(); 
+            loadInventory();
             break;
         case 'pantalla-menu-ventas':
             if(pantallaMenuVentas) pantallaMenuVentas.style.display = '';
@@ -268,10 +240,12 @@ function showScreen(screenId, pushToHistory = true) {
     }
 }
 
-function checkAuthStatus(pushToHistory = true) {
-    const storedUserEmail = localStorage.getItem('currentLoggedInUserEmail');
-    if (storedUserEmail) {
-        currentLoggedInUserEmail = storedUserEmail;
+// Integración Autenticación Supabase
+async function checkAuthStatus(pushToHistory = true) {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    
+    if (session) {
+        currentLoggedInUserEmail = session.user.email;
         if (pushToHistory) history.replaceState({ screen: 'pantalla-inicio' }, '', '#pantalla-inicio');
         showScreen('pantalla-inicio', false); 
         loadInventory(); 
@@ -294,14 +268,6 @@ window.addEventListener('popstate', (event) => {
 // ==========================================
 // EVENTOS DE NAVEGACIÓN
 // ==========================================
-btnRegistrarseLogin.addEventListener("click", function() {
-    showScreen('pantalla-registro');
-});
-
-btnVolverLoginRegistro.addEventListener("click", function() {
-    showScreen('pantalla-login');
-});
-
 btnInventario.addEventListener("click", function(e) {
   e.preventDefault();
   showScreen('pantalla-INVENTARIO');
@@ -350,12 +316,9 @@ if (btnVolverVentasOnline) {
     });
 }
 
-btnLogout.addEventListener("click", handleLogout);
-
 // ==========================================
-// LÓGICA DEL CARRITO Y TICKETS DIARIOS
+// LÓGICA DEL CARRITO Y TICKETS DIARIOS (Intacta)
 // ==========================================
-
 function generarNumeroTicket() {
     const fechaActual = new Date().toLocaleDateString(); 
     let ultimaFecha = localStorage.getItem('ultimaFechaVenta');
@@ -443,7 +406,6 @@ window.removeFromCart = function(index) {
     updateCartUI();
 };
 
-// Función para vaciar completamente la lista y cajas de texto de ventas
 function limpiarTodaLaVenta() {
     currentCart = [];
     updateCartUI(); 
@@ -454,26 +416,24 @@ function limpiarTodaLaVenta() {
     inputBuscarProductVenta.focus(); 
 }
 
-// Botón explícito de Limpiar Venta
 if (btnLimpiarVenta) {
     btnLimpiarVenta.addEventListener("click", limpiarTodaLaVenta);
 }
 
 if (btnAgregarAlCarrito) {
     btnAgregarAlCarrito.addEventListener("click", () => {
-        const productId = parseInt(selectProductoVenta.value);
+        // En Supabase los IDs pueden ser números o strings, aseguramos compatibilidad
+        const productId = selectProductoVenta.value;
         let qty = parseInt(inputCantidadVenta.value);
 
-        if (isNaN(qty) || qty <= 0) {
-            qty = 1; 
-        }
+        if (isNaN(qty) || qty <= 0) qty = 1; 
 
         if (!productId) { alert("Selecciona un producto."); return; }
 
-        const product = inventory.find(p => p.id === productId);
+        const product = inventory.find(p => p.id.toString() === productId.toString());
         if (!product) return;
 
-        const cartItem = currentCart.find(item => item.id === productId);
+        const cartItem = currentCart.find(item => item.id.toString() === productId.toString());
         const currentCartQty = cartItem ? cartItem.qty : 0;
         
         if (currentCartQty + qty > product.cantidad) {
@@ -494,7 +454,6 @@ if (btnAgregarAlCarrito) {
 
         updateCartUI();
         
-        // Limpiamos los inputs para escanear el siguiente producto
         inputCantidadVenta.value = ''; 
         inputBuscarProductVenta.value = ''; 
         selectProductoVenta.value = ''; 
@@ -519,24 +478,30 @@ inputBuscarProductVenta.addEventListener("keydown", function(event) {
     }
 });
 
-// Función para ELIMINAR un ticket y DEVOLVER al inventario
-window.eliminarTicket = function(ticketGlobalId) {
+// Función para ELIMINAR un ticket y DEVOLVER al inventario (Actualizada para Supabase)
+window.eliminarTicket = async function(ticketGlobalId) {
     if(!confirm("¿Estás seguro de eliminar este ticket? Los productos volverán al inventario de inmediato.")) return;
 
     const saleIndex = sales.findIndex(s => s.globalId === ticketGlobalId);
     if(saleIndex !== -1) {
         const sale = sales[saleIndex];
         
-        sale.items.forEach(item => {
-            const productIndex = inventory.findIndex(p => p.id === item.productId);
+        // Reponer inventario local y en Supabase
+        for (let item of sale.items) {
+            const productIndex = inventory.findIndex(p => p.id.toString() === item.productId.toString());
             if(productIndex !== -1) {
-                inventory[productIndex].cantidad += item.qty;
+                const nuevaCantidad = inventory[productIndex].cantidad + item.qty;
+                inventory[productIndex].cantidad = nuevaCantidad;
+                
+                // Actualizar en Supabase
+                await supabaseClient
+                    .from('productos')
+                    .update({ cantidad: nuevaCantidad })
+                    .eq('id', item.productId);
             }
-        });
+        }
 
         sales.splice(saleIndex, 1);
-        
-        saveInventory();
         saveSales();
         renderProducts();
         updateSalesDropdown();
@@ -552,7 +517,7 @@ window.eliminarTicket = function(ticketGlobalId) {
 // REGISTRO DE VENTA Y LIMPIEZA AUTOMÁTICA DEL CARRITO
 // =========================================================
 if (btnRegistrarVenta) {
-    btnRegistrarVenta.addEventListener("click", () => {
+    btnRegistrarVenta.addEventListener("click", async () => {
         if (currentCart.length === 0) {
             alert("Añade al menos un producto a la lista antes de registrar.");
             return;
@@ -564,10 +529,17 @@ if (btnRegistrarVenta) {
         let totalSale = 0;
         const cartItemsForReceipt = []; 
 
-        currentCart.forEach(item => {
-            const productIndex = inventory.findIndex(p => p.id === item.id);
+        for (let item of currentCart) {
+            const productIndex = inventory.findIndex(p => p.id.toString() === item.id.toString());
             if (productIndex !== -1) {
-                inventory[productIndex].cantidad -= item.qty;
+                const nuevaCantidad = inventory[productIndex].cantidad - item.qty;
+                inventory[productIndex].cantidad = nuevaCantidad;
+                
+                // Restar del inventario en Supabase
+                await supabaseClient
+                    .from('productos')
+                    .update({ cantidad: nuevaCantidad })
+                    .eq('id', item.id);
             }
             
             const subtotal = item.qty * item.price;
@@ -580,7 +552,7 @@ if (btnRegistrarVenta) {
                 price: item.price,
                 subtotal: subtotal
             });
-        });
+        }
 
         const numeroTicket = generarNumeroTicket();
 
@@ -595,15 +567,17 @@ if (btnRegistrarVenta) {
 
         sales.push(newSale);
         
-        saveInventory();
         saveSales();
         renderProducts();
         renderSalesHistory();
 
-        // LIMPIEZA TOTAL Y AUTOMÁTICA AL FINALIZAR LA VENTA
-        limpiarTodaLaVenta();
+        if (confirm("¿Desea imprimir la factura de esta venta?")) {
+             imprimirFacturaTicket(newSale);
+        }
 
-        // El timeout permite que el navegador refresque la pantalla dejándola en blanco antes de la alerta
+        limpiarTodaLaVenta();
+        if(inputBuscarProductVenta) inputBuscarProductVenta.focus();
+
         setTimeout(() => {
             alert(`¡Venta registrada con éxito! Ticket #${newSale.id} por $${totalSale}`);
         }, 100);
@@ -637,7 +611,6 @@ function renderSalesHistory() {
     const ventasHoy = [];
     const ventasPasadas = {};
 
-    // Clasificar ventas
     sales.forEach(sale => {
         const fechaVenta = sale.fechaLimpia || sale.date.split(',')[0].trim();
 
@@ -649,7 +622,6 @@ function renderSalesHistory() {
         }
     });
 
-    // 1. Renderizar Ventas de Hoy
     if (ventasHoy.length === 0) {
         listaVentasHoy.innerHTML = '<p>Aún no hay ventas registradas hoy.</p>';
     } else {
@@ -658,7 +630,6 @@ function renderSalesHistory() {
         });
     }
 
-    // 2. Renderizar Historial Pasado (Acordeones)
     const fechasOrdenadas = Object.keys(ventasPasadas).sort((a, b) => {
         const dateA = new Date(a.split('/').reverse().join('-'));
         const dateB = new Date(b.split('/').reverse().join('-'));
@@ -743,8 +714,9 @@ function crearDOMTicket(sale, esDeHoy) {
 // ==========================================
 // FUNCIONES DE RENDERIZADO (INVENTARIO)
 // ==========================================
-
 function renderProducts(productsToRender = inventory) {
+    if (!contenedorProductos) return;
+
     contenedorProductos.innerHTML = ''; 
 
     if (productsToRender.length === 0 && inputBuscarProducto.value.trim() !== '') {
@@ -810,7 +782,7 @@ btnSeleccionarImagen.addEventListener('click', () => {
 });
 
 // ==========================================
-// LÓGICA DE FORMULARIO (Añadir/Editar)
+// LÓGICA DE FORMULARIO (Añadir/Editar a Supabase)
 // ==========================================
 function resetFormAndMode() {
     inputCodigoBarras.value = ''; 
@@ -823,70 +795,62 @@ function resetFormAndMode() {
     btnLimpiarFormulario.textContent = 'Limpiar';
 }
 
-function handleSaveProduct() {
+async function handleSaveProduct() {
   const codigo = inputCodigoBarras.value.trim(); 
   const nombre = inputNombreProducto.value.trim();
   const precio = parseInt(inputPrecioProducto.value); 
   const cantidad = parseInt(inputCantidadProducto.value);
   
-  if (!nombre) {
-    alert("Por favor, ingresa el nombre del producto.");
-    return;
-  }
-  if (isNaN(precio) || precio <= 0) {
-    alert("Por favor, ingresa un precio válido para el producto (número entero mayor que 0).");
-    return;
-  }
-  if (!imagenProductoActual) {
-      alert("Por favor, selecciona una imagen para el producto.");
-      return;
-  }
-  if (isNaN(cantidad) || cantidad <= 0 || !Number.isInteger(cantidad)) {
-      alert("Por favor, ingresa una cantidad válida para el producto (número entero mayor que 0).");
+  if (!nombre) { alert("Por favor, ingresa el nombre del producto."); return; }
+  if (isNaN(precio) || precio <= 0) { alert("Por favor, ingresa un precio válido para el producto."); return; }
+  if (!imagenProductoActual) { alert("Por favor, selecciona una imagen para el producto."); return; }
+  if (isNaN(cantidad) || cantidad <= 0 || !Number.isInteger(cantidad)) { alert("Por favor, ingresa una cantidad válida."); return; }
+
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) {
+      alert("Debes iniciar sesión para guardar productos.");
+      showScreen('pantalla-login');
       return;
   }
 
   if (editingProductId !== null) {
-      const productIndex = inventory.findIndex(p => p.id === editingProductId);
-      if (productIndex !== -1) {
-          inventory[productIndex] = {
-              ...inventory[productIndex], 
-              codigoBarras: codigo, 
-              nombre: nombre,
-              precio: precio,
-              imagen: imagenProductoActual,
-              cantidad: cantidad
-          };
+      // Editar en Supabase
+      const { error } = await supabaseClient
+          .from('productos')
+          .update({ codigoBarras: codigo, nombre, precio, cantidad, imagen: imagenProductoActual })
+          .eq('id', editingProductId);
+
+      if (!error) {
           alert(`¡Producto "${nombre}" actualizado!`);
+          resetFormAndMode(); 
+          loadInventory(); 
+      } else {
+          alert("Error al actualizar el producto.");
       }
   } 
   else {
-      const nuevoProducto = {
-          id: Date.now(), 
-          codigoBarras: codigo, 
-          nombre: nombre,
-          precio: precio,
-          imagen: imagenProductoActual,
-          cantidad: cantidad
-      };
-      inventory.push(nuevoProducto);
-      alert(`¡Producto "${nombre}" (Cantidad: ${cantidad}) añadido al inventario!`);
-  }
+      // Añadir en Supabase
+      const { error } = await supabaseClient
+          .from('productos')
+          .insert([{ 
+              codigoBarras: codigo,
+              nombre, precio, cantidad, 
+              imagen: imagenProductoActual, 
+              user_id: user.id 
+          }]);
 
-  saveInventory();
-  if (inputBuscarProducto.value.trim() !== '') {
-      searchProducts();
-  } 
-  else {
-      renderProducts();
+      if (!error) {
+          alert(`¡Producto "${nombre}" (Cantidad: ${cantidad}) añadido al inventario!`);
+          resetFormAndMode(); 
+          loadInventory(); 
+      } else {
+          alert("Error al añadir el producto.");
+      }
   }
-  resetFormAndMode(); 
-  
-  inputCodigoBarras.focus(); 
 }
 
 function editProduct(productId) {
-    const productToEdit = inventory.find(p => p.id === productId);
+    const productToEdit = inventory.find(p => p.id.toString() === productId.toString());
     if (productToEdit) {
         editingProductId = productId; 
         inputCodigoBarras.value = productToEdit.codigoBarras || ''; 
@@ -906,8 +870,7 @@ function editProduct(productId) {
 btnLimpiarFormulario.addEventListener('click', function() {
     if (editingProductId !== null) {
         alert("Edición cancelada.");
-    }
-     else { 
+    } else { 
          clearSearch();
     }
     resetFormAndMode();
@@ -990,31 +953,33 @@ inputBuscarProducto.addEventListener("keydown", function(event) {
 });
 
 // ==========================================
-// DELEGACIÓN: BORRAR Y EDITAR
+// DELEGACIÓN: BORRAR Y EDITAR (Con Supabase)
 // ==========================================
-contenedorProductos.addEventListener('click', function(event) {
-    const cardDiv = event.target.closest('.tarjeta-producto');
-    if (!cardDiv) return; 
-    
-    const productId = parseInt(cardDiv.dataset.id);
+if (contenedorProductos) { 
+    contenedorProductos.addEventListener('click', async function(event) {
+        const cardDiv = event.target.closest('.tarjeta-producto');
+        if (!cardDiv) return; 
+        
+        const productId = cardDiv.dataset.id;
 
-    if (event.target.classList.contains('btn-borrar-producto')) {
-        inventory = inventory.filter(product => product.id !== productId);
-        saveInventory();
-    
-        if (productId === editingProductId) {
-            resetFormAndMode();
+        if (event.target.classList.contains('btn-borrar-producto')) {
+            if(confirm("¿Estás seguro de que quieres eliminar este producto?")){
+                const { error } = await supabaseClient.from('productos').delete().eq('id', productId);
+                
+                if (!error) {
+                    if (productId === editingProductId) resetFormAndMode();
+                    alert("Producto eliminado.");
+                    loadInventory(); 
+                } else {
+                    console.error("Error al eliminar producto:", error);
+                    alert("Error al eliminar el producto.");
+                }
+            }
+        } else if (event.target.classList.contains('btn-editar-producto')) {
+            editProduct(productId);
         }
-        if (inputBuscarProducto.value.trim() !== '') {
-            searchProducts(); 
-        } else {
-            renderProducts(); 
-        }
-        alert("Producto eliminado.");
-    } else if (event.target.classList.contains('btn-editar-producto')) {
-        editProduct(productId);
-    }
-});
+    });
+}
 
 // ==========================================
 // LÓGICA DE EXPORTACIÓN (CSV)
@@ -1054,155 +1019,64 @@ function exportInventoryToCSV() {
 btnExportarDatos.addEventListener("click", exportInventoryToCSV);
 
 // ==========================================
-// LÓGICA DE AUTENTICACIÓN (LOGIN/REGISTRO)
+// INTEGRACIÓN DE INICIO DE SESIÓN CON SUPABASE
 // ==========================================
-inputEmailLogin.addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-        event.preventDefault(); 
-        inputPasswordLogin.focus(); 
-    }
-});
-
-inputPasswordLogin.addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-        event.preventDefault();
-        btnIniciarSesionLogin.click(); 
-    }
-});
-
-function handleRegistrationSubmit(event) {
-    event.preventDefault(); 
-
-    const email = regEmail.value.trim();
-    const password = regPassword.value;
-
-    displayAuthMessage(authMessageRegistro, ''); 
-
-    if (!email || !password) {
-        displayAuthMessage(authMessageRegistro, "Por favor, completa todos los campos.", 'error');
-        return;
-    }
-
-    if (password.length < 6) {
-        displayAuthMessage(authMessageRegistro, "La contraseña debe tener al menos 6 caracteres.", 'error');
-        return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        displayAuthMessage(authMessageRegistro, "Por favor, ingresa un formato de email válido.", 'error');
-        return;
-    }
-
-    if (users.some(user => user.email === email)) {
-        displayAuthMessage(authMessageRegistro, "Este email ya está registrado. Por favor, usa otro o inicia sesión.", 'error');
-        return;
-    }
-
-    const newUser = {
-        email: email,
-        password: password
-    };
-
-    users.push(newUser);
-    saveUsers();
-    displayAuthMessage(authMessageRegistro, "¡Registro exitoso! Ya puedes iniciar sesión.", 'success');
-
-    regEmail.value = '';
-    regPassword.value = '';
-    setTimeout(() => showScreen('pantalla-login'), 1500);
-}
-
-registroForm.addEventListener("submit", handleRegistrationSubmit);
-
-function handleLoginSubmit(event) {
-    event.preventDefault(); 
-
-    const email = inputEmailLogin.value.trim();
-    const password = inputPasswordLogin.value;
-
-    displayAuthMessage(authMessageLogin, '');
-
-    if (!email || !password) {
-        displayAuthMessage(authMessageLogin, "Por favor, ingresa tu email y contraseña.", 'error');
-        return;
-    }
-
-    const user = users.find(u => u.email === email && u.password === password);
-
-    if (user) {
-        currentLoggedInUserEmail = user.email;
-        localStorage.setItem('currentLoggedInUserEmail', user.email);
-        displayAuthMessage(authMessageLogin, `Bienvenido, ${user.email}!`, 'success');
-        setTimeout(() => showScreen('pantalla-inicio'), 1000);
-        loadInventory(); 
-        loadSales(); 
+async function handleLoginWithGoogle() {
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: "https://franklin-2000.github.io/tienda-online/" } 
+    });
+    if (error) {
+        console.error('Error al iniciar sesión con Google:', error);
     } else {
-        displayAuthMessage(authMessageLogin, "Credenciales incorrectas. Inténtalo de nuevo.", 'error');
+        console.log('Redirigiendo a Google para autenticación...');
     }
 }
 
-btnIniciarSesionLogin.addEventListener('click', handleLoginSubmit);
-
-function handleLogout() {
-    currentLoggedInUserEmail = null;
-    localStorage.removeItem('currentLoggedInUserEmail');
-    showScreen('pantalla-login');
-    alert("Has cerrado sesión.");
+async function handleLogout() {
+    const { error } = await supabaseClient.auth.signOut();
+    if (!error) {
+        inventory = []; 
+        showScreen('pantalla-login');
+        alert("Sesión cerrada correctamente.");
+    } else {
+        console.error("Error al cerrar sesión:", error);
+        alert("Hubo un error al cerrar la sesión.");
+    }
 }
+
+if (btnGoogle) btnGoogle.addEventListener("click", handleLoginWithGoogle);
+btnLogout.addEventListener("click", handleLogout);
 
 // ==========================================
 // INICIALIZACIÓN DE LA APP
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    loadUsers();
     checkAuthStatus();
 });
 
-// =================================================MAA=======
+// =========================================================
 // EXTENSIÓN DE FUNCIONALIDADES (SIN ALTERAR FUNCIONES PREVIAS)
-// ===========================================================
+// =========================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Limpieza automática tras registrar la venta
-    if (btnRegistrarVenta) {
-        btnRegistrarVenta.addEventListener('click', () => {
-            // Verificamos si la venta fue posible (si había algo en el carrito)
-            if (currentCart.length > 0) {
-                // Esperamos un instante para que tu función original termine de guardar
-                setTimeout(() => {
-                    // Llamamos a tu función existente para resetear la vista de ventas
-                    limpiarTodaLaVenta();
-                    
-                    // Aseguramos el foco en el buscador para la siguiente venta
-                    if(inputBuscarProductVenta) inputBuscarProductVenta.focus();
-                    
-                    console.log("Interfaz de ventas reseteada automáticamente.");
-                }, 300); 
-            }
-        });
-    }
-
-    // 2. Foco automático al entrar a Ventas Físicas
+    // Foco automático al entrar a Ventas Físicas
     if (btnMenuVentasFisicas) {
         btnMenuVentasFisicas.addEventListener('click', () => {
             setTimeout(() => {
                 if(inputBuscarProductVenta) inputBuscarProductVenta.focus();
-            }, 500); // Espera a que la pantalla sea visible
+            }, 500); 
         });
     }
 
-    // 3. Mejora de flujo: Si escaneas un código y hay coincidencia única, saltar a cantidad
+    // Mejora de flujo: Si escaneas un código y hay coincidencia única
     if (inputBuscarProductVenta) {
         inputBuscarProductVenta.addEventListener('input', () => {
             const term = inputBuscarProductVenta.value.trim();
-            // Si el término coincide exactamente con un código de barras en tu inventario
             const productoEncontrado = inventory.find(p => p.codigoBarras === term);
             
             if (productoEncontrado) {
-                // Seleccionamos el producto en tu <select> automáticamente
                 selectProductoVenta.value = productoEncontrado.id;
-                // Saltamos a la cantidad para ahorrar un clic
                 inputCantidadVenta.focus();
             }
         });
@@ -1213,10 +1087,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // MODIFICACIONES DE FACTURACIÓN Y REPORTE
 // ==========================================
 
-// Función para generar la factura pequeña (Ticket)
 const imprimirFacturaTicket = (datosVenta) => {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit: 'mm', format: [80, 150] }); // Tamaño ticket
+    const doc = new jsPDF({ unit: 'mm', format: [80, 150] }); 
 
     doc.setFontSize(10);
     doc.text("MI TIENDA", 40, 10, { align: "center" });
@@ -1236,11 +1109,9 @@ const imprimirFacturaTicket = (datosVenta) => {
     doc.setFontSize(10);
     doc.text(`TOTAL: $${datosVenta.total}`, 75, y + 8, { align: "right" });
     
-    // Abre el diálogo de impresión
     window.open(doc.output('bloburl'), '_blank');
 };
 
-// Función para el reporte diario de todos los productos vendidos
 const descargarReporteDiario = () => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -1268,30 +1139,7 @@ const descargarReporteDiario = () => {
     doc.save(`Reporte_${hoy.replace(/\//g, '-')}.pdf`);
 };
 
-// --- INYECCIÓN DE COMPORTAMIENTO ---
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // 1. Al registrar, preguntar por factura y LIMPIAR AUTOMÁTICAMENTE
-    if (btnRegistrarVenta) {
-        btnRegistrarVenta.addEventListener('click', () => {
-            if (currentCart.length > 0) {
-                setTimeout(() => {
-                    // Obtener la venta que acabas de guardar en tu array global 'sales'
-                    const ultimaVenta = sales[sales.length - 1];
-                    
-                    if (confirm("¿Desea imprimir la factura de esta venta?")) {
-                        imprimirFacturaTicket(ultimaVenta);
-                    }
-
-                    // Limpieza automática (usando tu propia función original)
-                    limpiarTodaLaVenta();
-                    if(inputBuscarProductVenta) inputBuscarProductVenta.focus();
-                }, 500); // Espera a que tu código original termine de procesar
-            }
-        });
-    }
-
-    // 2. Añadir el botón de Reporte Diario en la sección de Historial
     const seccionHistorial = document.querySelector('.historial-ventas');
     if (seccionHistorial) {
         const btnPDF = document.createElement('button');
@@ -1300,63 +1148,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnPDF.style.width = "100%";
         btnPDF.style.marginBottom = "15px";
         btnPDF.onclick = descargarReporteDiario;
-        seccionHistorial.prepend(btnPDF); // Lo pone al principio del historial
-    }
-});
-
-// ==========================================
-// INTEGRACIÓN DE INICIO DE SESIÓN CON GOOGLE
-// ==========================================
-
-// 1. Función para desencriptar los datos que envía Google
-function decodeJwtResponse(token) {
-    let base64Url = token.split('.')[1];
-    let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    let jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
-}
-
-// 2. Función que procesa el login exitoso
-window.handleCredentialResponse = (response) => {
-    // Decodificamos el token de Google
-    const responsePayload = decodeJwtResponse(response.credential);
-
-    // Extraemos el email
-    const userEmail = responsePayload.email;
-
-    // Usamos TU lógica original para guardar el usuario logueado
-    currentLoggedInUserEmail = userEmail;
-    localStorage.setItem('currentLoggedInUserEmail', userEmail);
-    
-    // Usamos TU función original para mostrar el mensaje
-    displayAuthMessage(authMessageLogin, `¡Ingreso exitoso con Google, ${userEmail}!`, 'success');
-    
-    // Redirigimos al inicio usando TU función original tras 1 segundo
-    setTimeout(() => {
-        showScreen('pantalla-inicio');
-        loadInventory(); 
-        loadSales();
-    }, 1000);
-};
-
-// 3. Inicializar el botón cuando cargue la página
-window.addEventListener('load', () => {
-    // Verificamos que la librería de Google cargó correctamente
-    if (window.google && window.google.accounts) {
-        google.accounts.id.initialize({
-            // REEMPLAZA ESTO CON TU CLIENT ID REAL DE GOOGLE CLOUD
-            client_id: "430987812790-27986ekgk51cslp1uaqdqbnsnsn3if7m.apps.googleusercontent.com",
-            callback: handleCredentialResponse
-        });
-        
-        const btnContainer = document.getElementById("buttonDiv");
-        if (btnContainer) {
-            google.accounts.id.renderButton(
-                btnContainer,
-                { theme: "filled_black", size: "large", width: "220", shape: "pill" } 
-            );
-        }
+        seccionHistorial.prepend(btnPDF); 
     }
 });
