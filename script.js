@@ -717,26 +717,36 @@ function crearDOMTicket(sale, esDeHoy) {
 function renderProducts(productsToRender = inventory) {
     if (!contenedorProductos) return;
 
+    // Limpiamos el contenedor antes de renderizar
     contenedorProductos.innerHTML = ''; 
 
-    if (productsToRender.length === 0 && inputBuscarProducto.value.trim() !== '') {
-        contenedorProductos.innerHTML = '<p style="text-align: center; width: 100%; margin-top: 20px; font-size: 1.2em; color: #555;">No se encontraron productos que coincidan con la búsqueda.</p>';
-        return;
-    } else if (productsToRender.length === 0 && inventory.length === 0) {
-        contenedorProductos.innerHTML = '<p style="text-align: center; width: 100%; margin-top: 20px; font-size: 1.2em; color: #555;">El inventario está vacío. ¡Añade algunos productos!</p>';
+    // Lógica para mostrar mensajes cuando no hay productos
+    if (productsToRender.length === 0) {
+        if (inputBuscarProducto.value.trim() !== '') {
+            contenedorProductos.innerHTML = '<p style="text-align: center; width: 100%; margin-top: 20px; font-size: 1.2em; color: #555;">No se encontraron productos que coincidan con la búsqueda.</p>';
+        } else if (inventory.length === 0) {
+            contenedorProductos.innerHTML = '<p style="text-align: center; width: 100%; margin-top: 20px; font-size: 1.2em; color: #555;">El inventario está vacío. ¡Añade algunos productos!</p>';
+        }
         return;
     }
     
     productsToRender.forEach(product => {
         const nuevaTarjeta = templateTarjetaProducto.content.cloneNode(true);
         const cardDiv = nuevaTarjeta.querySelector(".tarjeta-producto");
+        
         cardDiv.dataset.id = product.id;
 
-        nuevaTarjeta.querySelector(".producto-imagen").src = product.imagen;
-        nuevaTarjeta.querySelector(".producto-imagen").alt = `Imagen de ${product.nombre}`;
+        const imgElement = nuevaTarjeta.querySelector(".producto-imagen");
+        imgElement.src = product.imagen || 'https://via.placeholder.com/150'; 
+        imgElement.alt = `Imagen de ${product.nombre}`;
+        
         nuevaTarjeta.querySelector(".producto-nombre").textContent = product.nombre;
         
-        nuevaTarjeta.querySelector(".producto-codigo").textContent = product.codigoBarras ? `Cod: ${product.codigoBarras}` : 'Cod: N/A';
+        const codigoElement = nuevaTarjeta.querySelector(".producto-codigo");
+        if (codigoElement) {
+            codigoElement.textContent = product.codigoBarras ? `Cod: ${product.codigoBarras}` : 'Cod: N/A';
+        }
+
         nuevaTarjeta.querySelector(".producto-precio").textContent = `$${product.precio}`; 
         nuevaTarjeta.querySelector(".producto-cantidad").textContent = `Unidades disponibles: ${product.cantidad}`;
 
