@@ -9,7 +9,6 @@
 
 
 -- ================================================================
--- PASO 0: LIMPIEZA (opcional, por si ya existían tablas previas)
 -- Descomenta este bloque solo si quieres borrar todo y empezar limpio.
 -- ================================================================
 -- DROP TABLE IF EXISTS items_venta      CASCADE;

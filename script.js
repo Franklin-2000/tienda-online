@@ -1,6 +1,5 @@
 // ==========================================
 // CONFIGURACIÓN DE SUPABASE
-// ==========================================
 const SB_URL = "https://mhnhfdtdpryrjaeaymsa.supabase.co";
 const SB_KEY = "sb_publishable_tiKyjeMyir7LD0EmFCdo8g_CqAXoM8R"; 
 const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
