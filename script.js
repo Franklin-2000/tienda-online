@@ -89,11 +89,12 @@ let currentCart = [];
 let users = [];
 let editingProductId = null; 
 let currentLoggedInUserEmail = null; 
+let currentUserId = null; // <-- NUEVO: guardamos el user_id en memoria
 let html5QrcodeScanner = null; 
 let objetivoEscaneo = ''; 
 
 // ==========================================
-// FUNCIONES DE NUBE SUPABASE (Reemplazan LocalStorage para Inventario)
+// FUNCIONES DE NUBE SUPABASE — INVENTARIO
 // ==========================================
 async function loadInventory() {
     const { data: { user } } = await supabaseClient.auth.getUser();
@@ -113,18 +114,170 @@ async function loadInventory() {
     }
 }
 
-// Ventas se mantienen en LocalStorage temporalmente como en tu original,
-// a menos que decidas migrar la tabla "sales" a Supabase después.
-function saveSales() {
-    localStorage.setItem('sales', JSON.stringify(sales));
+// ==========================================
+// FUNCIONES DE NUBE SUPABASE — VENTAS
+// (Reemplazan completamente a localStorage)
+// ==========================================
+
+/**
+ * Guarda una venta completa en Supabase.
+ * Inserta en `ventas` (cabecera) e `items_venta` (líneas de detalle).
+ */
+async function saveSale(saleData) {
+    const { data: ventaInsertada, error: errorVenta } = await supabaseClient
+        .from('ventas')
+        .insert([{
+            global_id:    saleData.globalId,
+            numero_ticket: saleData.id,
+            total:         saleData.total,
+            fecha:         saleData.date,
+            fecha_limpia:  saleData.fechaLimpia,
+            user_id:       currentUserId
+        }])
+        .select()
+        .single();
+
+    if (errorVenta) {
+        console.error("Error guardando venta:", errorVenta);
+        throw errorVenta;
+    }
+
+    const itemsParaInsertar = saleData.items.map(item => ({
+        venta_id:   ventaInsertada.id,
+        product_id: item.productId,
+        nombre:     item.name,
+        cantidad:   item.qty,
+        precio:     item.price,
+        subtotal:   item.subtotal,
+        user_id:    currentUserId
+    }));
+
+    const { error: errorItems } = await supabaseClient
+        .from('items_venta')
+        .insert(itemsParaInsertar);
+
+    if (errorItems) {
+        console.error("Error guardando items de venta:", errorItems);
+        throw errorItems;
+    }
+
+    return ventaInsertada;
 }
 
-function loadSales() {
-    const storedSales = localStorage.getItem('sales');
-    if (storedSales) {
-        sales = JSON.parse(storedSales);
-        renderSalesHistory();
+/**
+ * Carga todas las ventas del usuario desde Supabase,
+ * incluyendo sus items, y las deja en la variable global `sales`.
+ */
+async function loadSales() {
+    if (!currentUserId) return;
+
+    const { data: ventasData, error: errorVentas } = await supabaseClient
+        .from('ventas')
+        .select(`
+            id,
+            global_id,
+            numero_ticket,
+            total,
+            fecha,
+            fecha_limpia,
+            items_venta (
+                id,
+                product_id,
+                nombre,
+                cantidad,
+                precio,
+                subtotal
+            )
+        `)
+        .eq('user_id', currentUserId)
+        .order('global_id', { ascending: false });
+
+    if (errorVentas) {
+        console.error("Error cargando ventas:", errorVentas);
+        return;
     }
+
+    // Mapeamos al formato interno que usa el resto del código
+    sales = ventasData.map(v => ({
+        supabaseId: v.id,          // ID real de la fila en Supabase
+        globalId:   v.global_id,
+        id:         v.numero_ticket,
+        total:      v.total,
+        date:       v.fecha,
+        fechaLimpia: v.fecha_limpia,
+        items: v.items_venta.map(i => ({
+            itemSupabaseId: i.id,
+            productId:  i.product_id,
+            name:       i.nombre,
+            qty:        i.cantidad,
+            price:      i.precio,
+            subtotal:   i.subtotal
+        }))
+    }));
+
+    renderSalesHistory();
+}
+
+/**
+ * Elimina una venta (y sus items en cascada) de Supabase
+ * usando el global_id como identificador único de negocio.
+ */
+async function deleteSaleFromSupabase(ticketGlobalId) {
+    const venta = sales.find(s => s.globalId === ticketGlobalId);
+    if (!venta) return;
+
+    // Los items se eliminan en cascada por la FK (ON DELETE CASCADE).
+    const { error } = await supabaseClient
+        .from('ventas')
+        .delete()
+        .eq('id', venta.supabaseId);
+
+    if (error) {
+        console.error("Error eliminando venta:", error);
+        throw error;
+    }
+}
+
+/**
+ * Obtiene o crea un contador diario de tickets desde Supabase.
+ * Reemplaza los localStorage 'ultimaFechaVenta' y 'contadorDiarioVentas'.
+ */
+async function generarNumeroTicket() {
+    const fechaActual = new Date().toLocaleDateString();
+
+    const { data, error } = await supabaseClient
+        .from('contador_tickets')
+        .select('*')
+        .eq('user_id', currentUserId)
+        .single();
+
+    let nuevoContador;
+
+    if (error || !data) {
+        // Primera vez: crear registro
+        nuevoContador = 1;
+        await supabaseClient.from('contador_tickets').insert([{
+            user_id:        currentUserId,
+            ultima_fecha:   fechaActual,
+            contador_diario: nuevoContador
+        }]);
+    } else if (data.ultima_fecha !== fechaActual) {
+        // Nuevo día: reiniciar
+        nuevoContador = 1;
+        await supabaseClient
+            .from('contador_tickets')
+            .update({ ultima_fecha: fechaActual, contador_diario: nuevoContador })
+            .eq('user_id', currentUserId);
+    } else {
+        // Mismo día: incrementar
+        nuevoContador = data.contador_diario + 1;
+        await supabaseClient
+            .from('contador_tickets')
+            .update({ contador_diario: nuevoContador })
+            .eq('user_id', currentUserId);
+    }
+
+    return nuevoContador.toString().padStart(4, '0');
 }
 
 // ==========================================
@@ -246,12 +399,14 @@ async function checkAuthStatus(pushToHistory = true) {
     
     if (session) {
         currentLoggedInUserEmail = session.user.email;
+        currentUserId = session.user.id; // <-- guardamos el user_id
         if (pushToHistory) history.replaceState({ screen: 'pantalla-inicio' }, '', '#pantalla-inicio');
         showScreen('pantalla-inicio', false); 
         loadInventory(); 
-        loadSales(); 
+        loadSales(); // <-- Ahora carga desde Supabase
     } else {
         currentLoggedInUserEmail = null;
+        currentUserId = null;
         if (pushToHistory) history.replaceState({ screen: 'pantalla-login' }, '', '#pantalla-login');
         showScreen('pantalla-login', false);
     }
@@ -317,24 +472,8 @@ if (btnVolverVentasOnline) {
 }
 
 // ==========================================
-// LÓGICA DEL CARRITO Y TICKETS DIARIOS (Intacta)
+// LÓGICA DEL CARRITO
 // ==========================================
-function generarNumeroTicket() {
-    const fechaActual = new Date().toLocaleDateString(); 
-    let ultimaFecha = localStorage.getItem('ultimaFechaVenta');
-    let contadorDiario = parseInt(localStorage.getItem('contadorDiarioVentas')) || 0;
-
-    if (ultimaFecha !== fechaActual) {
-        contadorDiario = 0;
-        localStorage.setItem('ultimaFechaVenta', fechaActual);
-    }
-
-    contadorDiario++;
-    localStorage.setItem('contadorDiarioVentas', contadorDiario.toString());
-
-    return contadorDiario.toString().padStart(4, '0');
-}
-
 function updateSalesDropdown(searchTerm = '') {
     selectProductoVenta.innerHTML = '<option value="">-- Selecciona un producto --</option>';
     const normalizedTerm = normalizeStringForSearch(searchTerm);
@@ -422,7 +561,6 @@ if (btnLimpiarVenta) {
 
 if (btnAgregarAlCarrito) {
     btnAgregarAlCarrito.addEventListener("click", () => {
-        // En Supabase los IDs pueden ser números o strings, aseguramos compatibilidad
         const productId = selectProductoVenta.value;
         let qty = parseInt(inputCantidadVenta.value);
 
@@ -478,43 +616,40 @@ inputBuscarProductVenta.addEventListener("keydown", function(event) {
     }
 });
 
-// Función para ELIMINAR un ticket y DEVOLVER al inventario (Actualizada para Supabase)
+// Función para ELIMINAR un ticket y DEVOLVER al inventario
 window.eliminarTicket = async function(ticketGlobalId) {
-    if(!confirm("¿Estás seguro de eliminar este ticket? Los productos volverán al inventario de inmediato.")) return;
+    if(!confirm("¿Estás seguro de eliminar este ticket? Los productos volverán al inventario.")) return;
 
-    const saleIndex = sales.findIndex(s => s.globalId === ticketGlobalId);
-    if(saleIndex !== -1) {
-        const sale = sales[saleIndex];
-        
-        // Reponer inventario local y en Supabase
-        for (let item of sale.items) {
-            const productIndex = inventory.findIndex(p => p.id.toString() === item.productId.toString());
-            if(productIndex !== -1) {
-                const nuevaCantidad = inventory[productIndex].cantidad + item.qty;
-                inventory[productIndex].cantidad = nuevaCantidad;
-                
-                // Actualizar en Supabase
-                await supabaseClient
-                    .from('productos')
-                    .update({ cantidad: nuevaCantidad })
-                    .eq('id', item.productId);
-            }
-        }
+    try {
+        const sale = sales.find(s => s.globalId === ticketGlobalId);
+        if (!sale) return;
 
-        sales.splice(saleIndex, 1);
-        saveSales();
-        renderProducts();
+        // Eliminar la venta de Supabase.
+        // ON DELETE CASCADE borra los items_venta, y el trigger
+        // fn_reponer_inventario() repone automáticamente el stock por cada item.
+        await deleteSaleFromSupabase(ticketGlobalId);
+
+        // Actualizar estado local
+        sales = sales.filter(s => s.globalId !== ticketGlobalId);
+
+        // Recargamos inventario desde Supabase para reflejar las cantidades reales
+        // actualizadas por el trigger (fuente de verdad).
+        await loadInventory();
         updateSalesDropdown();
         renderSalesHistory();
         
         setTimeout(() => {
             alert("Ticket eliminado exitosamente y stock repuesto al inventario.");
         }, 100);
+
+    } catch (err) {
+        console.error("Error al eliminar ticket:", err);
+        alert("Hubo un error al eliminar el ticket. Intenta de nuevo.");
     }
 };
 
 // =========================================================
-// REGISTRO DE VENTA Y LIMPIEZA AUTOMÁTICA DEL CARRITO
+// REGISTRO DE VENTA — Ahora guarda en Supabase
 // =========================================================
 if (btnRegistrarVenta) {
     btnRegistrarVenta.addEventListener("click", async () => {
@@ -523,64 +658,71 @@ if (btnRegistrarVenta) {
             return;
         }
 
-        const saleDateObj = new Date();
-        const saleDateStr = saleDateObj.toLocaleString();
-        const soloFechaStr = saleDateObj.toLocaleDateString(); 
-        let totalSale = 0;
-        const cartItemsForReceipt = []; 
+        btnRegistrarVenta.disabled = true;
+        btnRegistrarVenta.textContent = "Registrando... ⏳";
 
-        for (let item of currentCart) {
-            const productIndex = inventory.findIndex(p => p.id.toString() === item.id.toString());
-            if (productIndex !== -1) {
-                const nuevaCantidad = inventory[productIndex].cantidad - item.qty;
-                inventory[productIndex].cantidad = nuevaCantidad;
-                
-                // Restar del inventario en Supabase
-                await supabaseClient
-                    .from('productos')
-                    .update({ cantidad: nuevaCantidad })
-                    .eq('id', item.id);
+        try {
+            const saleDateObj = new Date();
+            const saleDateStr = saleDateObj.toLocaleString();
+            const soloFechaStr = saleDateObj.toLocaleDateString(); 
+            let totalSale = 0;
+            const cartItemsForReceipt = []; 
+
+            for (let item of currentCart) {
+                const subtotal = item.qty * item.price;
+                totalSale += subtotal;
+
+                cartItemsForReceipt.push({
+                    productId: item.id, 
+                    name:      item.name,
+                    qty:       item.qty,
+                    price:     item.price,
+                    subtotal:  subtotal
+                });
             }
-            
-            const subtotal = item.qty * item.price;
-            totalSale += subtotal;
+            // NOTA: el descuento de inventario lo hace automáticamente
+            // el trigger fn_descontar_inventario() en Supabase al insertar items_venta.
 
-            cartItemsForReceipt.push({
-                productId: item.id, 
-                name: item.name,
-                qty: item.qty,
-                price: item.price,
-                subtotal: subtotal
-            });
+            const numeroTicket = await generarNumeroTicket(); // <-- ahora es async
+
+            const newSale = {
+                globalId:    Date.now(), 
+                id:          numeroTicket, 
+                total:       totalSale,
+                date:        saleDateStr,
+                fechaLimpia: soloFechaStr, 
+                items:       cartItemsForReceipt 
+            };
+
+            // Guardar en Supabase (reemplaza saveSales con localStorage).
+            // El trigger fn_descontar_inventario() descuenta el stock automáticamente.
+            const ventaGuardada = await saveSale(newSale);
+            newSale.supabaseId = ventaGuardada.id;
+            sales.unshift(newSale); // Añadir al inicio del array local
+
+            // Recargamos inventario desde Supabase para reflejar las cantidades reales
+            // actualizadas por el trigger (fuente de verdad).
+            await loadInventory();
+            renderSalesHistory();
+
+            if (confirm("¿Desea imprimir la factura de esta venta?")) {
+                 imprimirFacturaTicket(newSale);
+            }
+
+            limpiarTodaLaVenta();
+            if(inputBuscarProductVenta) inputBuscarProductVenta.focus();
+
+            setTimeout(() => {
+                alert(`¡Venta registrada con éxito! Ticket #${newSale.id} por $${totalSale}`);
+            }, 100);
+
+        } catch (err) {
+            console.error("Error al registrar venta:", err);
+            alert("Hubo un error al registrar la venta. Por favor intenta de nuevo.");
+        } finally {
+            btnRegistrarVenta.disabled = false;
+            btnRegistrarVenta.textContent = "Registrar Venta";
         }
-
-        const numeroTicket = generarNumeroTicket();
-
-        const newSale = {
-            globalId: Date.now(), 
-            id: numeroTicket, 
-            total: totalSale,
-            date: saleDateStr,
-            fechaLimpia: soloFechaStr, 
-            items: cartItemsForReceipt 
-        };
-
-        sales.push(newSale);
-        
-        saveSales();
-        renderProducts();
-        renderSalesHistory();
-
-        if (confirm("¿Desea imprimir la factura de esta venta?")) {
-             imprimirFacturaTicket(newSale);
-        }
-
-        limpiarTodaLaVenta();
-        if(inputBuscarProductVenta) inputBuscarProductVenta.focus();
-
-        setTimeout(() => {
-            alert(`¡Venta registrada con éxito! Ticket #${newSale.id} por $${totalSale}`);
-        }, 100);
     });
 }
 
@@ -717,10 +859,8 @@ function crearDOMTicket(sale, esDeHoy) {
 function renderProducts(productsToRender = inventory) {
     if (!contenedorProductos) return;
 
-    // Limpiamos el contenedor antes de renderizar
     contenedorProductos.innerHTML = ''; 
 
-    // Lógica para mostrar mensajes cuando no hay productos
     if (productsToRender.length === 0) {
         if (inputBuscarProducto.value.trim() !== '') {
             contenedorProductos.innerHTML = '<p style="text-align: center; width: 100%; margin-top: 20px; font-size: 1.2em; color: #555;">No se encontraron productos que coincidan con la búsqueda.</p>';
@@ -784,12 +924,10 @@ function handleImageSelection(event) {
 }
 
 async function subirImagenSupabase(archivo) {
-    // 1. Generamos un nombre único para la imagen
     const extension = archivo.name.split('.').pop();
     const nombreUnico = `img_${Date.now()}.${extension}`;
-    const rutaArchivo = `inventario/${nombreUnico}`; // Se guardará en una carpeta "inventario"
+    const rutaArchivo = `inventario/${nombreUnico}`;
 
-    // 2. Subimos el archivo al bucket "productos"
     const { data, error } = await supabaseClient
         .storage
         .from('productos')
@@ -800,7 +938,6 @@ async function subirImagenSupabase(archivo) {
         throw new Error("No se pudo subir la imagen.");
     }
 
-    // 3. Obtenemos la URL pública para guardarla en la base de datos
     const { data: publicUrlData } = supabaseClient
         .storage
         .from('productos')
@@ -809,12 +946,11 @@ async function subirImagenSupabase(archivo) {
     return publicUrlData.publicUrl;
 }
 
-// También actualiza tu función clearImagePreview para limpiarlo
 function clearImagePreview() {
     previewProductoImagen.src = "";
     previewProductoImagen.style.display = "none";
     inputProductoImagen.value = ''; 
-    archivoImagenFisico = null; // Limpiamos la variable
+    archivoImagenFisico = null;
 }
 
 inputProductoImagen.addEventListener("change", handleImageSelection);
@@ -853,7 +989,6 @@ async function handleSaveProduct() {
         return;
     }
 
-    // Cambiamos el texto del botón para que el usuario sepa que está cargando
     const textoOriginalBoton = btnGuardarProducto.textContent;
     btnGuardarProducto.textContent = "Subiendo... ⏳";
     btnGuardarProducto.disabled = true;
@@ -861,17 +996,13 @@ async function handleSaveProduct() {
     try {
         let urlImagenFinal = '';
 
-        // Si estamos editando y NO seleccionamos una imagen nueva, 
-        // mantenemos la URL de la imagen que ya tenía el producto.
         if (editingProductId !== null && !archivoImagenFisico) {
             const productoAntiguo = inventory.find(p => p.id.toString() === editingProductId.toString());
             urlImagenFinal = productoAntiguo.imagen;
         } 
-        // Si hay un archivo nuevo seleccionado, lo subimos a Supabase
         else if (archivoImagenFisico) {
             urlImagenFinal = await subirImagenSupabase(archivoImagenFisico);
         } 
-        // Si es un producto nuevo y no hay imagen, mostramos error
         else {
             alert("Por favor, selecciona una imagen para el producto.");
             btnGuardarProducto.textContent = textoOriginalBoton;
@@ -879,7 +1010,6 @@ async function handleSaveProduct() {
             return;
         }
 
-        // GUARDAR EN LA BASE DE DATOS
         if (editingProductId !== null) {
             const { error } = await supabaseClient
                 .from('productos')
@@ -910,7 +1040,6 @@ async function handleSaveProduct() {
         console.error("Error en handleSaveProduct:", error);
         alert("Ocurrió un error al guardar el producto.");
     } finally {
-        // Restauramos el botón a su estado normal
         btnGuardarProducto.textContent = textoOriginalBoton;
         btnGuardarProducto.disabled = false;
     }
@@ -1010,6 +1139,7 @@ function clearSearch() {
 
 btnBuscarProducto.addEventListener("click", searchProducts);
 btnLimpiarBusqueda.addEventListener("click", clearSearch);
+
 inputBuscarProducto.addEventListener("input", searchProducts);
 
 inputBuscarProducto.addEventListener("keydown", function(event) {
@@ -1104,6 +1234,8 @@ async function handleLogout() {
     const { error } = await supabaseClient.auth.signOut();
     if (!error) {
         inventory = []; 
+        sales = [];
+        currentUserId = null;
         showScreen('pantalla-login');
         alert("Sesión cerrada correctamente.");
     } else {
@@ -1123,7 +1255,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =========================================================
-// EXTENSIÓN DE FUNCIONALIDADES (SIN ALTERAR FUNCIONES PREVIAS)
+// EXTENSIÓN DE FUNCIONALIDADES
 // =========================================================
 
 document.addEventListener('DOMContentLoaded', () => {
