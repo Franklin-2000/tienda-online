@@ -753,27 +753,58 @@ function updateProductCount() {
 // ==========================================
 // LÓGICA DE IMÁGENES
 // ==========================================
-function handleImageSelection(event) {
-  const archivo = event.target.files[0];
+let archivoImagenFisico = null; 
 
-  if (archivo) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      previewProductoImagen.src = e.target.result;
-      previewProductoImagen.style.display = "block";
-      imagenProductoActual = e.target.result;
-    };
-    reader.readAsDataURL(archivo);
-  } else {
-    clearImagePreview();
-  }
+function handleImageSelection(event) {
+    const archivo = event.target.files[0];
+
+    if (archivo) {
+        archivoImagenFisico = archivo;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewProductoImagen.src = e.target.result;
+            previewProductoImagen.style.display = "block";
+        };
+        reader.readAsDataURL(archivo);
+    } else {
+        clearImagePreview();
+        archivoImagenFisico = null;
+    }
 }
 
+async function subirImagenSupabase(archivo) {
+    // 1. Generamos un nombre único para la imagen
+    const extension = archivo.name.split('.').pop();
+    const nombreUnico = `img_${Date.now()}.${extension}`;
+    const rutaArchivo = `inventario/${nombreUnico}`; // Se guardará en una carpeta "inventario"
+
+    // 2. Subimos el archivo al bucket "productos"
+    const { data, error } = await supabaseClient
+        .storage
+        .from('productos')
+        .upload(rutaArchivo, archivo);
+
+    if (error) {
+        console.error("Error subiendo imagen:", error);
+        throw new Error("No se pudo subir la imagen.");
+    }
+
+    // 3. Obtenemos la URL pública para guardarla en la base de datos
+    const { data: publicUrlData } = supabaseClient
+        .storage
+        .from('productos')
+        .getPublicUrl(rutaArchivo);
+
+    return publicUrlData.publicUrl;
+}
+
+// También actualiza tu función clearImagePreview para limpiarlo
 function clearImagePreview() {
     previewProductoImagen.src = "";
     previewProductoImagen.style.display = "none";
-    imagenProductoActual = '';
     inputProductoImagen.value = ''; 
+    archivoImagenFisico = null; // Limpiamos la variable
 }
 
 inputProductoImagen.addEventListener("change", handleImageSelection);
@@ -796,57 +827,83 @@ function resetFormAndMode() {
 }
 
 async function handleSaveProduct() {
-  const codigo = inputCodigoBarras.value.trim(); 
-  const nombre = inputNombreProducto.value.trim();
-  const precio = parseInt(inputPrecioProducto.value); 
-  const cantidad = parseInt(inputCantidadProducto.value);
+    const codigo = inputCodigoBarras.value.trim(); 
+    const nombre = inputNombreProducto.value.trim();
+    const precio = parseInt(inputPrecioProducto.value); 
+    const cantidad = parseInt(inputCantidadProducto.value);
   
-  if (!nombre) { alert("Por favor, ingresa el nombre del producto."); return; }
-  if (isNaN(precio) || precio <= 0) { alert("Por favor, ingresa un precio válido para el producto."); return; }
-  if (!imagenProductoActual) { alert("Por favor, selecciona una imagen para el producto."); return; }
-  if (isNaN(cantidad) || cantidad <= 0 || !Number.isInteger(cantidad)) { alert("Por favor, ingresa una cantidad válida."); return; }
+    if (!nombre) { alert("Por favor, ingresa el nombre del producto."); return; }
+    if (isNaN(precio) || precio <= 0) { alert("Por favor, ingresa un precio válido."); return; }
+    if (isNaN(cantidad) || cantidad <= 0 || !Number.isInteger(cantidad)) { alert("Por favor, ingresa una cantidad válida."); return; }
 
-  const { data: { user } } = await supabaseClient.auth.getUser();
-  if (!user) {
-      alert("Debes iniciar sesión para guardar productos.");
-      showScreen('pantalla-login');
-      return;
-  }
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) {
+        alert("Debes iniciar sesión para guardar productos.");
+        showScreen('pantalla-login');
+        return;
+    }
 
-  if (editingProductId !== null) {
-      // Editar en Supabase
-      const { error } = await supabaseClient
-          .from('productos')
-          .update({ codigoBarras: codigo, nombre, precio, cantidad, imagen: imagenProductoActual })
-          .eq('id', editingProductId);
+    // Cambiamos el texto del botón para que el usuario sepa que está cargando
+    const textoOriginalBoton = btnGuardarProducto.textContent;
+    btnGuardarProducto.textContent = "Subiendo... ⏳";
+    btnGuardarProducto.disabled = true;
 
-      if (!error) {
-          alert(`¡Producto "${nombre}" actualizado!`);
-          resetFormAndMode(); 
-          loadInventory(); 
-      } else {
-          alert("Error al actualizar el producto.");
-      }
-  } 
-  else {
-      // Añadir en Supabase
-      const { error } = await supabaseClient
-          .from('productos')
-          .insert([{ 
-              codigoBarras: codigo,
-              nombre, precio, cantidad, 
-              imagen: imagenProductoActual, 
-              user_id: user.id 
-          }]);
+    try {
+        let urlImagenFinal = '';
 
-      if (!error) {
-          alert(`¡Producto "${nombre}" (Cantidad: ${cantidad}) añadido al inventario!`);
-          resetFormAndMode(); 
-          loadInventory(); 
-      } else {
-          alert("Error al añadir el producto.");
-      }
-  }
+        // Si estamos editando y NO seleccionamos una imagen nueva, 
+        // mantenemos la URL de la imagen que ya tenía el producto.
+        if (editingProductId !== null && !archivoImagenFisico) {
+            const productoAntiguo = inventory.find(p => p.id.toString() === editingProductId.toString());
+            urlImagenFinal = productoAntiguo.imagen;
+        } 
+        // Si hay un archivo nuevo seleccionado, lo subimos a Supabase
+        else if (archivoImagenFisico) {
+            urlImagenFinal = await subirImagenSupabase(archivoImagenFisico);
+        } 
+        // Si es un producto nuevo y no hay imagen, mostramos error
+        else {
+            alert("Por favor, selecciona una imagen para el producto.");
+            btnGuardarProducto.textContent = textoOriginalBoton;
+            btnGuardarProducto.disabled = false;
+            return;
+        }
+
+        // GUARDAR EN LA BASE DE DATOS
+        if (editingProductId !== null) {
+            const { error } = await supabaseClient
+                .from('productos')
+                .update({ codigoBarras: codigo, nombre, precio, cantidad, imagen: urlImagenFinal })
+                .eq('id', editingProductId);
+
+            if (error) throw error;
+            alert(`¡Producto "${nombre}" actualizado!`);
+        } 
+        else {
+            const { error } = await supabaseClient
+                .from('productos')
+                .insert([{ 
+                    codigoBarras: codigo,
+                    nombre, precio, cantidad, 
+                    imagen: urlImagenFinal, 
+                    user_id: user.id 
+                }]);
+
+            if (error) throw error;
+            alert(`¡Producto "${nombre}" añadido al inventario!`);
+        }
+
+        resetFormAndMode(); 
+        loadInventory(); 
+
+    } catch (error) {
+        console.error("Error en handleSaveProduct:", error);
+        alert("Ocurrió un error al guardar el producto.");
+    } finally {
+        // Restauramos el botón a su estado normal
+        btnGuardarProducto.textContent = textoOriginalBoton;
+        btnGuardarProducto.disabled = false;
+    }
 }
 
 function editProduct(productId) {
