@@ -450,8 +450,10 @@ if (btnMenuVentasOnline) {
     btnMenuVentasOnline.addEventListener("click", function(e) {
         e.preventDefault();
         showScreen('pantalla-ventas-online');
+        cargarPedidosAdmin();
     });
 }
+
 
 if (btnVolverInicioDesdeVentas) {
     btnVolverInicioDesdeVentas.addEventListener("click", function() {
@@ -1350,3 +1352,269 @@ document.addEventListener('DOMContentLoaded', () => {
         seccionHistorial.prepend(btnPDF); 
     }
 });
+
+let pedidosAdmin      = [];
+let filtroEstadoAdmin = 'todos';
+ 
+ 
+// ---------------------------------------------------------------
+// Cargar pedidos — el admin ve todos gracias a la política
+// es_admin() que definiste en el SQL definitivo
+// ---------------------------------------------------------------
+async function cargarPedidosAdmin() {
+    const lista = document.getElementById('listaPedidosAdmin');
+    if (!lista) return;
+    lista.innerHTML = '<p style="color:#666;padding:30px;text-align:center;">Cargando pedidos...</p>';
+ 
+    const { data, error } = await supabaseClient
+        .from('pedidos')
+        .select(`
+            id, estado, total, metodo_pago, fecha, fecha_confirmacion,
+            cliente_nombre, cliente_email, cliente_tel,
+            direccion, notas, wompi_transaction_id,
+            items_pedido ( nombre, cantidad, precio, subtotal )
+        `)
+        .order('id', { ascending: false });
+ 
+    if (error) {
+        console.error('Error cargando pedidos online:', error);
+        lista.innerHTML = `<p style="color:red;padding:20px;">Error al cargar pedidos: ${error.message}</p>`;
+        return;
+    }
+ 
+    pedidosAdmin = data || [];
+    renderResumenAdmin();
+    renderPedidosAdmin(filtroEstadoAdmin);
+}
+ 
+// ---------------------------------------------------------------
+// Tarjetas de resumen
+// ---------------------------------------------------------------
+function renderResumenAdmin() {
+    const el = document.getElementById('resumenPedidosAdmin');
+    if (!el) return;
+ 
+    const c = { pendiente:0, esperando_pago:0, pago_confirmado:0,
+                despachado:0, entregado:0, pago_fallido:0, cancelado:0 };
+    let totalPorCobrar = 0, totalCobrado = 0;
+ 
+    pedidosAdmin.forEach(p => {
+        if (c[p.estado] !== undefined) c[p.estado]++;
+        if (p.estado === 'pendiente' || p.estado === 'esperando_pago')
+            totalPorCobrar += Number(p.total);
+        if (['pago_confirmado','despachado','entregado'].includes(p.estado))
+            totalCobrado += Number(p.total);
+    });
+ 
+    el.innerHTML = `
+        <div class="tarjeta-resumen-online amarilla">
+            <strong>⏳ Por atender</strong>
+            <span class="num">${c.pendiente + c.esperando_pago}</span>
+            <small>$${totalPorCobrar.toLocaleString('es-CO')} por cobrar</small>
+        </div>
+        <div class="tarjeta-resumen-online verde">
+            <strong>✅ Confirmados + Entregados</strong>
+            <span class="num">${c.pago_confirmado + c.despachado + c.entregado}</span>
+            <small>$${totalCobrado.toLocaleString('es-CO')} cobrado</small>
+        </div>
+        <div class="tarjeta-resumen-online azul">
+            <strong>🚚 En camino</strong>
+            <span class="num">${c.despachado}</span>
+        </div>
+        <div class="tarjeta-resumen-online roja">
+            <strong>❌ Fallidos / Cancelados</strong>
+            <span class="num">${c.pago_fallido + c.cancelado}</span>
+        </div>
+    `;
+}
+ 
+// ---------------------------------------------------------------
+// Render lista con filtro activo
+// ---------------------------------------------------------------
+function renderPedidosAdmin(estadoFiltro = 'todos') {
+    const el = document.getElementById('listaPedidosAdmin');
+    if (!el) return;
+    filtroEstadoAdmin = estadoFiltro;
+ 
+    const lista = estadoFiltro === 'todos'
+        ? pedidosAdmin
+        : pedidosAdmin.filter(p => p.estado === estadoFiltro);
+ 
+    if (lista.length === 0) {
+        el.innerHTML = '<p style="color:#666;padding:30px;text-align:center;">No hay pedidos con este estado.</p>';
+        return;
+    }
+ 
+    el.innerHTML = '';
+ 
+    const etqMap = {
+        pendiente:       { texto: '⏳ Pendiente',         clase: 'estado-pendiente'  },
+        esperando_pago:  { texto: '💳 Esperando pago',    clase: 'estado-pendiente'  },
+        pago_confirmado: { texto: '✅ Pago confirmado',   clase: 'estado-pagado'     },
+        despachado:      { texto: '🚚 Despachado',        clase: 'estado-despachado' },
+        entregado:       { texto: '📦 Entregado',         clase: 'estado-entregado'  },
+        pago_fallido:    { texto: '❌ Pago fallido',      clase: 'estado-cancelado'  },
+        cancelado:       { texto: '🚫 Cancelado',         clase: 'estado-cancelado'  },
+    };
+ 
+    lista.forEach(pedido => {
+        const etq = etqMap[pedido.estado] || { texto: pedido.estado, clase: '' };
+        const fecha = new Date(pedido.fecha).toLocaleString('es-CO');
+        const esContraEntrega = pedido.metodo_pago === 'contraentrega';
+ 
+        // Botones según el estado actual del pedido
+        let botonesHTML = '';
+        if (pedido.estado === 'pendiente' && esContraEntrega) {
+            botonesHTML = `
+                <button class="btn-añadir btn-accion-pedido"
+                        data-id="${pedido.id}" data-nuevo-estado="pago_confirmado">
+                    ✅ Confirmar Pago → Descontar Inventario
+                </button>
+                <button class="btn-borrar-producto btn-accion-pedido"
+                        data-id="${pedido.id}" data-nuevo-estado="cancelado">
+                    🚫 Cancelar pedido
+                </button>`;
+        } else if (pedido.estado === 'esperando_pago') {
+            botonesHTML = `
+                <button class="btn-borrar-producto btn-accion-pedido"
+                        data-id="${pedido.id}" data-nuevo-estado="cancelado">
+                    🚫 Cancelar pedido
+                </button>`;
+        } else if (pedido.estado === 'pago_confirmado') {
+            botonesHTML = `
+                <button class="btn-buscar btn-accion-pedido"
+                        data-id="${pedido.id}" data-nuevo-estado="despachado">
+                    🚚 Marcar como Despachado
+                </button>`;
+        } else if (pedido.estado === 'despachado') {
+            botonesHTML = `
+                <button class="btn-añadir btn-accion-pedido"
+                        data-id="${pedido.id}" data-nuevo-estado="entregado">
+                    📦 Confirmar Entrega
+                </button>`;
+        }
+ 
+        const card = document.createElement('div');
+        card.className = 'tarjeta-producto pedido-admin-card';
+        card.innerHTML = `
+            <div class="pedido-admin-header">
+                <div class="pedido-admin-id">
+                    <strong>#${pedido.id}</strong>
+                    <span class="pedido-estado ${etq.clase}">${etq.texto}</span>
+                </div>
+                <div class="pedido-admin-total">
+                    $${Number(pedido.total).toLocaleString('es-CO')}
+                    <small>${esContraEntrega ? '💵 Contra entrega' : '💳 Wompi'}</small>
+                </div>
+            </div>
+ 
+            <div class="pedido-admin-cliente">
+                <div>👤 <strong>${pedido.cliente_nombre}</strong></div>
+                <div>📧 ${pedido.cliente_email}</div>
+                <div>📞 ${pedido.cliente_tel}</div>
+                <div>📍 ${pedido.direccion}</div>
+                ${pedido.notas ? `<div>📝 <em>${pedido.notas}</em></div>` : ''}
+                <div class="pedido-admin-fecha">📅 ${fecha}</div>
+                ${pedido.wompi_transaction_id
+                    ? `<div style="font-size:0.8em;color:#666;">🔑 Wompi ID: ${pedido.wompi_transaction_id}</div>`
+                    : ''}
+                ${pedido.fecha_confirmacion
+                    ? `<div style="font-size:0.8em;color:#1e7e34;">✅ Confirmado el ${new Date(pedido.fecha_confirmacion).toLocaleString('es-CO')}</div>`
+                    : ''}
+            </div>
+ 
+            <div class="pedido-admin-items">
+                <table class="tabla-items-pedido">
+                    <thead><tr>
+                        <th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th>
+                    </tr></thead>
+                    <tbody>
+                        ${(pedido.items_pedido || []).map(i => `
+                            <tr>
+                                <td>${i.nombre}</td>
+                                <td style="text-align:center">${i.cantidad}</td>
+                                <td style="text-align:right">$${Number(i.precio).toLocaleString('es-CO')}</td>
+                                <td style="text-align:right;font-weight:700">$${Number(i.subtotal).toLocaleString('es-CO')}</td>
+                            </tr>`).join('')}
+                    </tbody>
+                </table>
+            </div>
+ 
+            ${botonesHTML ? `<div class="pedido-admin-acciones">${botonesHTML}</div>` : ''}
+        `;
+ 
+        card.querySelectorAll('.btn-accion-pedido').forEach(btn => {
+            btn.addEventListener('click', () =>
+                cambiarEstadoPedido(parseInt(btn.dataset.id), btn.dataset.nuevoEstado, btn)
+            );
+        });
+ 
+        el.appendChild(card);
+    });
+}
+ 
+// ---------------------------------------------------------------
+// Cambiar estado — al confirmar pago el trigger descuenta stock
+// ---------------------------------------------------------------
+async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
+    const msgs = {
+        pago_confirmado: `¿Confirmar el PAGO del pedido #${pedidoId}?\n\nEl inventario se descontará automáticamente y la venta aparecerá en el historial.`,
+        despachado:      `¿Marcar el pedido #${pedidoId} como despachado?`,
+        entregado:       `¿Confirmar la entrega del pedido #${pedidoId}?`,
+        cancelado:       `¿Cancelar el pedido #${pedidoId}?`,
+    };
+    if (!confirm(msgs[nuevoEstado] || `¿Cambiar estado del pedido #${pedidoId}?`)) return;
+ 
+    const textoOrig   = btnEl.textContent;
+    btnEl.disabled    = true;
+    btnEl.textContent = '⏳ Procesando...';
+ 
+    const { error } = await supabaseClient
+        .from('pedidos')
+        .update({ estado: nuevoEstado })
+        .eq('id', pedidoId);
+ 
+    if (error) {
+        console.error('Error actualizando pedido:', error);
+        alert(`Error: ${error.message}\n\nVerifica que tu email esté configurado como admin en el SQL.`);
+        btnEl.disabled    = false;
+        btnEl.textContent = textoOrig;
+        return;
+    }
+ 
+    // Actualizar estado local
+    const idx = pedidosAdmin.findIndex(p => p.id === pedidoId);
+    if (idx !== -1) {
+        pedidosAdmin[idx].estado = nuevoEstado;
+        if (nuevoEstado === 'pago_confirmado') {
+            pedidosAdmin[idx].fecha_confirmacion = new Date().toISOString();
+        }
+    }
+ 
+    renderResumenAdmin();
+    renderPedidosAdmin(filtroEstadoAdmin);
+ 
+    // Si acabamos de confirmar pago → recargar inventario en el panel
+    if (nuevoEstado === 'pago_confirmado') {
+        await loadInventory();
+        alert(`✅ Pago del pedido #${pedidoId} confirmado.\nEl inventario fue descontado automáticamente.`);
+    }
+}
+ 
+// ---------------------------------------------------------------
+// Eventos de filtros y botón refrescar
+// ---------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+ 
+    document.querySelectorAll('.btn-filtro-estado').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.btn-filtro-estado')
+                .forEach(b => b.classList.remove('activo'));
+            btn.classList.add('activo');
+            renderPedidosAdmin(btn.dataset.estado);
+        });
+    });
+ 
+    const btnRef = document.getElementById('btnRefrescarPedidosAdmin');
+    if (btnRef) btnRef.addEventListener('click', cargarPedidosAdmin);
+})

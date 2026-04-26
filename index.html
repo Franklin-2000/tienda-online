@@ -174,15 +174,31 @@
   </div>
 
   <div id="pantalla-ventas-online" style="display: none;">
-    <h1>Registro de Ventas Online</h1>
-    <div class="contenedor-ventas">
-        <div class="historial-ventas" style="text-align: center; padding: 50px; width: 100%;">
-            <h2>Ventas Online</h2>
-            <p>Esta sección está en construcción. Aquí aparecerán los pedidos de tu tienda en línea.</p>
-        </div>
+  <h1>Pedidos Online</h1>
+  <div class="contenedor-ventas" style="max-width: 1200px;">
+ 
+    <!-- Tarjetas resumen -->
+    <div id="resumenPedidosAdmin" class="resumen-pedidos-grid"></div>
+ 
+    <!-- Filtros de estado -->
+    <div class="filtros-pedidos-wrap">
+      <button class="btn-filtro-estado activo" data-estado="todos">Todos</button>
+      <button class="btn-filtro-estado" data-estado="pendiente">⏳ Pendiente</button>
+      <button class="btn-filtro-estado" data-estado="esperando_pago">💳 Esp. pago</button>
+      <button class="btn-filtro-estado" data-estado="pago_confirmado">✅ Confirmado</button>
+      <button class="btn-filtro-estado" data-estado="despachado">🚚 Despachado</button>
+      <button class="btn-filtro-estado" data-estado="entregado">📦 Entregado</button>
+      <button class="btn-filtro-estado" data-estado="cancelado">🚫 Cancelado</button>
+      <button id="btnRefrescarPedidosAdmin" class="btn-buscar" style="margin-left:auto;">🔄 Actualizar</button>
     </div>
-    <button id="btnVolverVentasOnline" class="boton-volver">← Volver al Menú Ventas</button>
+ 
+    <!-- Lista de pedidos -->
+    <div id="listaPedidosAdmin"></div>
+ 
   </div>
+  <button id="btnVolverVentasOnline" class="boton-volver">← Volver al Menú Ventas</button>
+  </div>
+  */
 
   <div id="modal-escaner" class="modal-overlay" style="display: none;">
       <div class="modal-contenido">
