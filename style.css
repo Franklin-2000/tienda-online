@@ -857,16 +857,15 @@ input[type="file"] {
 }
 
 .contenedor-ventas {
-    background-color: transparent;
     border: none;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px);
     border-radius: 15px;
     padding: 40px;
     width: 90%;
     max-width: 900px;
     margin-top: 20px;
     color: #333;
+    background-color: rgba(255, 255, 255, 0.8);
 }
 
 .ventas-grid {
