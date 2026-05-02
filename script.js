@@ -1569,9 +1569,14 @@ async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
     btnEl.disabled    = true;
     btnEl.textContent = '⏳ Procesando...';
  
+    const updateData = { estado: nuevoEstado };
+    if (nuevoEstado === 'pago_confirmado') {
+        updateData.fecha_confirmacion = new Date().toISOString();
+    }
+
     const { error } = await supabaseClient
         .from('pedidos')
-        .update({ estado: nuevoEstado })
+        .update(updateData)
         .eq('id', pedidoId);
  
     if (error) {
