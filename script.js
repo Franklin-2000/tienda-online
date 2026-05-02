@@ -1467,7 +1467,7 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
         if (pedido.estado === 'pendiente' && esContraEntrega) {
             botonesHTML = `
                 <button class="btn-añadir btn-accion-pedido"
-                        data-id="${pedido.id}" data-nuevo-estado="pago_confirmado">
+                        data-id="${pedido.id}" data-nuevo-estado="despachado">
                     ✅ Confirmar Pago → Descontar Inventario
                 </button>
                 <button class="btn-borrar-producto btn-accion-pedido"
