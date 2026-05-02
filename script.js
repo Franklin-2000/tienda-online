@@ -1467,7 +1467,7 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
         if (pedido.estado === 'pendiente' && esContraEntrega) {
             botonesHTML = `
                 <button class="btn-añadir btn-accion-pedido"
-                        data-id="${pedido.id}" data-nuevo-estado="despachado">
+                        data-id="${pedido.id}" data-nuevo-estado="pago_confirmado">
                     ✅ Confirmar Pago → Descontar Inventario
                 </button>
                 <button class="btn-borrar-producto btn-accion-pedido"
@@ -1481,12 +1481,6 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
                     🚫 Cancelar pedido
                 </button>`;
         } else if (pedido.estado === 'pago_confirmado') {
-            botonesHTML = `
-                <button class="btn-buscar btn-accion-pedido"
-                        data-id="${pedido.id}" data-nuevo-estado="despachado">
-                    🚚 Marcar como Despachado
-                </button>`;
-        } else if (pedido.estado === 'despachado') {
             botonesHTML = `
                 <button class="btn-añadir btn-accion-pedido"
                         data-id="${pedido.id}" data-nuevo-estado="entregado">
