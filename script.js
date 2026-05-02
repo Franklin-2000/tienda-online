@@ -1417,10 +1417,6 @@ function renderResumenAdmin() {
             <span class="num">${c.pago_confirmado + c.despachado + c.entregado}</span>
             <small>$${totalCobrado.toLocaleString('es-CO')} cobrado</small>
         </div>
-        <div class="tarjeta-resumen-online azul">
-            <strong>🚚 En camino</strong>
-            <span class="num">${c.despachado}</span>
-        </div>
         <div class="tarjeta-resumen-online roja">
             <strong>❌ Fallidos / Cancelados</strong>
             <span class="num">${c.pago_fallido + c.cancelado}</span>
@@ -1451,7 +1447,6 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
         pendiente:       { texto: '⏳ Pendiente',         clase: 'estado-pendiente'  },
         esperando_pago:  { texto: '💳 Esperando pago',    clase: 'estado-pendiente'  },
         pago_confirmado: { texto: '✅ Pago confirmado',   clase: 'estado-pagado'     },
-        despachado:      { texto: '🚚 Despachado',        clase: 'estado-despachado' },
         entregado:       { texto: '📦 Entregado',         clase: 'estado-entregado'  },
         pago_fallido:    { texto: '❌ Pago fallido',      clase: 'estado-cancelado'  },
         cancelado:       { texto: '🚫 Cancelado',         clase: 'estado-cancelado'  },
@@ -1481,11 +1476,11 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
                     🚫 Cancelar pedido
                 </button>`;
         } else if (pedido.estado === 'pago_confirmado') {
-            botonesHTML = `
-                <button class="btn-añadir btn-accion-pedido"
-                        data-id="${pedido.id}" data-nuevo-estado="entregado">
-                    📦 Confirmar Entrega
-                </button>`;
+                    botonesHTML = `
+                        <button class="btn-añadir btn-accion-pedido"
+                                data-id="${pedido.id}" data-nuevo-estado="entregado">
+                            📦 Confirmar Entrega
+                        </button>`;
         }
  
         const card = document.createElement('div');
@@ -1553,7 +1548,6 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
 async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
     const msgs = {
         pago_confirmado: `¿Confirmar el PAGO del pedido #${pedidoId}?\n\nEl inventario se descontará automáticamente.`,
-        despachado:      `¿Marcar el pedido #${pedidoId} como despachado?`,
         entregado:       `¿Confirmar la entrega del pedido #${pedidoId}?`,
         cancelado:       `¿Cancelar el pedido #${pedidoId}?`,
     };
