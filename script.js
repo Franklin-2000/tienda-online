@@ -1558,35 +1558,31 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
 // ---------------------------------------------------------------
 async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
     const msgs = {
-        pago_confirmado: `¿Confirmar el PAGO del pedido #${pedidoId}?\n\nEl inventario se descontará automáticamente y la venta aparecerá en el historial.`,
+        pago_confirmado: `¿Confirmar el PAGO del pedido #${pedidoId}?\n\nEl inventario se descontará automáticamente.`,
         despachado:      `¿Marcar el pedido #${pedidoId} como despachado?`,
         entregado:       `¿Confirmar la entrega del pedido #${pedidoId}?`,
         cancelado:       `¿Cancelar el pedido #${pedidoId}?`,
     };
     if (!confirm(msgs[nuevoEstado] || `¿Cambiar estado del pedido #${pedidoId}?`)) return;
- 
+
     const textoOrig   = btnEl.textContent;
     btnEl.disabled    = true;
     btnEl.textContent = '⏳ Procesando...';
- 
-    const updateData = { estado: nuevoEstado };
-    if (nuevoEstado === 'pago_confirmado') {
-        updateData.fecha_confirmacion = new Date().toISOString();
-    }
 
-    const { error } = await supabaseClient
-        .from('pedidos')
-        .update(updateData)
-        .eq('id', pedidoId);
- 
+    const { error } = await supabaseClient.rpc('cambiar_estado_pedido', {
+        p_pedido_id:          pedidoId,
+        p_nuevo_estado:       nuevoEstado,
+        p_fecha_confirmacion: nuevoEstado === 'pago_confirmado' ? new Date().toISOString() : null
+    });
+
     if (error) {
         console.error('Error actualizando pedido:', error);
-        alert(`Error: ${error.message}\n\nVerifica que tu email esté configurado como admin en el SQL.`);
+        alert(`Error: ${error.message}`);
         btnEl.disabled    = false;
         btnEl.textContent = textoOrig;
         return;
     }
- 
+
     // Actualizar estado local
     const idx = pedidosAdmin.findIndex(p => p.id === pedidoId);
     if (idx !== -1) {
@@ -1595,11 +1591,10 @@ async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
             pedidosAdmin[idx].fecha_confirmacion = new Date().toISOString();
         }
     }
- 
+
     renderResumenAdmin();
     renderPedidosAdmin(filtroEstadoAdmin);
- 
-    // Si acabamos de confirmar pago → recargar inventario en el panel
+
     if (nuevoEstado === 'pago_confirmado') {
         await loadInventory();
         alert(`✅ Pago del pedido #${pedidoId} confirmado.\nEl inventario fue descontado automáticamente.`);
