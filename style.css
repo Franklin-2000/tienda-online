@@ -913,10 +913,10 @@ input[type="file"] {
 }
 
 .online-pedidos-wrapper {
-    background-color: rgba(255, 255, 255, 0.92);
+    background-color:transparent;
     border-radius: 16px;
     padding: 24px;
-    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.08);
+    box-shadow: transparent;
     border: 1px solid rgba(0,0,0,0.08);
     margin-bottom: 24px;
     width: 100%;
