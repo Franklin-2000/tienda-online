@@ -912,10 +912,29 @@ input[type="file"] {
     margin-bottom: 24px;
 }
 
+.online-pedidos-wrapper {
+    background-color: rgba(255, 255, 255, 0.92);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+.online-pedidos-title {
+    font-size: 1.6em;
+    font-weight: 700;
+    color: #0c566c;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
 .online-pedidos-lista {
     display: flex;
-    flex-direction: column;
-    gap: 18px;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
 }
 
 .venta-ticket {
@@ -1243,8 +1262,10 @@ input[type="number"] {
     padding: 0 !important;
     margin-bottom: 16px;
     overflow: hidden;
-    width: 100%;
     box-sizing: border-box;
+    flex: 1 1 320px;
+    max-width: 420px;
+    min-width: 320px;
 }
 .pedido-admin-header {
     display: flex;
@@ -1323,15 +1344,16 @@ input[type="number"] {
 .estado-cancelado  { background:#f8d7da; color:#842029; }
 
 #listaPedidosAdmin {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 20px;
-    justify-items: stretch;
+    justify-content: flex-start;
     align-items: start;
 }
 
 @media (max-width: 900px) {
-    #listaPedidosAdmin {
-        grid-template-columns: 1fr;
+    #listaPedidosAdmin,
+    .online-pedidos-lista {
+        flex-direction: column;
     }
 }
