@@ -1393,7 +1393,93 @@ async function cargarPedidosAdmin() {
     renderPedidosAdmin(filtroEstadoAdmin);
     renderHistorialOnline();
 }
- 
+
+async function deletePedidoFromSupabase(pedidoId) {
+    const ids = [pedidoId];
+    const { error: errorItems } = await supabaseClient
+        .from('items_pedido')
+        .delete()
+        .in('pedido_id', ids);
+
+    if (errorItems) {
+        console.error('Error eliminando items del pedido:', errorItems);
+        throw errorItems;
+    }
+
+    const { error } = await supabaseClient
+        .from('pedidos')
+        .delete()
+        .eq('id', pedidoId);
+
+    if (error) {
+        console.error('Error eliminando pedido:', error);
+        throw error;
+    }
+}
+
+async function eliminarPedidoCancelado(pedidoId) {
+    if (!confirm(`¿Eliminar permanentemente la venta cancelada #${pedidoId}?`)) return;
+
+    try {
+        await deletePedidoFromSupabase(pedidoId);
+        pedidosAdmin = pedidosAdmin.filter(p => p.id !== pedidoId);
+        renderResumenAdmin();
+        renderPedidosAdmin(filtroEstadoAdmin);
+        renderHistorialOnline();
+        alert(`Venta cancelada #${pedidoId} eliminada correctamente.`);
+    } catch (error) {
+        alert(`No se pudo eliminar la venta cancelada: ${error.message || error}`);
+    }
+}
+
+async function eliminarTodosLosPedidosCancelados() {
+    const cancelados = pedidosAdmin.filter(p => p.estado === 'cancelado');
+    if (cancelados.length === 0) {
+        alert('No hay ventas canceladas para eliminar.');
+        return;
+    }
+
+    if (!confirm(`¿Eliminar todas las ventas canceladas? Se borrarán ${cancelados.length} pedidos.`)) return;
+
+    const ids = cancelados.map(p => p.id);
+    const btn = btnBorrarTodasVentasCanceladas;
+    const originalText = btn ? btn.textContent : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ Eliminando...';
+    }
+
+    try {
+        const { error: errorItems } = await supabaseClient
+            .from('items_pedido')
+            .delete()
+            .in('pedido_id', ids);
+
+        if (errorItems) throw errorItems;
+
+        const { error } = await supabaseClient
+            .from('pedidos')
+            .delete()
+            .in('id', ids);
+
+        if (error) throw error;
+
+        pedidosAdmin = pedidosAdmin.filter(p => p.estado !== 'cancelado');
+        renderResumenAdmin();
+        renderPedidosAdmin(filtroEstadoAdmin);
+        renderHistorialOnline();
+        alert(`Se eliminaron ${ids.length} ventas canceladas correctamente.`);
+    } catch (error) {
+        console.error('Error eliminando pedidos cancelados:', error);
+        alert(`No se pudieron eliminar todas las ventas canceladas: ${error.message || error}`);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }
+    }
+}
+
 // ---------------------------------------------------------------
 // Tarjetas de resumen
 // ---------------------------------------------------------------
@@ -1438,6 +1524,10 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
     const el = document.getElementById('listaPedidosAdmin');
     if (!el) return;
     filtroEstadoAdmin = estadoFiltro;
+
+    if (btnBorrarTodasVentasCanceladas) {
+        btnBorrarTodasVentasCanceladas.style.display = estadoFiltro === 'cancelado' ? 'inline-flex' : 'none';
+    }
  
     // Cuando el filtro es "todos", mostrar solo pedidos activos (no cancelados ni entregados)
     const pedidosActivos = ['pendiente', 'esperando_pago', 'pago_confirmado', 'despachado'];
@@ -1504,6 +1594,12 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
                         data-id="${pedido.id}" data-nuevo-estado="entregado">
                     📦 Confirmar Entrega
                 </button>`;
+        } else if (pedido.estado === 'cancelado') {
+            botonesHTML = `
+                <button class="btn-borrar-producto btn-eliminar-pedido-cancelado"
+                        data-id="${pedido.id}">
+                    🗑️ Eliminar venta cancelada
+                </button>`;
         }
  
         const card = document.createElement('div');
@@ -1559,6 +1655,10 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
             btn.addEventListener('click', () =>
                 cambiarEstadoPedido(parseInt(btn.dataset.id), btn.dataset.nuevoEstado, btn)
             );
+        });
+
+        card.querySelectorAll('.btn-eliminar-pedido-cancelado').forEach(btn => {
+            btn.addEventListener('click', () => eliminarPedidoCancelado(parseInt(btn.dataset.id)));
         });
  
         el.appendChild(card);
@@ -1777,6 +1877,9 @@ document.addEventListener('DOMContentLoaded', () => {
  
     const btnRef = document.getElementById('btnRefrescarPedidosAdmin');
     if (btnRef) btnRef.addEventListener('click', cargarPedidosAdmin);
+    if (btnBorrarTodasVentasCanceladas) {
+        btnBorrarTodasVentasCanceladas.addEventListener('click', eliminarTodosLosPedidosCancelados);
+    }
     
     // Evento para mostrar/ocultar historial de entregas
     if (btnVerHistorialOnline) {
