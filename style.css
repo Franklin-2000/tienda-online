@@ -945,8 +945,27 @@ input[type="file"] {
     cursor: pointer;
 }
 
-.venta-ticket-details {
-    display: none;
+.online-pedidos-lista.transparente {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+.btn-historial-esquina {
+    background-color: #0c566c;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: background-color 0.3s;
+}
+
+.btn-historial-esquina:hover {
+    background-color: #0a4a5a;
 }
 
 .ventas-grid {
