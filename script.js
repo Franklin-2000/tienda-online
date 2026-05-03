@@ -1887,11 +1887,11 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             if (seccionHistorialOnline.style.display === 'none') {
                 seccionHistorialOnline.style.display = 'block';
-                btnVerHistorialOnline.innerHTML = 'Ocultar Historial de Entregas ✖';
+                btnVerHistorialOnline.innerHTML = '📅 Ocultar Historial';
                 renderHistorialOnline();
             } else {
                 seccionHistorialOnline.style.display = 'none';
-                btnVerHistorialOnline.innerHTML = 'Ver Historial de Entregas 📅';
+                btnVerHistorialOnline.innerHTML = '📅 Historial';
             }
         });
     }

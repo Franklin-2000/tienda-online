@@ -175,39 +175,41 @@
 
   <div id="pantalla-ventas-online" style="display: none;">
   <h1>Pedidos Online</h1>
+  <button id="btnVerHistorialOnline" class="btn-historial-esquina" style="position: absolute; top: 20px; right: 20px; z-index: 10;">📅 Historial</button>
   <div class="contenedor-ventas" style="max-width: 1200px;">
  
-    <div class="online-ventas-header">
-      <div id="resumenPedidosAdmin" class="resumenPedidosAdmin-panel"></div>
-      <div class="online-filtros-panel">
-        <div class="filtros-pedidos-wrap">
-          <button class="btn-filtro-estado activo" data-estado="todos">Activos</button>
-          <button class="btn-filtro-estado" data-estado="pendiente">⏳ Pendiente</button>
-          <button class="btn-filtro-estado" data-estado="esperando_pago">💳 Esp. pago</button>
-          <button class="btn-filtro-estado" data-estado="pago_confirmado">✅ Confirmado</button>
-          <button class="btn-filtro-estado" data-estado="despachado">🚚 Despachado</button>
-          <button class="btn-filtro-estado" data-estado="entregado">📦 Entregado</button>
-          <button class="btn-filtro-estado" data-estado="cancelado">🚫 Cancelado</button>
+    <div class="inventory-header">
+        <div class="inventory-actions-group">
+            <div class="search-summary-group">
+                <div class="inventory-summary-card">
+                    <div id="resumenPedidosAdmin" class="resumenPedidosAdmin-panel"></div>
+                </div>
+            </div>
+            <div class="export-section">
+                <div class="online-filtros-panel">
+                    <div class="filtros-pedidos-wrap">
+                      <button class="btn-filtro-estado activo" data-estado="todos">Activos</button>
+                      <button class="btn-filtro-estado" data-estado="pendiente">⏳ Pendiente</button>
+                      <button class="btn-filtro-estado" data-estado="esperando_pago">💳 Esp. pago</button>
+                      <button class="btn-filtro-estado" data-estado="pago_confirmado">✅ Confirmado</button>
+                      <button class="btn-filtro-estado" data-estado="despachado">🚚 Despachado</button>
+                      <button class="btn-filtro-estado" data-estado="entregado">📦 Entregado</button>
+                      <button class="btn-filtro-estado" data-estado="cancelado">🚫 Cancelado</button>
+                    </div>
+                    <button id="btnRefrescarPedidosAdmin" class="btn-buscar btn-refrescar-online">🔄 Actualizar</button>
+                    <button id="btnBorrarTodasVentasCanceladas" class="btn-borrar-producto" style="display:none; margin-left: 10px;">🗑️ Borrar todas las ventas canceladas</button>
+                </div>
+            </div>
         </div>
-        <button id="btnRefrescarPedidosAdmin" class="btn-buscar btn-refrescar-online">🔄 Actualizar</button>
-        <button id="btnBorrarTodasVentasCanceladas" class="btn-borrar-producto" style="display:none; margin-left: 10px;">🗑️ Borrar todas las ventas canceladas</button>
-      </div>
     </div>
 
-    <div class="online-ventas-separator"></div>
-
-    <div class="online-pedidos-wrapper">
-        <div class="online-pedidos-title">Pedidos</div>
-        <div id="listaPedidosAdmin" class="online-pedidos-lista"></div>
-    </div>
+    <h2 id="online-pedidos-title">Pedidos</h2>
+    <div id="listaPedidosAdmin" class="online-pedidos-lista transparente"></div>
     
-    <div class="historial-global-section" style="margin-top: 40px; border-top: 2px dashed #ccc; padding-top: 20px;">
-        <button id="btnVerHistorialOnline" class="btn-buscar" style="font-size: 1.1em; padding: 10px 30px; margin-bottom: 15px;">Ver Historial de Entregas 📅</button>
-        <div id="seccionHistorialOnline" style="display: none; background-color: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: left;">
-            <h3 style="color: #0c566c; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px;">Historial de Entregas</h3>
-            <div id="listaEntregasHoy" class="lista-ventas-scroll" style="margin-bottom: 20px;"></div>
-            <div id="listaHistorialEntregasAcordeon" class="lista-ventas-scroll" style="max-height: 500px;"></div>
-        </div>
+    <div id="seccionHistorialOnline" style="display: none; background-color: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: left; margin-top: 20px;">
+        <h3 style="color: #0c566c; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px;">Historial de Entregas</h3>
+        <div id="listaEntregasHoy" class="lista-ventas-scroll" style="margin-bottom: 20px;"></div>
+        <div id="listaHistorialEntregasAcordeon" class="lista-ventas-scroll" style="max-height: 500px;"></div>
     </div>
  
   </div>
