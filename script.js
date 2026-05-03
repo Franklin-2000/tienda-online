@@ -45,6 +45,12 @@ const btnVerHistorial = document.querySelector("#btnVerHistorial");
 const listaVentasHoy = document.querySelector("#listaVentasHoy");
 const seccionHistorialAnterior = document.querySelector("#seccionHistorialAnterior");
 const listaHistorialAcordeon = document.querySelector("#listaHistorialAcordeon");
+
+// Referencias Historial Ventas Online
+const btnVerHistorialOnline = document.querySelector("#btnVerHistorialOnline");
+const listaEntregasHoy = document.querySelector("#listaEntregasHoy");
+const seccionHistorialOnline = document.querySelector("#seccionHistorialOnline");
+const listaHistorialEntregasAcordeon = document.querySelector("#listaHistorialEntregasAcordeon");
 // --------------------------------------
 
 const inputProductoImagen = document.querySelector("#inputProductoImagen");
@@ -1432,9 +1438,13 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
     if (!el) return;
     filtroEstadoAdmin = estadoFiltro;
  
-    const lista = estadoFiltro === 'todos'
-        ? pedidosAdmin
-        : pedidosAdmin.filter(p => p.estado === estadoFiltro);
+    // Cuando el filtro es "todos", excluir pedidos entregados (van al historial)
+    let lista;
+    if (estadoFiltro === 'todos') {
+        lista = pedidosAdmin.filter(p => p.estado !== 'entregado');
+    } else {
+        lista = pedidosAdmin.filter(p => p.estado === estadoFiltro);
+    }
  
     if (lista.length === 0) {
         el.innerHTML = '<p style="color:#666;padding:30px;text-align:center;">No hay pedidos con este estado.</p>';
@@ -1582,11 +1592,155 @@ async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
 
     renderResumenAdmin();
     renderPedidosAdmin(filtroEstadoAdmin);
+    
+    // Renderizar historial si se marca como entregado
+    if (nuevoEstado === 'entregado') {
+        renderHistorialOnline();
+    }
 
     if (nuevoEstado === 'pago_confirmado') {
         await loadInventory();
         alert(`✅ Pago del pedido #${pedidoId} confirmado.\nEl inventario fue descontado automáticamente.`);
     }
+    
+    if (nuevoEstado === 'entregado') {
+        alert(`✅ Pedido #${pedidoId} marcado como entregado.\nAhora aparece en el historial de entregas.`);
+    }
+}
+
+// ---------------------------------------------------------------
+// Renderizar historial de entregas (pedidos con estado entregado)
+// ---------------------------------------------------------------
+function renderHistorialOnline() {
+    listaEntregasHoy.innerHTML = '';
+    listaHistorialEntregasAcordeon.innerHTML = '';
+
+    // Filtrar solo pedidos entregados
+    const pedidosEntregados = pedidosAdmin.filter(p => p.estado === 'entregado');
+
+    if (pedidosEntregados.length === 0) {
+        listaEntregasHoy.innerHTML = '<p>Aún no hay entregas registradas.</p>';
+        listaHistorialEntregasAcordeon.innerHTML = '<p style="color: #666;">El historial está vacío.</p>';
+        return;
+    }
+
+    const fechaHoy = new Date().toLocaleDateString('es-CO');
+    const entregasHoy = [];
+    const entregasPasadas = {};
+
+    pedidosEntregados.forEach(pedido => {
+        const fecha = new Date(pedido.fecha).toLocaleDateString('es-CO');
+
+        if (fecha === fechaHoy) {
+            entregasHoy.push(pedido);
+        } else {
+            if (!entregasPasadas[fecha]) entregasPasadas[fecha] = [];
+            entregasPasadas[fecha].push(pedido);
+        }
+    });
+
+    // Mostrar entregas de hoy
+    if (entregasHoy.length === 0) {
+        listaEntregasHoy.innerHTML = '<p>Aún no hay entregas registradas hoy.</p>';
+    } else {
+        const titleHoy = document.createElement('h4');
+        titleHoy.textContent = `📅 Entregas de Hoy (${entregasHoy.length})`;
+        titleHoy.style.cssText = 'color: #0c566c; margin-bottom: 10px;';
+        listaEntregasHoy.appendChild(titleHoy);
+        
+        [...entregasHoy].reverse().forEach(pedido => {
+            listaEntregasHoy.appendChild(crearDOMTicketOnline(pedido, true));
+        });
+    }
+
+    // Mostrar entregas de días pasados en acordeón
+    const fechasOrdenadas = Object.keys(entregasPasadas).sort((a, b) => {
+        const dateA = new Date(a.split('/').reverse().join('-'));
+        const dateB = new Date(b.split('/').reverse().join('-'));
+        return dateB - dateA;
+    });
+
+    if (fechasOrdenadas.length === 0) {
+        listaHistorialEntregasAcordeon.innerHTML = '<p style="color: #666;">No hay entregas de días anteriores.</p>';
+    } else {
+        fechasOrdenadas.forEach(fecha => {
+            const entregasDelDia = entregasPasadas[fecha];
+            const totalDia = entregasDelDia.reduce((sum, p) => sum + Number(p.total), 0);
+            
+            const acordeonBtn = document.createElement('div');
+            acordeonBtn.className = 'acordeon-fecha';
+            acordeonBtn.innerHTML = `<span>📅 ${fecha} (${entregasDelDia.length} entregas)</span> <strong>$${totalDia.toLocaleString('es-CO')} ▼</strong>`;
+            
+            const acordeonContent = document.createElement('div');
+            acordeonContent.className = 'acordeon-contenido';
+            acordeonContent.style.display = 'none';
+
+            [...entregasDelDia].reverse().forEach(pedido => {
+                acordeonContent.appendChild(crearDOMTicketOnline(pedido, false));
+            });
+
+            acordeonBtn.addEventListener('click', () => {
+                const isVisible = acordeonContent.style.display === 'block';
+                acordeonContent.style.display = isVisible ? 'none' : 'block';
+                acordeonBtn.querySelector('strong').innerHTML = `$${totalDia.toLocaleString('es-CO')} ${isVisible ? '▼' : '▲'}`;
+            });
+
+            listaHistorialEntregasAcordeon.appendChild(acordeonBtn);
+            listaHistorialEntregasAcordeon.appendChild(acordeonContent);
+        });
+    }
+}
+
+// ---------------------------------------------------------------
+// Crear ticket de pedido para el historial
+// ---------------------------------------------------------------
+function crearDOMTicketOnline(pedido, esDeHoy) {
+    const ticketDiv = document.createElement('div');
+    ticketDiv.className = 'venta-ticket';
+    
+    let itemsHtml = '<ul style="list-style: none; padding: 0;">';
+    (pedido.items_pedido || []).forEach(item => {
+        itemsHtml += `<li style="border-bottom: 1px solid #eee; padding: 5px 0;"><span>${item.cantidad}x ${item.nombre}</span> <span style="float:right;">$${Number(item.subtotal).toLocaleString('es-CO')}</span></li>`;
+    });
+    itemsHtml += '</ul>';
+
+    const fecha = new Date(pedido.fecha).toLocaleString('es-CO');
+
+    ticketDiv.innerHTML = `
+        <div class="venta-ticket-header">
+            <div style="text-align: left;">
+                <strong>Pedido #${pedido.id}</strong>
+                <span class="fecha-venta">${fecha}</span>
+            </div>
+            <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
+                <div style="display:flex; align-items:center;">
+                    <strong>$${Number(pedido.total).toLocaleString('es-CO')}</strong>
+                </div>
+                <span style="font-size: 0.8em; color: #007bff;">Ver detalles ▼</span>
+            </div>
+        </div>
+        <div class="venta-ticket-details">
+            <div style="margin-bottom: 10px;">
+                <strong>Cliente:</strong> ${pedido.cliente_nombre} <br>
+                <strong>Email:</strong> ${pedido.cliente_email} <br>
+                <strong>Teléfono:</strong> ${pedido.cliente_tel} <br>
+                <strong>Dirección:</strong> ${pedido.direccion} <br>
+                ${pedido.notas ? `<strong>Notas:</strong> ${pedido.notas} <br>` : ''}
+            </div>
+            ${itemsHtml}
+        </div>
+    `;
+
+    ticketDiv.querySelector('.venta-ticket-header').addEventListener('click', () => {
+        const details = ticketDiv.querySelector('.venta-ticket-details');
+        if (details.style.display === 'block') {
+            details.style.display = 'none';
+        } else {
+            details.style.display = 'block';
+        }
+    });
+
+    return ticketDiv;
 }
  
 // ---------------------------------------------------------------
@@ -1605,4 +1759,19 @@ document.addEventListener('DOMContentLoaded', () => {
  
     const btnRef = document.getElementById('btnRefrescarPedidosAdmin');
     if (btnRef) btnRef.addEventListener('click', cargarPedidosAdmin);
+    
+    // Evento para mostrar/ocultar historial de entregas
+    if (btnVerHistorialOnline) {
+        btnVerHistorialOnline.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (seccionHistorialOnline.style.display === 'none') {
+                seccionHistorialOnline.style.display = 'block';
+                btnVerHistorialOnline.innerHTML = 'Ocultar Historial de Entregas ✖';
+                renderHistorialOnline();
+            } else {
+                seccionHistorialOnline.style.display = 'none';
+                btnVerHistorialOnline.innerHTML = 'Ver Historial de Entregas 📅';
+            }
+        });
+    }
 })
