@@ -1376,3 +1376,254 @@ input[type="number"] {
         flex-direction: column;
     }
 }
+
+.contenedor-botones-login {
+    margin-top: 20px;
+}
+
+.btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #dadce0;
+    border-radius: 24px;
+    font-family: 'Google Sans', arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3);
+    transition: background-color 0.2s;
+}
+
+.pantalla-display-none {
+    display: none;
+}
+
+.preview-producto-imagen {
+    display: none;
+    max-width: 150px;
+    margin-top: 10px;
+}
+
+.flex-gap-5 {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.input-codigo-barras {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.contenedor-ventas-max-width {
+    max-width: 1200px;
+}
+
+.formulario-venta-flex {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex: 1;
+}
+
+.panel-venta-seccion-transparent {
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+}
+
+.input-buscar-producto-venta {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.btn-agregar-al-carrito {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.formulario-venta-flex-1-5 {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex: 1.5;
+    min-width: 350px;
+}
+
+.panel-venta-seccion-transparent-column {
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.header-carrito {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 8px;
+    font-size: 0.9em;
+    color: #353937;
+}
+
+.span-producto {
+    flex: 2;
+}
+
+.span-cantidad {
+    flex: 1;
+    text-align: center;
+}
+
+.span-precio {
+    flex: 1;
+    text-align: right;
+}
+
+.span-eliminar {
+    width: 25px;
+}
+
+.carrito-container-styles {
+    flex-grow: 1;
+    min-height: 150px;
+    background: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.no-productos-agregados {
+    color: #666;
+    margin: 0;
+    text-align: center;
+}
+
+.total-venta-preview-styles {
+    margin-top: 15px;
+    background: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.botones-accion-venta-margin {
+    margin-top: 10px;
+}
+
+.btn-limpiar-venta {
+    flex: 1;
+    margin: 0;
+}
+
+.btn-registrar-venta {
+    flex: 2;
+    margin: 0;
+}
+
+.historial-ventas-flex {
+    flex: 1.2;
+}
+
+.header-historial-ventas {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.h2-ventas-hoy {
+    margin: 0;
+    border: none;
+    padding: 0;
+}
+
+.historial-global-section-margin {
+    margin-top: 40px;
+    border-top: 2px dashed #ccc;
+    padding-top: 20px;
+}
+
+.btn-ver-historial {
+    font-size: 1.1em;
+    padding: 10px 30px;
+    margin-bottom: 15px;
+}
+
+.seccion-historial-anterior {
+    display: none;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: left;
+}
+
+.h3-historial-anterior {
+    color: #0c566c;
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.lista-historial-acordeon-max-height {
+    max-height: 400px;
+}
+
+.btn-historial-esquina-position {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+}
+
+.btn-borrar-todas-canceladas {
+    display: none;
+    margin-left: 10px;
+}
+
+.seccion-historial-online {
+    display: none;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: left;
+    margin-top: 20px;
+}
+
+.h3-historial-entregas {
+    color: #0c566c;
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.lista-entregas-hoy {
+    margin-bottom: 20px;
+}
+
+.lista-historial-entregas-acordeon {
+    max-height: 500px;
+}
+
+.producto-codigo-small {
+    font-size: 0.8em;
+    color: #555;
+    margin: 2px 0;
+}

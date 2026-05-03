@@ -18,8 +18,8 @@
       <div class="animated-ring"></div>
       <div class="login-card">
         <h1></h1>
-        <div class="contenedor-botones-login" style="margin-top: 20px;">
-            <button id="btnGoogle" style="display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 10px 15px; background-color: #000; color: #fff; border: 1px solid #dadce0; border-radius: 24px; font-family: 'Google Sans', arial, sans-serif; font-size: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3); transition: background-color 0.2s;">
+        <div class="contenedor-botones-login">
+            <button id="btnGoogle" class="btn-google">
               
                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px">
                     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
@@ -36,7 +36,7 @@
     </div>
   </div>
 
-  <div id="pantalla-inicio" style="display: none;">
+  <div id="pantalla-inicio" class="pantalla-display-none">
     <h1 class="title">INDEX</h1>
     <div class="botones-container">
       <a href="#" class="boton" id="btn-Inventario">INVENTARIO</a>
@@ -45,7 +45,7 @@
     <button id="btnLogout" class="boton-volver">Cerrar Sesión</button>
   </div>
 
-  <div id="pantalla-menu-ventas" style="display: none;">
+  <div id="pantalla-menu-ventas" class="pantalla-display-none">
     <h1 class="title">Sección de Ventas</h1>
     <div class="botones-container">
       <a href="#" class="boton" id="btn-Menu-Ventas-Fisicas">VENTAS FÍSICAS</a>
@@ -54,7 +54,7 @@
     <button id="btnVolverInicioDesdeVentas" class="boton-volver">← Volver al Inicio</button>
   </div>
 
-  <div id="pantalla-INVENTARIO" style="display: none;">
+  <div id="pantalla-INVENTARIO" class="pantalla-display-none">
     <h1>Añadir y Gestionar Mercancía</h1>
     <div class="inventory-header">
         <div class="inventory-actions-group">
@@ -63,10 +63,10 @@
                 <h2>Añadir Nuevo Producto</h2>
                 <input type="file" accept="image/*" id="inputProductoImagen">
                 <button class="btn-seleccionar-imagen" id="btnSeleccionarImagen">Seleccionar Imagen</button>
-                <img id="previewProductoImagen" src="#" alt="Vista previa de la imagen" style="display: none; max-width: 150px; margin-top: 10px;">
+                <img id="previewProductoImagen" src="#" alt="Vista previa de la imagen" class="preview-producto-imagen">
                 <label for="inputCodigoBarras">Código de Barras:</label>
-                <div style="display: flex; gap: 5px; width: 100%; margin-bottom: 10px;">
-                    <input type="text" id="inputCodigoBarras" placeholder="Ej: 123456789" style="width: 100%; margin-bottom: 0;">
+                <div class="flex-gap-5">
+                    <input type="text" id="inputCodigoBarras" placeholder="Ej: 123456789" class="input-codigo-barras">
                     <button id="btnEscanearInventario" class="btn-escanear" title="Escanear Código">📷</button>
                 </div>
                 <label for="inputNombreProducto">Nombre:</label>
@@ -103,17 +103,17 @@
     <button id="btnVolverInicio" class="boton-volver">← Volver al Inicio</button>
   </div>
 
-  <div id="pantalla-ventas-fisicas" style="display: none;">
+  <div id="pantalla-ventas-fisicas" class="pantalla-display-none">
     <h1>Registro de Ventas Físicas</h1>
-    <div class="contenedor-ventas" style="max-width: 1200px;"> 
+    <div class="contenedor-ventas contenedor-ventas-max-width"> 
       
       <div class="ventas-grid">
-        <div class="formulario-venta tarjeta-input-producto" style="display: flex; flex-direction: column; gap: 15px; flex: 1;">
+        <div class="formulario-venta tarjeta-input-producto formulario-venta-flex">
             <h2>Punto de Venta</h2>
-            <div class="panel-venta-seccion" style="background: transparent; padding: 0; box-shadow: none;">
+            <div class="panel-venta-seccion panel-venta-seccion-transparent">
                 <label for="inputBuscarProductVenta">Buscar Producto (Nombre o Código):</label>
-                <div style="display: flex; gap: 5px; width: 100%; margin-bottom: 10px;">
-                    <input type="text" id="inputBuscarProductVenta" placeholder="Ej: Camiseta o 123456" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                <div class="flex-gap-5">
+                    <input type="text" id="inputBuscarProductVenta" placeholder="Ej: Camiseta o 123456" class="input-buscar-producto-venta">
                     <button id="btnEscanearVenta" class="btn-escanear" title="Escanear Código">📷</button>
                 </div>
                 <label for="selectProductoVenta">Seleccionar Producto:</label>
@@ -122,39 +122,39 @@
                 </select>
                 <label for="inputCantidadVenta">Cantidad a vender:</label>
                 <input type="number" id="inputCantidadVenta" placeholder="Ej: 1" min="1" step="1">
-                <button class="btn-buscar" id="btnAgregarAlCarrito" style="width: 100%; margin-top: 10px;">+ Añadir a la Lista</button>
+                <button class="btn-buscar btn-agregar-al-carrito" id="btnAgregarAlCarrito">+ Añadir a la Lista</button>
             </div>
         </div>
 
-        <div class="formulario-venta tarjeta-input-producto" style="display: flex; flex-direction: column; gap: 15px; flex: 1.5; min-width: 350px;">
+        <div class="formulario-venta tarjeta-input-producto formulario-venta-flex-1-5">
             <h2>Lista Actual</h2>
-            <div class="panel-venta-seccion" style="background: transparent; padding: 0; box-shadow: none; display: flex; flex-direction: column; height: 100%;">
+            <div class="panel-venta-seccion panel-venta-seccion-transparent-column">
                 
-                <div style="display: flex; justify-content: space-between; font-weight: bold; border-bottom: 2px solid #ccc; padding-bottom: 8px; font-size: 0.9em; color: #353937;">
-                    <span style="flex: 2;">Producto</span>
-                    <span style="flex: 1; text-align: center;">Cant.</span>
-                    <span style="flex: 1; text-align: right;">V. Unit</span>
-                    <span style="flex: 1; text-align: right;">V. Total</span>
-                    <span style="width: 25px;"></span> </div>
+                <div class="header-carrito">
+                    <span class="span-producto">Producto</span>
+                    <span class="span-cantidad">Cant.</span>
+                    <span class="span-precio">V. Unit</span>
+                    <span class="span-precio">V. Total</span>
+                    <span class="span-eliminar"></span> </div>
 
-                <div id="listaCarrito" class="carrito-container" style="flex-grow: 1; min-height: 150px; background: #fff; padding: 10px; border-radius: 5px; margin-top: 10px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);">
-                    <p style="color: #666; margin: 0; text-align: center;">No hay productos agregados.</p>
+                <div id="listaCarrito" class="carrito-container carrito-container-styles">
+                    <p class="no-productos-agregados">No hay productos agregados.</p>
                 </div>
                 
-                <div class="total-venta-preview" style="margin-top: 15px; background: #f0f0f0; padding: 10px; border-radius: 5px;">
+                <div class="total-venta-preview total-venta-preview-styles">
                     <strong>Total de la Compra:</strong>
                     <span class="monto">$<span id="totalCarritoPreview">0</span></span>
                 </div>
-                <div class="botones-accion-venta" style="margin-top: 10px;">
-                    <button class="btn-borrar-producto" id="btnLimpiarVenta" style="flex: 1; margin: 0;">Limpiar Venta</button>
-                    <button class="btn-añadir" id="btnRegistrarVenta" style="flex: 2; margin: 0;">Registrar Venta</button>
+                <div class="botones-accion-venta botones-accion-venta-margin">
+                    <button class="btn-borrar-producto btn-limpiar-venta" id="btnLimpiarVenta">Limpiar Venta</button>
+                    <button class="btn-añadir btn-registrar-venta" id="btnRegistrarVenta">Registrar Venta</button>
                 </div>
             </div>
         </div>
 
-        <div class="historial-ventas" style="flex: 1.2;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 15px;">
-                <h2 style="margin: 0; border: none; padding: 0;">Ventas de Hoy</h2>
+        <div class="historial-ventas historial-ventas-flex">
+            <div class="header-historial-ventas">
+                <h2 class="h2-ventas-hoy">Ventas de Hoy</h2>
             </div>
             <div id="listaVentasHoy" class="lista-ventas-scroll">
                 <p>Aún no hay ventas registradas hoy.</p>
@@ -162,21 +162,21 @@
         </div>
       </div>
 
-      <div class="historial-global-section" style="margin-top: 40px; border-top: 2px dashed #ccc; padding-top: 20px;">
-          <button id="btnVerHistorial" class="btn-buscar" style="font-size: 1.1em; padding: 10px 30px; margin-bottom: 15px;">Ver Historial de Días Anteriores 📅</button>
-          <div id="seccionHistorialAnterior" style="display: none; background-color: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: left;">
-              <h3 style="color: #0c566c; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px;">Historial Anterior</h3>
-              <div id="listaHistorialAcordeon" class="lista-ventas-scroll" style="max-height: 400px;"></div>
+      <div class="historial-global-section historial-global-section-margin">
+          <button id="btnVerHistorial" class="btn-buscar btn-ver-historial">Ver Historial de Días Anteriores 📅</button>
+          <div id="seccionHistorialAnterior" class="seccion-historial-anterior">
+              <h3 class="h3-historial-anterior">Historial Anterior</h3>
+              <div id="listaHistorialAcordeon" class="lista-ventas-scroll lista-historial-acordeon-max-height"></div>
           </div>
       </div>
     </div>
     <button id="btnVolverVentasFisicas" class="boton-volver">← Volver al Menú Ventas</button>
   </div>
 
-  <div id="pantalla-ventas-online" style="display: none;">
+  <div id="pantalla-ventas-online" class="pantalla-display-none">
   <h1>Pedidos Online</h1>
-  <button id="btnVerHistorialOnline" class="btn-historial-esquina" style="position: absolute; top: 20px; right: 20px; z-index: 10;">📅 Historial</button>
-  <div class="contenedor-ventas" style="max-width: 1200px;">
+  <button id="btnVerHistorialOnline" class="btn-historial-esquina btn-historial-esquina-position">📅 Historial</button>
+  <div class="contenedor-ventas contenedor-ventas-max-width">
  
     <div class="inventory-header">
         <div class="inventory-actions-group">
@@ -197,7 +197,7 @@
                       <button class="btn-filtro-estado" data-estado="cancelado">🚫 Cancelado</button>
                     </div>
                     <button id="btnRefrescarPedidosAdmin" class="btn-buscar btn-refrescar-online">🔄 Actualizar</button>
-                    <button id="btnBorrarTodasVentasCanceladas" class="btn-borrar-producto" style="display:none; margin-left: 10px;">🗑️ Borrar todas las ventas canceladas</button>
+                    <button id="btnBorrarTodasVentasCanceladas" class="btn-borrar-producto btn-borrar-todas-canceladas">🗑️ Borrar todas las ventas canceladas</button>
                 </div>
             </div>
         </div>
@@ -206,10 +206,10 @@
     <h2 id="online-pedidos-title">Pedidos</h2>
     <div id="listaPedidosAdmin" class="online-pedidos-lista transparente"></div>
     
-    <div id="seccionHistorialOnline" style="display: none; background-color: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: left; margin-top: 20px;">
-        <h3 style="color: #0c566c; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px;">Historial de Entregas</h3>
-        <div id="listaEntregasHoy" class="lista-ventas-scroll" style="margin-bottom: 20px;"></div>
-        <div id="listaHistorialEntregasAcordeon" class="lista-ventas-scroll" style="max-height: 500px;"></div>
+    <div id="seccionHistorialOnline" class="seccion-historial-online">
+        <h3 class="h3-historial-entregas">Historial de Entregas</h3>
+        <div id="listaEntregasHoy" class="lista-ventas-scroll lista-entregas-hoy"></div>
+        <div id="listaHistorialEntregasAcordeon" class="lista-ventas-scroll lista-historial-entregas-acordeon"></div>
     </div>
  
   </div>
@@ -217,7 +217,7 @@
   </div>
   */
 
-  <div id="modal-escaner" class="modal-overlay" style="display: none;">
+  <div id="modal-escaner" class="modal-overlay pantalla-display-none">
       <div class="modal-contenido">
           <h3>Escanear Código</h3>
           <div id="lector-camara"></div>
@@ -229,7 +229,7 @@
     <div class="tarjeta-producto" data-id="">
       <img src="https://via.placeholder.com/150" alt="Imagen del Producto" class="producto-imagen">
       <h3 class="producto-nombre">Nombre del Producto</h3>
-      <p class="producto-codigo" style="font-size: 0.8em; color: #555; margin: 2px 0;">Cod: N/A</p>
+      <p class="producto-codigo producto-codigo-small">Cod: N/A</p>
       <p class="producto-precio">$0</p>
       <p class="producto-cantidad disponible">Unidades disponibles: 1</p>
       <button class="btn-editar-producto">Editar</button>
