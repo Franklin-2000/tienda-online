@@ -194,6 +194,16 @@
  
     <!-- Lista de pedidos -->
     <div id="listaPedidosAdmin"></div>
+    
+    <!-- Sección de Historial de Pedidos Entregados -->
+    <div class="historial-global-section" style="margin-top: 40px; border-top: 2px dashed #ccc; padding-top: 20px;">
+        <button id="btnVerHistorialOnline" class="btn-buscar" style="font-size: 1.1em; padding: 10px 30px; margin-bottom: 15px;">Ver Historial de Entregas 📅</button>
+        <div id="seccionHistorialOnline" style="display: none; background-color: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: left;">
+            <h3 style="color: #0c566c; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px;">Historial de Entregas</h3>
+            <div id="listaEntregasHoy" class="lista-ventas-scroll" style="margin-bottom: 20px;"></div>
+            <div id="listaHistorialEntregasAcordeon" class="lista-ventas-scroll" style="max-height: 500px;"></div>
+        </div>
+    </div>
  
   </div>
   <button id="btnVolverVentasOnline" class="boton-volver">← Volver al Menú Ventas</button>
