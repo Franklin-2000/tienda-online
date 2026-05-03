@@ -1391,6 +1391,7 @@ async function cargarPedidosAdmin() {
     pedidosAdmin = data || [];
     renderResumenAdmin();
     renderPedidosAdmin(filtroEstadoAdmin);
+    renderHistorialOnline();
 }
  
 // ---------------------------------------------------------------
@@ -1611,7 +1612,11 @@ async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
 // ---------------------------------------------------------------
 // Renderizar historial de entregas (pedidos con estado entregado)
 // ---------------------------------------------------------------
+// Renderizar historial de entregas (pedidos con estado entregado)
+// ---------------------------------------------------------------
 function renderHistorialOnline() {
+    if (!listaEntregasHoy || !listaHistorialEntregasAcordeon) return;
+    
     listaEntregasHoy.innerHTML = '';
     listaHistorialEntregasAcordeon.innerHTML = '';
 
