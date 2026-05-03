@@ -1243,8 +1243,8 @@ input[type="number"] {
     padding: 0 !important;
     margin-bottom: 16px;
     overflow: hidden;
-    flex: 1 1 300px;
-    max-width: 400px;
+    width: 100%;
+    box-sizing: border-box;
 }
 .pedido-admin-header {
     display: flex;
@@ -1323,8 +1323,15 @@ input[type="number"] {
 .estado-cancelado  { background:#f8d7da; color:#842029; }
 
 #listaPedidosAdmin {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 20px;
-    justify-content: flex-start;
+    justify-items: stretch;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    #listaPedidosAdmin {
+        grid-template-columns: 1fr;
+    }
 }
