@@ -177,25 +177,26 @@
   <h1>Pedidos Online</h1>
   <div class="contenedor-ventas" style="max-width: 1200px;">
  
-    <!-- Tarjetas resumen -->
-    <div id="resumenPedidosAdmin" class="resumen-pedidos-grid"></div>
- 
-    <!-- Filtros de estado -->
-    <div class="filtros-pedidos-wrap">
-      <button class="btn-filtro-estado activo" data-estado="todos">Todos</button>
-      <button class="btn-filtro-estado" data-estado="pendiente">⏳ Pendiente</button>
-      <button class="btn-filtro-estado" data-estado="esperando_pago">💳 Esp. pago</button>
-      <button class="btn-filtro-estado" data-estado="pago_confirmado">✅ Confirmado</button>
-      <button class="btn-filtro-estado" data-estado="despachado">🚚 Despachado</button>
-      <button class="btn-filtro-estado" data-estado="entregado">📦 Entregado</button>
-      <button class="btn-filtro-estado" data-estado="cancelado">🚫 Cancelado</button>
-      <button id="btnRefrescarPedidosAdmin" class="btn-buscar" style="margin-left:auto;">🔄 Actualizar</button>
+    <div class="online-ventas-header">
+      <div id="resumenPedidosAdmin" class="resumenPedidosAdmin-panel"></div>
+      <div class="online-filtros-panel">
+        <div class="filtros-pedidos-wrap">
+          <button class="btn-filtro-estado activo" data-estado="todos">Activos</button>
+          <button class="btn-filtro-estado" data-estado="pendiente">⏳ Pendiente</button>
+          <button class="btn-filtro-estado" data-estado="esperando_pago">💳 Esp. pago</button>
+          <button class="btn-filtro-estado" data-estado="pago_confirmado">✅ Confirmado</button>
+          <button class="btn-filtro-estado" data-estado="despachado">🚚 Despachado</button>
+          <button class="btn-filtro-estado" data-estado="entregado">📦 Entregado</button>
+          <button class="btn-filtro-estado" data-estado="cancelado">🚫 Cancelado</button>
+        </div>
+        <button id="btnRefrescarPedidosAdmin" class="btn-buscar btn-refrescar-online">🔄 Actualizar</button>
+      </div>
     </div>
- 
-    <!-- Lista de pedidos -->
-    <div id="listaPedidosAdmin"></div>
+
+    <div class="online-ventas-separator"></div>
+
+    <div id="listaPedidosAdmin" class="online-pedidos-lista"></div>
     
-    <!-- Sección de Historial de Pedidos Entregados -->
     <div class="historial-global-section" style="margin-top: 40px; border-top: 2px dashed #ccc; padding-top: 20px;">
         <button id="btnVerHistorialOnline" class="btn-buscar" style="font-size: 1.1em; padding: 10px 30px; margin-bottom: 15px;">Ver Historial de Entregas 📅</button>
         <div id="seccionHistorialOnline" style="display: none; background-color: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: left;">
