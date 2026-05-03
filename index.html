@@ -174,48 +174,70 @@
   </div>
 
   <div id="pantalla-ventas-online" class="pantalla-display-none">
-  <h1>Pedidos Online</h1>
-  <button id="btnVerHistorialOnline" class="btn-historial-esquina btn-historial-esquina-position">📅 Historial</button>
-  <div class="contenedor-ventas contenedor-ventas-max-width">
- 
+    <h1>Pedidos Online</h1>
+
     <div class="inventory-header">
-        <div class="inventory-actions-group">
-            <div class="search-summary-group">
-                <div class="inventory-summary-card">
-                    <div id="resumenPedidosAdmin" class="resumenPedidosAdmin-panel"></div>
-                </div>
-            </div>
-            <div class="export-section">
-                <div class="online-filtros-panel">
-                    <div class="filtros-pedidos-wrap">
-                      <button class="btn-filtro-estado activo" data-estado="todos">Activos</button>
-                      <button class="btn-filtro-estado" data-estado="pendiente">⏳ Pendiente</button>
-                      <button class="btn-filtro-estado" data-estado="esperando_pago">💳 Esp. pago</button>
-                      <button class="btn-filtro-estado" data-estado="pago_confirmado">✅ Confirmado</button>
-                      <button class="btn-filtro-estado" data-estado="despachado">🚚 Despachado</button>
-                      <button class="btn-filtro-estado" data-estado="entregado">📦 Entregado</button>
-                      <button class="btn-filtro-estado" data-estado="cancelado">🚫 Cancelado</button>
-                    </div>
-                    <button id="btnRefrescarPedidosAdmin" class="btn-buscar btn-refrescar-online">🔄 Actualizar</button>
-                    <button id="btnBorrarTodasVentasCanceladas" class="btn-borrar-producto btn-borrar-todas-canceladas">🗑️ Borrar todas las ventas canceladas</button>
-                </div>
-            </div>
+      <div class="inventory-actions-group">
+
+        <div class="search-summary-group">
+          <div class="inventory-summary-card">
+            <div id="resumenPedidosAdmin" class="resumenPedidosAdmin-panel"></div>
+          </div>
         </div>
+
+        <div class="export-section online-filtros-panel-card">
+          <div class="filtros-pedidos-wrap">
+            <button class="btn-filtro-estado activo" data-estado="todos">Activos</button>
+            <button class="btn-filtro-estado" data-estado="pendiente">⏳ Pendiente</button>
+            <button class="btn-filtro-estado" data-estado="esperando_pago">💳 Esp. pago</button>
+            <button class="btn-filtro-estado" data-estado="pago_confirmado">✅ Confirmado</button>
+            <button class="btn-filtro-estado" data-estado="despachado">🚚 Despachado</button>
+            <button class="btn-filtro-estado" data-estado="entregado">📦 Entregado</button>
+            <button class="btn-filtro-estado" data-estado="cancelado">🚫 Cancelado</button>
+          </div>
+          <div class="online-acciones-wrap">
+            <button id="btnRefrescarPedidosAdmin" class="btn-buscar btn-refrescar-online">🔄 Actualizar</button>
+            <button id="btnBorrarTodasVentasCanceladas" class="btn-borrar-producto btn-borrar-todas-canceladas">🗑️ Borrar canceladas</button>
+            <button id="btnVerHistorialOnline" class="btn-historial-inline">📅 Ver Historial</button>
+          </div>
+        </div>
+
+      </div>
     </div>
 
     <h2 id="online-pedidos-title">Pedidos</h2>
     <div id="listaPedidosAdmin" class="online-pedidos-lista transparente"></div>
-    
-    <div id="seccionHistorialOnline" class="seccion-historial-online">
-        <h3 class="h3-historial-entregas">Historial de Entregas</h3>
-        <div id="listaEntregasHoy" class="lista-ventas-scroll lista-entregas-hoy"></div>
-        <div id="listaHistorialEntregasAcordeon" class="lista-ventas-scroll lista-historial-entregas-acordeon"></div>
+
+    <button id="btnVolverVentasOnline" class="boton-volver">← Volver al Menú Ventas</button>
+  </div>
+
+  <!-- NUEVA PÁGINA: Historial Online -->
+  <div id="pantalla-historial-online" class="pantalla-display-none">
+    <h1>Historial de Pedidos</h1>
+    <div class="inventory-header">
+      <div class="inventory-actions-group">
+        <div class="inventory-summary-card">
+          <h2>Historial</h2>
+          <p class="summary-count">📦</p>
+        </div>
+      </div>
     </div>
- 
+
+    <h2 id="historial-online-title">Entregas y Pedidos Anteriores</h2>
+
+    <div class="contenedor-productos" id="contenedorHistorialOnline">
+      <div class="seccion-historial-online-page">
+        <h3 class="h3-historial-entregas">Entregas de Hoy</h3>
+        <div id="listaEntregasHoy" class="lista-ventas-scroll lista-entregas-hoy"></div>
+      </div>
+      <div class="seccion-historial-online-page">
+        <h3 class="h3-historial-entregas">Historial Anterior</h3>
+        <div id="listaHistorialEntregasAcordeon" class="lista-ventas-scroll lista-historial-entregas-acordeon"></div>
+      </div>
+    </div>
+
+    <button id="btnVolverDesdeHistorialOnline" class="boton-volver">← Volver a Pedidos Online</button>
   </div>
-  <button id="btnVolverVentasOnline" class="boton-volver">← Volver al Menú Ventas</button>
-  </div>
-  */
 
   <div id="modal-escaner" class="modal-overlay pantalla-display-none">
       <div class="modal-contenido">

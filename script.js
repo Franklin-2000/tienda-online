@@ -367,6 +367,8 @@ function showScreen(screenId, pushToHistory = true) {
     if(pantallaMenuVentas) pantallaMenuVentas.style.display = 'none';
     if(pantallaVentasFisicas) pantallaVentasFisicas.style.display = 'none';
     if(pantallaVentasOnline) pantallaVentasOnline.style.display = 'none';
+    const pantallaHistorialOnline = document.querySelector('#pantalla-historial-online');
+    if(pantallaHistorialOnline) pantallaHistorialOnline.style.display = 'none';
 
     switch (screenId) {
         case 'pantalla-login':
@@ -391,6 +393,12 @@ function showScreen(screenId, pushToHistory = true) {
             break;
         case 'pantalla-ventas-online':
             if(pantallaVentasOnline) pantallaVentasOnline.style.display = ''; 
+            break;
+        case 'pantalla-historial-online':
+            if(pantallaHistorialOnline) {
+                pantallaHistorialOnline.style.display = 'block';
+                renderHistorialOnline();
+            }
             break;
     }
 
@@ -1881,18 +1889,19 @@ document.addEventListener('DOMContentLoaded', () => {
         btnBorrarTodasVentasCanceladas.addEventListener('click', eliminarTodosLosPedidosCancelados);
     }
     
-    // Evento para mostrar/ocultar historial de entregas
+    // Evento para navegar al historial online (nueva pantalla)
     if (btnVerHistorialOnline) {
         btnVerHistorialOnline.addEventListener('click', (e) => {
             e.preventDefault();
-            if (seccionHistorialOnline.style.display === 'none') {
-                seccionHistorialOnline.style.display = 'block';
-                btnVerHistorialOnline.innerHTML = '📅 Ocultar Historial';
-                renderHistorialOnline();
-            } else {
-                seccionHistorialOnline.style.display = 'none';
-                btnVerHistorialOnline.innerHTML = '📅 Historial';
-            }
+            showScreen('pantalla-historial-online');
+        });
+    }
+
+    // Botón volver desde historial online
+    const btnVolverDesdeHistorialOnline = document.querySelector('#btnVolverDesdeHistorialOnline');
+    if (btnVolverDesdeHistorialOnline) {
+        btnVolverDesdeHistorialOnline.addEventListener('click', () => {
+            showScreen('pantalla-ventas-online');
         });
     }
 })
