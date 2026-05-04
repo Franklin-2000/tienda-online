@@ -1,1800 +1,292 @@
-body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  margin: 0;
-}
-
-h1 {
-  font-size: 100px;
-  font-family:'Pacifico', cursive;
-  font-weight: bold;
-  font-style: italic;
-  color: #0c566c;
-  text-align: center;
-}
-
-#pantalla-inicio, #pantalla-menu-ventas {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://img.freepik.com/vector-premium/tecnologia-digital-compras-linea-icono-sobre-fondo-azul-marketing-tiendas-linea-comercio-electronico_252172-219.jpg);
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    min-height: 100vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-#pantalla-inicio .title, #pantalla-menu-ventas .title {
-  margin-bottom: 30px;
-  margin-top: 3em;
-  color: #ccbbbb;
-  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.9);
-  font-size: 100px;
-  font-family:'Pacifico', cursive;
-  font-weight: bold;
-  font-style: italic;
-  line-height: 1.2;
-}
-
-.botones-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 30px;
-  flex-wrap: wrap;
-}
-
-#pantalla-INVENTARIO {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://image.slidesdocs.com/responsive-images/background/website-mobile-app-explore-the-world-of-virtual-shopping-with-digital-marketing-powerpoint-background_bb972eee09__960_540.jpg);
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    min-height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-#pantalla-INVENTARIO h1 {
-    font-size: 80px;
-    color: #fafcfd;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
-    margin-top: 20px;
-    margin-bottom: 25px;
-    font-family:'Pacifico', cursive;
-    font-weight: bold;
-    font-style: italic;
-    line-height: 1.2;
-}
-
-#pantalla-INVENTARIO h2 {
-    color: #E0E0E0;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-    margin-top: 30px;
-    margin-bottom: 15px;
-}
-
-#pantalla-INVENTARIO #inventory-products-title {
-    font-size: 3em;
-    color: #edefed;
-    text-align: center;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-#pantalla-INVENTARIO .tarjeta-input-producto,
-#pantalla-INVENTARIO .search-section,
-#pantalla-INVENTARIO .inventory-summary-card,
-#pantalla-INVENTARIO .export-section {
-    background-color: transparent;
-    border:none;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px);
-    border-radius: 15px;
-}
-
-#pantalla-INVENTARIO .tarjeta-producto {
-    background-color: rgba(255, 255, 255, 0.5); 
-    border-color: rgba(200, 200, 200, 0.7); 
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); 
-    color: #121111; 
-    backdrop-filter: blur(5px); 
-}
-
-#pantalla-INVENTARIO .tarjeta-producto:hover {
-    transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 18px 35px rgba(0,0,0,0.8); 
-}
-
-.tarjeta-producto img {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border: 2px solid rgba(100, 100, 100, 0.5); 
-    display: block;
-    margin: 0 auto 10px auto;
-    border-radius: 10px;
-}
-
-.tarjeta-producto h3,
-.tarjeta-producto p {
-    color: #0d0d0d; 
-    text-shadow: none; 
-}
-
-#pantalla-INVENTARIO .tarjeta-input-producto h2,
-#pantalla-INVENTARIO .search-section h2,
-#pantalla-INVENTARIO .inventory-summary-card h2 {
-    color: #eee2e2;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 1.8em;
-    width: 100%;
-    text-align: center;
-}
-
-#pantalla-INVENTARIO .tarjeta-input-producto label {
-    color: #f5f1f1;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-#pantalla-INVENTARIO .inventory-summary-card .summary-count {
-    font-size: 3em;
-    font-weight: bold;
-    color: #8be0ff;
-    margin: 0;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
-}
-
-#pantalla-INVENTARIO .tarjeta-input-producto input[type="text"],
-#pantalla-INVENTARIO .tarjeta-input-producto input[type="number"],
-#pantalla-INVENTARIO .search-input-group input[type="text"] {
-    background-color: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    color: #333;
-}
-
-#pantalla-INVENTARIO .inventory-header {
-    background-color: transparent;
-    border-bottom: 1px solid rgba(204, 204, 204, 0.7);
-}
-
-#pantalla-INVENTARIO .boton-volver {
-    background-color: rgba(243, 107, 80, 0.85);
-    color: white;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    margin-top: 40px;
-}
-
-#pantalla-INVENTARIO .boton-volver:hover {
-    background-color: #e12020;
-}
-
-/* ANIMACIONES */
-@keyframes hoverBoton {
-  0% { transform: translateY(0) scale(1); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
-  100% { transform: translateY(-8px) scale(1.08); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35); }
-}
-
-@keyframes clickBoton {
-  0% { transform: translateY(-8px) scale(1.08); }
-  100% { transform: translateY(2px) scale(1.02); }
-}
-
-@keyframes rotateRing {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes slideIn {
-  0% { opacity: 0; transform: translateY(-20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-.boton {
-  display: inline-block;
-  padding: 35px 25px;
-  color: rgb(33, 16, 51);
-  background-color: #7ae4d6;
-  text-decoration: none;
-  border-radius: 150em;
-  font-size: 40px;
-  font-weight: bold;
-  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-  cursor: pointer;
-  border: none;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.boton:hover {
-  background-color: rgba(36, 160, 154, 0.766);
-  animation: hoverBoton 0.2s ease forwards;
-  filter: brightness(1.1);
-}
-
-.boton:active {
-  animation: clickBoton 0.1s ease forwards;
-  filter: brightness(0.95);
-}
-
-input[type="file"] {
-  display: none;
-}
-
-.contenedor-productos {
-    background-color: transparent;
-    display: flex;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-top: 5px;
-    padding: 10px;
-    width: 100%;
-}
-
-.tarjeta-producto {
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    width: 220px;
-    text-align: center;
-    border: 1px solid #eee;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: transparent;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.tarjeta-producto:hover {
-    transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.25);
-}
-
-.tarjeta-input-producto h2 {
-    color: #353937;
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 1.8em;
-    width: 100%;
-    text-align: center;
-}
-
-.tarjeta-input-producto {
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    background-color: #f9f9f9;
-    width: fit-content;
-    max-width: 250px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    border: 1px solid #ddd;
-}
-
-.tarjeta-input-producto label {
-    margin-top: 10px;
-    font-weight: bold;
-    color: #353937;
-}
-
-.tarjeta-input-producto input[type="text"],
-.tarjeta-input-producto input[type="number"] {
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 150px;
-    box-sizing: border-box;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.tarjeta-input-producto input[type="text"]:focus,
-.tarjeta-input-producto input[type="number"]:focus {
-    outline: none;
-    border-color: #1b1b1b;
-    box-shadow: 0 0 8px rgba(87, 107, 109, 0.5);
-}
-
-.btn-añadir {
-    background-color: #48a4aa;
-    color: rgb(18, 17, 18);
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-    font-weight: bold;
-    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.btn-añadir:hover {
-    opacity: 0.9;
-    background-color: #87fafa;
-    transform: translateY(-6px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    filter: brightness(1.1);
-}
-
-.btn-añadir:active {
-    transform: translateY(2px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    filter: brightness(0.95);
-}
-
-.boton-volver {
-    background-color: #e8846e;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 50px;
-    font-size: 18px;
-    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.boton-volver:hover {
-    background-color: #5a6268;
-    transform: translateY(-6px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    filter: brightness(1.1);
-}
-
-.boton-volver:active {
-    transform: translateY(2px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    filter: brightness(0.95);
-}
-
-.btn-seleccionar-imagen {
-  display: inline-block;
-  background-color: #007bff;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-bottom: 10px;
-  font-size: 16px;
-  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-  border: none;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.btn-seleccionar-imagen:hover {
-  background-color: #0056b3;
-  transform: translateY(-6px) scale(1.05);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  filter: brightness(1.1);
-}
-
-.btn-seleccionar-imagen:active {
-  transform: translateY(2px) scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  filter: brightness(0.95);
-}
-
-.btn-limpiar-formulario {
-  background-color: #6c757d;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-  font-size: 16px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.btn-limpiar-formulario:hover {
-  background-color: #5a6268;
-  transform: translateY(-6px) scale(1.05);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  filter: brightness(1.1);
-}
-
-.btn-limpiar-formulario:active {
-  transform: translateY(2px) scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  filter: brightness(0.95);
-}
-
-.btn-borrar-producto {
-  background-color: #dc3545;
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 5px;
-  margin-bottom: 10px;
-  font-size: 14px;
-  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-}
-
-.btn-borrar-producto:hover {
-  background-color: #851924;
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  filter: brightness(1.1);
-}
-
-.btn-borrar-producto:active {
-  transform: translateY(1px) scale(1.02);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-  filter: brightness(0.95);
-}
-
-.btn-editar-producto {
-  background-color: #007bff;
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 5px;
-  margin-right: 5px;
-  font-size: 14px;
-  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-}
-
-.btn-editar-producto:hover {
-  background-color: #294461;
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  filter: brightness(1.1);
-}
-
-.btn-editar-producto:active {
-  transform: translateY(1px) scale(1.02);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-  filter: brightness(0.95);
-}
-
-.inventory-header {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-bottom: 20px;
-    padding: 10px;
-    background-color: #f0f0f0;
-    border-bottom: 1px solid #ccc;
-}
-
-.inventory-actions-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    align-items: flex-start;
-    flex-shrink: 0;
-}
-
-.search-summary-group {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-self: flex-start;
-}
-
-.search-section {
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    flex-shrink: 0;
-    align-self: flex-start;
-}
-
-.search-section h2 {
-    color: #353937;
-    margin-bottom: 15px;
-    font-size: 1.5em;
-}
-
-.search-input-group {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-#inputBuscarProducto {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 180px;
-    box-sizing: border-box;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-#inputBuscarProducto:focus {
-    outline: none;
-    border-color: #28a745;
-    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
-}
-
-.btn-buscar {
-    background-color: #28a745;
-    color: white;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.btn-buscar:hover {
-    background-color: #256978;
-    transform: translateY(-6px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    filter: brightness(1.1);
-}
-
-.btn-buscar:active {
-    transform: translateY(2px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    filter: brightness(0.95);
-}
-
-.btn-limpiar-busqueda {
-    background-color: #2b6292;
-    color: white;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.btn-limpiar-busqueda:hover {
-    background-color: #cc5c5a;
-    transform: translateY(-6px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    filter: brightness(1.1);
-}
-
-.btn-limpiar-busqueda:active {
-    transform: translateY(2px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    filter: brightness(0.95);
-}
-
-.formulario-producto-nuevo {
-    margin: 0;
-    flex-shrink: 0;
-    align-self: flex-start;
-}
-
-.inventory-summary-card {
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    flex-shrink: 0;
-    align-self: flex-start;
-    text-align: center;
-    max-width: 250px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.inventory-summary-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-}
-
-.inventory-summary-card h2 {
-    color: #f6f7f6;
-    margin-bottom: 15px;
-    font-size: 1.5em;
-}
-
-.summary-count {
-    font-size: 3em;
-    font-weight: bold;
-    color: #fafbfc;
-    margin: 0;
-}
-
-.export-section {
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    flex-shrink: 0;
-    align-self: flex-start;
-    text-align: center;
-    max-width: 250px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 150px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.export-section:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-}
-
-.btn-exportar {
-    background-color: #2da267;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-    font-size: 1em;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.btn-exportar:hover {
-    background-color: #22787e;
-    transform: translateY(-6px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    filter: brightness(1.1);
-}
-
-.btn-exportar:active {
-    transform: translateY(2px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    filter: brightness(0.95);
-}
-
-/* --- ESTILOS PARA LA PANTALLA DE LOGIN --- */
-#pantalla-login {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  width: 100vw;
-   background: 
- linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.00)),
-    url(https://preview.redd.it/futuristic-city-at-dusk-4k-v0-0l8pcbaab7n51.jpg?auto=webp&s=cd5621e05c5bbe95fb4e97f685f7dedae0e41d87) 
-    center/cover no-repeat;
-}
-
-.login-ring-container {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 700px;
-  height: 700px;
-}
-
-.animated-ring {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 60%;
-  background: 
-    repeating-conic-gradient(
-      from 0deg,
-      #2f3031 0deg 6deg,
-      #1a3943 6deg 8deg,
-      transparent 9deg 18deg
-    );
-  animation: rotateRing 13s linear infinite;
-}
-
-.login-card {
-  position: relative;
-  z-index: 10;
-  width: 300px;
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  text-align: center;
-  animation: slideIn 0.5s ease;
-  
-  background: 
- linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.00)),
-    url(https://w0.peakpx.com/wallpaper/1011/312/HD-wallpaper-welcome-card-word-blue-black.jpg) 
-    center/cover no-repeat;
-  
-  color: #fbfafc;
-}
-
-.login-card h1 {
-  font-size: 4em;
-  margin-bottom: 45px;
-  color: #d5d0dc;
-}
-
-.login-card input {
-  padding: 12px 15px;
-  border: 1px solid #f8f9f9;
-  border-radius: 5px;
-  font-size: 1em;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  background-color: rgba(255, 255, 255, 0.9);
-}
-
-.login-card input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
-}
-
-.btn-auth {
-  background-color: #051a31;
-  color: rgb(253, 250, 250);
-  padding: 12px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1.1em;
-  font-weight: bold;
-  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.btn-auth:hover {
-  background-color: #1b528d;
-  transform: translateY(-6px) scale(1.05);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  filter: brightness(1.1);
-}
-
-.btn-auth:active {
-  transform: translateY(2px) scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  filter: brightness(0.95);
-}
-
-.auth-message {
-  margin-top: 15px;
-  font-size: 0.9em;
-  color: #dc3545;
-  animation: fadeIn 0.3s ease;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 8px;
-  border-radius: 5px;
-}
-
-.auth-message.success {
-    color: #28a745;
-}
-
-.auth-message.error {
-    color: #dc3545;
-}
-
-#btnLogout {
-    margin-top: 20px;
-    background-color: #6c757d;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-#btnLogout:hover {
-    background-color: #5a6268;
-    transform: translateY(-6px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    filter: brightness(1.1);
-}
-
-#btnLogout:active {
-    transform: translateY(2px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    filter: brightness(0.95);
-}
-
-#pantalla-registro {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  width: 100vw;
-  background: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);
-}
-
-/* --- ESTILOS PANTALLAS DE VENTAS --- */
-#pantalla-ventas-fisicas {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://www.loquequierasya.com/wp-content/uploads/2012/09/aumentar-ventas.jpg);
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    min-height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-}
-
-#pantalla-ventas-fisicas h1 {
-    font-size: 80px;
-    color: #fafcfd;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
-    margin-top: 20px;
-    margin-bottom: 25px;
-    font-family: 'Pacifico', cursive;
-    font-weight: bold;
-    font-style: italic;
-}
-
-/* --- NUEVOS ESTILOS: VENTAS FÍSICAS INDEPENDIENTES Y RESPONSIVES --- */
-
-.contenedor-ventas-independientes {
-    display: flex;
-    flex-wrap: wrap; 
-    gap: 30px; 
-    justify-content: center; 
-    align-items: flex-start; 
-    width: 95%; 
-    max-width: 1400px; 
-    margin: 20px auto; 
-}
-
-.tarjeta-venta-independiente {
-    background-color: rgba(255, 255, 255, 0.96); 
-    border-radius: 15px; 
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); 
-    padding: 30px; 
-    border: 1px solid #ccc;
-    box-sizing: border-box; 
-}
-
-.tarjeta-venta-independiente h2 {
-    color: #0c566c;
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.8em;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-}
-
-.formulario-venta-flex {
-    flex: 1 1 400px; 
-    min-width: 320px; 
-}
-
-.formulario-venta-flex-1-5 {
-    flex: 1.5 1 600px; 
-    min-width: 320px; 
-}
-
-.panel-venta-seccion-transparent {
-    background: transparent;
-    padding: 0;
-    box-shadow: none;
-    text-align: left; 
-}
-
-.panel-venta-seccion-transparent-column {
-    background: transparent;
-    padding: 0;
-    box-shadow: none;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    text-align: left;
-}
-
-.input-buscar-producto-venta,
-.select-venta,
-#inputCantidadVenta {
-    width: 100%;
-    padding: 12px; 
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-sizing: border-box;
-    font-size: 16px; 
-    margin-bottom: 15px;
-}
-
-.btn-agregar-al-carrito {
-    width: 100%;
-    margin-top: 10px;
-    padding: 15px; 
-    font-size: 1.1em;
-}
-
-@media (max-width: 900px) {
-    .contenedor-ventas-independientes {
-        flex-direction: column; 
-        align-items: center; 
-    }
-
-    .tarjeta-venta-independiente {
-        width: 100%; 
-        max-width: 600px; 
-    }
-}
-
-/* === VENTAS ONLINE === */
-#pantalla-ventas-online,
-#pantalla-historial-online {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://static.vecteezy.com/ti/vetor-gratis/p1/5723793-icone-de-compras-linha-compras-simbolo-atraves-de-telefone-movel-isolado-em-fundo-branco-vetor.jpg);
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    display: block;
-    min-height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-#pantalla-ventas-online h1,
-#pantalla-historial-online h1 {
-    font-size: 80px;
-    color: #000000;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
-    margin-top: 20px;
-    margin-bottom: 25px;
-    font-family: 'Pacifico', cursive;
-    font-weight: bold;
-    font-style: italic;
-    line-height: 1.2;
-}
-
-#pantalla-ventas-online h2,
-#pantalla-historial-online h2 {
-    color: #ffffff;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-    margin-top: 30px;
-    margin-bottom: 15px;
-}
-
-#pantalla-ventas-online #online-pedidos-title,
-#pantalla-historial-online #historial-online-title {
-    font-size: 3em;
-    color: #edefed;
-    text-align: center;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-#pantalla-ventas-online .inventory-summary-card,
-#pantalla-ventas-online .export-section,
-#pantalla-historial-online .inventory-summary-card,
-#pantalla-historial-online .export-section {
-    background-color: transparent;
-    border: none;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px);
-    border-radius: 15px;
-}
-
-#pantalla-ventas-online .inventory-summary-card h2,
-#pantalla-historial-online .inventory-summary-card h2 {
-    color: #eee2e2;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
-}
-
-#pantalla-ventas-online .inventory-header,
-#pantalla-historial-online .inventory-header {
-    background-color: transparent;
-    border-bottom: 1px solid rgba(204, 204, 204, 0.7);
-}
-
-#pantalla-ventas-online .boton-volver,
-#pantalla-historial-online .boton-volver {
-    background-color: rgba(243, 107, 80, 0.85);
-    color: white;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    margin-top: 40px;
-    margin-bottom: 30px;
-}
-
-#pantalla-ventas-online .boton-volver:hover,
-#pantalla-historial-online .boton-volver:hover {
-    background-color: #e12020;
-}
-
-.online-filtros-panel-card {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-start;
-    min-height: unset;
-    max-width: unset;
-}
-
-.online-acciones-wrap {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.btn-historial-inline {
-    background-color: #0c566c;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: background-color 0.2s ease, transform 0.15s ease;
-}
-
-.btn-historial-inline:hover {
-    background-color: #0a4a5a;
-    transform: translateY(-3px);
-}
-
-#contenedorHistorialOnline {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: flex-start;
-    padding: 10px;
-}
-
-.seccion-historial-online-page {
-    background-color: rgba(255, 255, 255, 0.4);
-    border-color: rgba(200, 200, 200, 0.7);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(5px);
-    border-radius: 12px;
-    padding: 20px;
-    flex: 1;
-    min-width: 300px;
-    text-align: left;
-}
-
-.seccion-historial-online-page h3 {
-    color: #eee2e2;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-    margin-top: 0;
-    border-bottom: 1px solid rgba(255,255,255,0.3);
-    padding-bottom: 10px;
-}
-
-.online-ventas-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 20px;
-    padding-bottom: 25px;
-    border-bottom: 1px solid rgba(0,0,0,0.12);
-    margin-bottom: 20px;
-}
-
-.resumenPedidosAdmin-panel {
-    flex: 1 1 320px;
-    min-width: 280px;
-}
-
-.online-filtros-panel {
-    flex: 1.4 1 360px;
-    min-width: 280px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.filtros-pedidos-wrap {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-}
-
-.btn-refrescar-online {
-    flex-shrink: 0;
-}
-
-.online-ventas-separator {
-    width: 100%;
-    height: 1px;
-    background: rgba(0, 0, 0, 0.12);
-    margin-bottom: 24px;
-}
-
-.online-pedidos-wrapper {
-    background-color:transparent;
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: transparent;
-    border: 1px solid rgba(0,0,0,0.08);
-    margin-bottom: 24px;
-    width: 100%;
-}
-
-.online-pedidos-title {
-    font-size: 1.6em;
-    font-weight: 700;
-    color: #0c566c;
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-.online-pedidos-lista {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: flex-start;
-}
-
-.venta-ticket {
-    border: 1px solid rgba(0,0,0,0.08);
-}
-
-.venta-ticket-header {
-    cursor: pointer;
-}
-
-.online-pedidos-lista.transparente {
-    background: transparent !important;
-    box-shadow: none !important;
-    border: none !important;
-    padding: 0 !important;
-}
-
-.btn-historial-esquina {
-    background-color: #0c566c;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: background-color 0.3s;
-}
-
-.btn-historial-esquina:hover {
-    background-color: #0a4a5a;
-}
-
-.historial-ventas {
-    flex: 1.5;
-    min-width: 300px;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    text-align: left;
-}
-
-.historial-ventas h2 {
-    margin-top: 0;
-    color: #353937;
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 10px;
-}
-
-.lista-ventas-scroll {
-    max-height: 400px;
-    overflow-y: auto;
-    padding-right: 10px;
-}
-
-/* Ocultar flechas de inputs numéricos */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-input[type="number"] {
-    -moz-appearance: textfield; 
-}
-
-/* CLASES PARA EL CARRITO DE COMPRAS */
-.panel-venta-seccion {
-    background: rgba(255,255,255,0.5); 
-    padding: 15px; 
-    border-radius: 8px;
-    margin-bottom: 15px;
-}
-
-.carrito-container {
-    max-height: 150px; 
-    overflow-y: auto; 
-    background: #fff; 
-    padding: 10px; 
-    border-radius: 5px; 
-    margin-bottom: 10px; 
-    text-align: left;
-}
-
-.carrito-item {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid #eee;
-    padding: 5px 0;
-}
-
-.carrito-item-remover {
-    background: none;
-    border: none;
-    color: #dc3545;
-    cursor: pointer;
-    font-weight: bold;
-    margin-left: 10px;
-}
-
-.total-venta-preview {
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 15px;
-    font-size: 1.2em;
-}
-
-.total-venta-preview .monto {
-    font-size: 1.4em; 
-    color: #28a745;
-    font-weight: bold;
-}
-
-.botones-accion-venta {
-    display: flex; 
-    gap: 10px;
-}
-
-/* ESTILOS PARA LOS TICKETS DE VENTA DESPLEGABLES */
-.venta-ticket {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    background-color: #fff;
-    overflow: hidden;
-    cursor: pointer;
-    transition: box-shadow 0.3s ease;
-}
-
-.venta-ticket:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.venta-ticket-header {
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #f9f9f9;
-}
-
-.venta-ticket-header strong {
-    color: #0c566c;
-    font-size: 1.1em;
-}
-
-.fecha-venta {
-    font-size: 0.85em;
-    color: #777;
-    margin-top: 5px;
-    display: block;
-}
-
-.venta-ticket-details {
-    padding: 15px;
-    background-color: #fff;
-    border-top: 1px dashed #eee;
-    display: none; 
-    font-size: 0.95em;
-}
-
-.venta-ticket-details ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.venta-ticket-details li {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid #f0f0f0;
-    padding: 5px 0;
-}
-
-/* --- NUEVOS ESTILOS PARA EL ESCÁNER DE CÓDIGOS --- */
-
-.btn-escanear {
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    padding: 0 10px;
-    font-size: 1.2em;
-    transition: all 0.2s ease;
-}
-
-.btn-escanear:hover {
-    background-color: #e0e0e0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    backdrop-filter: blur(5px);
-}
-
-.modal-contenido {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 500px;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-.modal-contenido h3 {
-    margin-top: 0;
-    color: #333;
-}
-
-#lector-camara {
-    width: 100%;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: #000;
-}
-
-/* --- ESTILOS PARA EL HISTORIAL ACORDEÓN Y TICKETS --- */
-.acordeon-fecha {
-    background-color: #0c566c;
-    color: white;
-    padding: 10px 15px;
-    margin-top: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
-
-.acordeon-fecha:hover {
-    background-color: #1a7b98;
-}
-
-.acordeon-contenido {
-    padding: 10px;
-    background-color: #f4f7f6;
-    border: 1px solid #ccc;
-    border-top: none;
-    border-radius: 0 0 5px 5px;
-}
-
-.btn-eliminar-ticket {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 3px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.85em;
-    margin-left: 10px;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
-}
-
-.btn-eliminar-ticket:hover {
-    background-color: #bd2130;
-}
-
-.resumen-pedidos-grid {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-}
-.tarjeta-resumen-online {
-    flex: 1;
-    min-width: 160px;
-    padding: 16px 18px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-.tarjeta-resumen-online.amarilla { background:#fff3cd; border-left:4px solid #ffc107; }
-.tarjeta-resumen-online.verde    { background:#d1e7dd; border-left:4px solid #28a745; }
-.tarjeta-resumen-online.azul     { background:#cff4fc; border-left:4px solid #0dcaf0; }
-.tarjeta-resumen-online.roja     { background:#f8d7da; border-left:4px solid #dc3545; }
-.tarjeta-resumen-online strong   { font-size:0.85em; color:#353937; }
-.tarjeta-resumen-online .num     { font-size:2em; font-weight:900; color:#0c566c; line-height:1; }
-.tarjeta-resumen-online small    { font-size:0.8em; color:#555; }
- 
-.filtros-pedidos-wrap {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-/* --- BOTONES DE FILTRO DE PEDIDOS --- */
-.btn-filtro-estado {
-    padding: 8px 16px;
-    border: 2px solid #0c566c;
-    background: #ffffff; 
-    color: #0c566c; 
-    border-radius: 20px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 0.9em;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.4); 
-}
-
-.btn-filtro-estado:hover {
-    background: #e0f4f4; 
-    transform: translateY(-2px);
-}
-
-.btn-filtro-estado.activo { 
-    background: #0c566c; 
-    color: #ffffff; 
-    border-color: #0c566c;
-    box-shadow: 0 4px 8px rgba(12, 86, 108, 0.6);
-}
-
-/* --- TARJETAS DE PEDIDOS (ADMIN CARDS) --- */
-.pedido-admin-card {
-    text-align: left !important;
-    padding: 0 !important;
-    margin-bottom: 16px;
-    overflow: hidden;
-    box-sizing: border-box;
-    flex: 1 1 320px;
-    max-width: 420px;
-    min-width: 320px;
-    background-color: rgba(255, 255, 255, 0.96) !important; 
-    border: 1px solid #bbb !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
-}
-
-.pedido-admin-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #e2e8ea !important; 
-    padding: 12px 16px;
-    border-bottom: 1px solid #ccc;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.pedido-admin-id {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.05em;
-    color: #0c566c;
-}
-.pedido-admin-total {
-    font-size: 1.2em;
-    font-weight: 800;
-    color: #0c566c;
-    text-align: right;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-.pedido-admin-total small { font-size:0.7em; font-weight:400; color:#555; }
-
-.pedido-admin-cliente {
-    padding: 12px 16px;
-    font-size: 0.9em;
-    line-height: 1.9;
-    color: #111111 !important; 
-    font-weight: 500;
-    border-bottom: 1px dashed #ccc;
-}
-
-.pedido-admin-fecha { color:#888; font-size:0.85em; margin-top:4px; }
-.pedido-admin-items {
-    padding: 12px 16px;
-    border-bottom: 1px dashed #e0e0e0;
-}
-.tabla-items-pedido {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.88em;
-}
-
-.tabla-items-pedido th {
-    text-align: left;
-    padding: 5px 8px;
-    border-bottom: 2px solid #bbb;
-    color: #000000 !important; 
-    font-size: 0.9em;
-    font-weight: bold;
-}
-
-.tabla-items-pedido td {
-    padding: 6px 8px;
-    border-bottom: 1px solid #eaeaea;
-    color: #222222 !important; 
-}
-
-.pedido-admin-acciones {
-    padding: 12px 16px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-.pedido-admin-acciones button { flex:1; min-width:160px; margin:0 !important; }
- 
-/* --- ESTILO GENERAL DE LA ETIQUETA MEJORADO --- */
-.pedido-estado {
-    display: inline-block;
-    font-size: 0.85em; 
-    font-weight: 900; 
-    padding: 5px 12px;
-    border-radius: 50px;
-    text-transform: uppercase; 
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-}
-
-/* --- COLORES VIBRANTES CON ALTO CONTRASTE --- */
-.estado-pendiente  { 
-    background: #ffc107; 
-    color: #423000;      
-}
-.estado-pagado     { 
-    background: #198754; 
-    color: #ffffff;      
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); 
-}
-.estado-despachado { 
-    background: #0dcaf0; 
-    color: #032b35;      
-}
-.estado-entregado  { 
-    background: #20c997; 
-    color: #00402e;      
-}
-.estado-cancelado  { 
-    background: #dc3545; 
-    color: #ffffff;      
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-#listaPedidosAdmin {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: flex-start;
-    align-items: start;
-}
-
-@media (max-width: 900px) {
-    #listaPedidosAdmin,
-    .online-pedidos-lista {
-        flex-direction: column;
-    }
-}
-
-.contenedor-botones-login {
-    margin-top: 20px;
-}
-
-.btn-google {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    width: 100%;
-    padding: 10px 15px;
-    background-color: #000;
-    color: #fff;
-    border: 1px solid #dadce0;
-    border-radius: 24px;
-    font-family: 'Google Sans', arial, sans-serif;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3);
-    transition: background-color 0.2s;
-}
-
-.pantalla-display-none {
-    display: none;
-}
-
-.preview-producto-imagen {
-    display: none;
-    max-width: 150px;
-    margin-top: 10px;
-}
-
-.flex-gap-5 {
-    display: flex;
-    gap: 5px;
-    width: 100%;
-    margin-bottom: 10px;
-}
-
-.input-codigo-barras {
-    width: 100%;
-    margin-bottom: 0;
-}
-
-.btn-historial-esquina-position {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 10;
-}
-
-.btn-borrar-todas-canceladas {
-    display: none;
-    margin-left: 10px;
-}
-
-.seccion-historial-online {
-    display: none;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    text-align: left;
-    margin-top: 20px;
-}
-
-.h3-historial-entregas {
-    color: #0c566c;
-    margin-top: 0;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-}
-
-.lista-entregas-hoy {
-    margin-bottom: 20px;
-}
-
-.lista-historial-entregas-acordeon {
-    max-height: 500px;
-}
-
-.tarjeta-ventas-hoy-independiente {
-    width: 90%;
-    max-width: 1200px;
-    margin: 30px auto 0 auto;
-    background-color: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(8px);
-    border-radius: 15px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-    padding: 25px 30px;
-    text-align: left;
-}
-
-.titulo-ventas-hoy-independiente {
-    color: #fff;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 1.6em;
-    border-bottom: 1px solid rgba(255,255,255,0.3);
-    padding-bottom: 10px;
-}
-
-#pantalla-historial-fisicas {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://www.loquequierasya.com/wp-content/uploads/2012/09/aumentar-ventas.jpg);
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    display: block;
-    min-height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-#pantalla-historial-fisicas h1 {
-    font-size: 80px;
-    color: #fafcfd;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
-    margin-top: 20px;
-    margin-bottom: 25px;
-    font-family: 'Pacifico', cursive;
-    font-weight: bold;
-    font-style: italic;
-    line-height: 1.2;
-}
-
-#pantalla-historial-fisicas h2 {
-    color: #E0E0E0;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-    font-size: 3em;
-    margin-top: 30px;
-    margin-bottom: 20px;
-}
-
-#pantalla-historial-fisicas .inventory-header {
-    background-color: transparent;
-    border-bottom: 1px solid rgba(204, 204, 204, 0.7);
-}
-
-#pantalla-historial-fisicas .inventory-summary-card {
-    background-color: transparent;
-    border: none;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px);
-    border-radius: 15px;
-}
-
-#pantalla-historial-fisicas .inventory-summary-card h2 {
-    color: #eee2e2;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
-    font-size: 1.8em;
-}
-
-#pantalla-historial-fisicas .boton-volver {
-    background-color: rgba(243, 107, 80, 0.85);
-    color: white;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    margin-top: 40px;
-    margin-bottom: 30px;
-}
-
-#pantalla-historial-fisicas .boton-volver:hover {
-    background-color: #e12020;
-}
-.producto-codigo-small {
-    font-size: 0.8em;
-    color: #555;
-    margin: 2px 0;
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Tienda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div id="pantalla-login">
+    <div class="login-ring-container">
+      <div class="animated-ring">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      </div>
+      <div class="login-card">
+        <h1></h1>
+        <div class="contenedor-botones-login">
+            <button id="btnGoogle" class="btn-google">
+              
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                    <path fill="none" d="M0 0h48v48H0z"></path>
+                </svg>
+
+                Continuar con Google
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pantalla-inicio" class="pantalla-display-none">
+    <h1 class="title">INDEX</h1>
+    <div class="botones-container">
+      <a href="#" class="boton" id="btn-Inventario">INVENTARIO</a>
+      <a href="#" class="boton" id="btn-Ventas">VENTAS</a> 
+    </div>
+    <button id="btnLogout" class="boton-volver">Cerrar Sesión</button>
+  </div>
+
+  <div id="pantalla-menu-ventas" class="pantalla-display-none">
+    <h1 class="title">Sección de Ventas</h1>
+    <div class="botones-container">
+      <a href="#" class="boton" id="btn-Menu-Ventas-Fisicas">VENTAS FÍSICAS</a>
+      <a href="#" class="boton" id="btn-Menu-Ventas-Online">VENTAS ONLINE</a> 
+    </div>
+    <button id="btnVolverInicioDesdeVentas" class="boton-volver">← Volver al Inicio</button>
+  </div>
+
+  <div id="pantalla-INVENTARIO" class="pantalla-display-none">
+    <h1>Añadir y Gestionar Mercancía</h1>
+    <div class="inventory-header">
+        <div class="inventory-actions-group">
+            <div class="formulario-producto-nuevo">
+              <div class="tarjeta-input-producto">
+                <h2>Añadir Nuevo Producto</h2>
+                <input type="file" accept="image/*" id="inputProductoImagen">
+                <button class="btn-seleccionar-imagen" id="btnSeleccionarImagen">Seleccionar Imagen</button>
+                <img id="previewProductoImagen" src="#" alt="Vista previa de la imagen" class="preview-producto-imagen">
+                <label for="inputCodigoBarras">Código de Barras:</label>
+                <div class="flex-gap-5">
+                    <input type="text" id="inputCodigoBarras" placeholder="Ej: 123456789" class="input-codigo-barras">
+                    <button id="btnEscanearInventario" class="btn-escanear" title="Escanear Código">📷</button>
+                </div>
+                <label for="inputNombreProducto">Nombre:</label>
+                <input type="text" id="inputNombreProducto" placeholder="Nombre del Producto">
+                <label for="inputPrecioProducto">Precio:</label>
+                <input type="number" id="inputPrecioProducto" placeholder="$ 0" min="0" step="1">
+                <label for="inputCantidadProducto">Cantidad:</label>
+                <input type="number" id="inputCantidadProducto" placeholder="Ej: 1" min="1" step="1">
+                <button class="btn-añadir btn-limpiar-formulario" id="btnLimpiarFormulario">Limpiar</button>
+                <button class="btn-añadir" id="btnGuardarProducto">Añadir Producto</button>
+              </div>
+            </div>
+            <div class="search-summary-group">
+                <div class="search-section">
+                    <h2>Buscar Producto</h2>
+                    <div class="search-input-group">
+                        <input type="text" id="inputBuscarProducto" placeholder="Nombre o Código">
+                        <button class="btn-buscar" id="btnBuscarProducto">Buscar</button>
+                        <button class="btn-limpiar-busqueda" id="btnLimpiarBusqueda">Limpiar</button>
+                    </div>
+                </div>
+                <div class="inventory-summary-card">
+                    <h2>Productos Registrados</h2>
+                    <p id="totalProductosCount" class="summary-count">0</p>
+                </div>
+            </div>
+            <div class="export-section">
+                <button id="btnExportarDatos" class="btn-exportar">Exportar Datos</button>
+            </div>
+        </div>
+    </div>
+    <h2 id="inventory-products-title">Productos en Inventario</h2>
+    <div class="contenedor-productos" id="contenedorProductos"></div>
+    <button id="btnVolverInicio" class="boton-volver">← Volver al Inicio</button>
+  </div>
+
+  <div id="pantalla-ventas-fisicas" class="pantalla-display-none">
+    <h1>Registro de Ventas Físicas</h1>
+    <button id="btnVerHistorial" class="btn-historial-esquina btn-historial-esquina-position">📅 Historial</button>
+
+    <!-- NUEVO CONTENEDOR FLEXIBLE Y RESPONSIVE -->
+    <div class="contenedor-ventas-independientes"> 
+      
+        <!-- TARJETA 1: PUNTO DE VENTA -->
+        <div class="tarjeta-venta-independiente formulario-venta-flex">
+            <h2>Punto de Venta</h2>
+            <div class="panel-venta-seccion panel-venta-seccion-transparent">
+                <label for="inputBuscarProductVenta">Buscar Producto (Nombre o Código):</label>
+                <div class="flex-gap-5">
+                    <input type="text" id="inputBuscarProductVenta" placeholder="Ej: Camiseta o 123456" class="input-buscar-producto-venta">
+                    <button id="btnEscanearVenta" class="btn-escanear" title="Escanear Código">📷</button>
+                </div>
+                <label for="selectProductoVenta">Seleccionar Producto:</label>
+                <select id="selectProductoVenta" class="select-venta">
+                    <option value="">-- Selecciona un producto --</option>
+                </select>
+                <label for="inputCantidadVenta">Cantidad a vender:</label>
+                <input type="number" id="inputCantidadVenta" placeholder="Ej: 1" min="1" step="1">
+                <button class="btn-buscar btn-agregar-al-carrito" id="btnAgregarAlCarrito">+ Añadir a la Lista</button>
+            </div>
+        </div>
+
+        <!-- TARJETA 2: LISTA ACTUAL -->
+        <div class="tarjeta-venta-independiente formulario-venta-flex-1-5">
+            <h2>Lista Actual</h2>
+            <div class="panel-venta-seccion panel-venta-seccion-transparent-column">
+                <div class="header-carrito">
+                    <span class="span-producto">Producto</span>
+                    <span class="span-cantidad">Cant.</span>
+                    <span class="span-precio">V. Unit</span>
+                    <span class="span-precio">V. Total</span>
+                    <span class="span-eliminar"></span>
+                </div>
+                <div id="listaCarrito" class="carrito-container carrito-container-styles">
+                    <p class="no-productos-agregados">No hay productos agregados.</p>
+                </div>
+                <div class="total-venta-preview total-venta-preview-styles">
+                    <strong>Total de la Compra:</strong>
+                    <span class="monto">$<span id="totalCarritoPreview">0</span></span>
+                </div>
+                <div class="botones-accion-venta botones-accion-venta-margin">
+                    <button class="btn-borrar-producto btn-limpiar-venta" id="btnLimpiarVenta">Limpiar Venta</button>
+                    <button class="btn-añadir btn-registrar-venta" id="btnRegistrarVenta">Registrar Venta</button>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- FIN DEL CONTENEDOR FLEXIBLE -->
+
+    <!-- Tarjeta Ventas de Hoy -->
+    <div class="tarjeta-ventas-hoy-independiente">
+      <h2 class="titulo-ventas-hoy-independiente">🧾 Ventas de Hoy</h2>
+      <div id="listaVentasHoy" class="lista-ventas-scroll">
+          <p>Aún no hay ventas registradas hoy.</p>
+      </div>
+    </div>
+
+    <button id="btnVolverVentasFisicas" class="boton-volver">← Volver al Menú Ventas</button>
+  </div>
+
+  <!-- NUEVA PÁGINA: Historial Ventas Físicas -->
+  <div id="pantalla-historial-fisicas" class="pantalla-display-none">
+    <h1>Historial de Ventas</h1>
+    <div class="inventory-header">
+      <div class="inventory-actions-group">
+        <div class="inventory-summary-card">
+          <h2>Historial</h2>
+          <p class="summary-count">🧾</p>
+        </div>
+      </div>
+    </div>
+    <h2 id="historial-fisicas-title">Ventas de Días Anteriores</h2>
+    <div class="contenedor-productos" id="contenedorHistorialFisicas">
+      <div class="seccion-historial-online-page" style="min-width:300px; flex:1;">
+        <h3 class="h3-historial-entregas">Historial por Fecha</h3>
+        <div id="listaHistorialAcordeon" class="lista-ventas-scroll lista-historial-acordeon-max-height"></div>
+      </div>
+    </div>
+    <button id="btnVolverDesdeHistorialFisicas" class="boton-volver">← Volver a Ventas Físicas</button>
+  </div>
+
+  <div id="pantalla-ventas-online" class="pantalla-display-none">
+    <h1>Pedidos Online</h1>
+    <button id="btnVerHistorialOnline" class="btn-historial-esquina btn-historial-esquina-position">📅 Historial</button>
+      <div class="inventory-actions-group">
+
+        <div class="search-summary-group">
+          <div class="inventory-summary-card">
+            <div id="resumenPedidosAdmin" class="resumenPedidosAdmin-panel"></div>
+          </div>
+        </div>
+
+        <div class="export-section online-filtros-panel-card">
+          <div class="filtros-pedidos-wrap">
+            <button class="btn-filtro-estado activo" data-estado="todos">Activos</button>
+            <button class="btn-filtro-estado" data-estado="pendiente">⏳ Pendiente</button>
+            <button class="btn-filtro-estado" data-estado="esperando_pago">💳 Esp. pago</button>
+            <button class="btn-filtro-estado" data-estado="pago_confirmado">✅ Confirmado</button>
+            <button class="btn-filtro-estado" data-estado="despachado">🚚 Despachado</button>
+            <button class="btn-filtro-estado" data-estado="entregado">📦 Entregado</button>
+            <button class="btn-filtro-estado" data-estado="cancelado">🚫 Cancelado</button>
+          </div>
+          <div class="online-acciones-wrap">
+            <button id="btnRefrescarPedidosAdmin" class="btn-buscar btn-refrescar-online">🔄 Actualizar</button>
+            <button id="btnBorrarTodasVentasCanceladas" class="btn-borrar-producto btn-borrar-todas-canceladas">🗑️ Borrar canceladas</button>
+          </div>
+        </div>
+
+      </div>
+      
+    <h2 id="online-pedidos-title">Pedidos</h2>
+    <div id="listaPedidosAdmin" class="online-pedidos-lista transparente"></div>
+
+    <button id="btnVolverVentasOnline" class="boton-volver">← Volver al Menú Ventas</button>
+  </div>
+
+  <!-- NUEVA PÁGINA: Historial Online -->
+  <div id="pantalla-historial-online" class="pantalla-display-none">
+    <h1>Historial de Pedidos</h1>
+    <div class="inventory-header">
+      <div class="inventory-actions-group">
+        <div class="inventory-summary-card">
+          <h2>Historial</h2>
+          <p class="summary-count">📦</p>
+        </div>
+      </div>
+    </div>
+
+    <h2 id="historial-online-title">Entregas y Pedidos Anteriores</h2>
+
+    <div class="contenedor-productos" id="contenedorHistorialOnline">
+      <div class="seccion-historial-online-page">
+        <h3 class="h3-historial-entregas">Entregas de Hoy</h3>
+        <div id="listaEntregasHoy" class="lista-ventas-scroll lista-entregas-hoy"></div>
+      </div>
+      <div class="seccion-historial-online-page">
+        <h3 class="h3-historial-entregas">Historial Anterior</h3>
+        <div id="listaHistorialEntregasAcordeon" class="lista-ventas-scroll lista-historial-entregas-acordeon"></div>
+      </div>
+    </div>
+
+    <button id="btnVolverDesdeHistorialOnline" class="boton-volver">← Volver a Pedidos Online</button>
+  </div>
+
+  <div id="modal-escaner" class="modal-overlay pantalla-display-none">
+      <div class="modal-contenido">
+          <h3>Escanear Código</h3>
+          <div id="lector-camara"></div>
+          <button id="btnCerrarScanner" class="btn-borrar-producto">Cancelar</button>
+      </div>
+  </div>
+
+  <template id="template-tarjeta-producto">
+    <div class="tarjeta-producto" data-id="">
+      <img src="https://via.placeholder.com/150" alt="Imagen del Producto" class="producto-imagen">
+      <h3 class="producto-nombre">Nombre del Producto</h3>
+      <p class="producto-codigo producto-codigo-small">Cod: N/A</p>
+      <p class="producto-precio">$0</p>
+      <p class="producto-cantidad disponible">Unidades disponibles: 1</p>
+      <button class="btn-editar-producto">Editar</button>
+      <button class="btn-borrar-producto">Borrar</button>
+    </div>
+  </template>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
