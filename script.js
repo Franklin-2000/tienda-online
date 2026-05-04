@@ -41,16 +41,15 @@ const btnLimpiarVenta = document.querySelector("#btnLimpiarVenta");
 const btnRegistrarVenta = document.querySelector("#btnRegistrarVenta");
 
 // Referencias Historial Ventas 
+// Referencias Historial Ventas Físicas
 const btnVerHistorial = document.querySelector("#btnVerHistorial");
 const listaVentasHoy = document.querySelector("#listaVentasHoy");
-const seccionHistorialAnterior = document.querySelector("#seccionHistorialAnterior");
+const seccionHistorialAnterior = null; // movido a pantalla separada
 const listaHistorialAcordeon = document.querySelector("#listaHistorialAcordeon");
 
 // Referencias Historial Ventas Online
 const btnVerHistorialOnline = document.querySelector("#btnVerHistorialOnline");
-const listaEntregasHoy = document.querySelector("#listaEntregasHoy");
-const seccionHistorialOnline = document.querySelector("#seccionHistorialOnline");
-const listaHistorialEntregasAcordeon = document.querySelector("#listaHistorialEntregasAcordeon");
+const seccionHistorialOnline = null; // movido a pantalla separada
 // --------------------------------------
 
 const inputProductoImagen = document.querySelector("#inputProductoImagen");
@@ -369,6 +368,8 @@ function showScreen(screenId, pushToHistory = true) {
     if(pantallaVentasOnline) pantallaVentasOnline.style.display = 'none';
     const pantallaHistorialOnline = document.querySelector('#pantalla-historial-online');
     if(pantallaHistorialOnline) pantallaHistorialOnline.style.display = 'none';
+    const pantallaHistorialFisicas = document.querySelector('#pantalla-historial-fisicas');
+    if(pantallaHistorialFisicas) pantallaHistorialFisicas.style.display = 'none';
 
     switch (screenId) {
         case 'pantalla-login':
@@ -388,16 +389,22 @@ function showScreen(screenId, pushToHistory = true) {
             if(pantallaMenuVentas) pantallaMenuVentas.style.display = '';
             break;
         case 'pantalla-ventas-fisicas':
-            if(pantallaVentasFisicas) pantallaVentasFisicas.style.display = ''; 
+            if(pantallaVentasFisicas) pantallaVentasFisicas.style.display = 'block'; 
             updateSalesDropdown(); 
             break;
         case 'pantalla-ventas-online':
-            if(pantallaVentasOnline) pantallaVentasOnline.style.display = ''; 
+            if(pantallaVentasOnline) pantallaVentasOnline.style.display = 'block'; 
             break;
         case 'pantalla-historial-online':
             if(pantallaHistorialOnline) {
                 pantallaHistorialOnline.style.display = 'block';
                 renderHistorialOnline();
+            }
+            break;
+        case 'pantalla-historial-fisicas':
+            if(pantallaHistorialFisicas) {
+                pantallaHistorialFisicas.style.display = 'block';
+                renderSalesHistory();
             }
             break;
     }
@@ -742,51 +749,34 @@ if (btnRegistrarVenta) {
     });
 }
 
-// Lógica de Mostrar/Ocultar Historial
+// Lógica botón Historial Ventas Físicas → nueva pantalla
 btnVerHistorial.addEventListener('click', (e) => {
     e.preventDefault();
-    if(seccionHistorialAnterior.style.display === 'none') {
-        seccionHistorialAnterior.style.display = 'block';
-        btnVerHistorial.innerHTML = 'Ocultar Historial de Días Anteriores ✖';
-    } else {
-        seccionHistorialAnterior.style.display = 'none';
-        btnVerHistorial.innerHTML = 'Ver Historial de Días Anteriores 📅';
-    }
+    showScreen('pantalla-historial-fisicas');
 });
 
 // Renderizado Inteligente de Historial
 function renderSalesHistory() {
-    listaVentasHoy.innerHTML = '';
+    const listaHistorialAcordeon = document.getElementById('listaHistorialAcordeon');
+    if (!listaHistorialAcordeon) return;
+
     listaHistorialAcordeon.innerHTML = '';
 
     if (sales.length === 0) {
-        listaVentasHoy.innerHTML = '<p>Aún no hay ventas registradas.</p>';
         listaHistorialAcordeon.innerHTML = '<p style="color: #666;">El historial está vacío.</p>';
         return;
     }
 
     const fechaHoy = new Date().toLocaleDateString();
-    const ventasHoy = [];
     const ventasPasadas = {};
 
     sales.forEach(sale => {
         const fechaVenta = sale.fechaLimpia || sale.date.split(',')[0].trim();
-
-        if (fechaVenta === fechaHoy) {
-            ventasHoy.push(sale);
-        } else {
+        if (fechaVenta !== fechaHoy) {
             if (!ventasPasadas[fechaVenta]) ventasPasadas[fechaVenta] = [];
             ventasPasadas[fechaVenta].push(sale);
         }
     });
-
-    if (ventasHoy.length === 0) {
-        listaVentasHoy.innerHTML = '<p>Aún no hay ventas registradas hoy.</p>';
-    } else {
-        [...ventasHoy].reverse().forEach(sale => {
-            listaVentasHoy.appendChild(crearDOMTicket(sale, true));
-        });
-    }
 
     const fechasOrdenadas = Object.keys(ventasPasadas).sort((a, b) => {
         const dateA = new Date(a.split('/').reverse().join('-'));
@@ -1399,7 +1389,6 @@ async function cargarPedidosAdmin() {
     pedidosAdmin = data || [];
     renderResumenAdmin();
     renderPedidosAdmin(filtroEstadoAdmin);
-    renderHistorialOnline();
 }
 
 async function deletePedidoFromSupabase(pedidoId) {
@@ -1736,6 +1725,8 @@ async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
 // Renderizar historial de entregas (pedidos con estado entregado)
 // ---------------------------------------------------------------
 function renderHistorialOnline() {
+    const listaEntregasHoy = document.getElementById('listaEntregasHoy');
+    const listaHistorialEntregasAcordeon = document.getElementById('listaHistorialEntregasAcordeon');
     if (!listaEntregasHoy || !listaHistorialEntregasAcordeon) return;
     
     listaEntregasHoy.innerHTML = '';
@@ -1902,6 +1893,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnVolverDesdeHistorialOnline) {
         btnVolverDesdeHistorialOnline.addEventListener('click', () => {
             showScreen('pantalla-ventas-online');
+        });
+    }
+
+    // Botón volver desde historial físicas
+    const btnVolverDesdeHistorialFisicas = document.querySelector('#btnVolverDesdeHistorialFisicas');
+    if (btnVolverDesdeHistorialFisicas) {
+        btnVolverDesdeHistorialFisicas.addEventListener('click', () => {
+            showScreen('pantalla-ventas-fisicas');
         });
     }
 })
