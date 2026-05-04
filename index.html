@@ -107,9 +107,11 @@
     <h1>Registro de Ventas Físicas</h1>
     <button id="btnVerHistorial" class="btn-historial-esquina btn-historial-esquina-position">📅 Historial</button>
 
-    <div class="contenedor-ventas contenedor-ventas-max-width"> 
-      <div class="ventas-grid">
-        <div class="formulario-venta tarjeta-input-producto formulario-venta-flex">
+    <!-- NUEVO CONTENEDOR FLEXIBLE Y RESPONSIVE -->
+    <div class="contenedor-ventas-independientes"> 
+      
+        <!-- TARJETA 1: PUNTO DE VENTA -->
+        <div class="tarjeta-venta-independiente formulario-venta-flex">
             <h2>Punto de Venta</h2>
             <div class="panel-venta-seccion panel-venta-seccion-transparent">
                 <label for="inputBuscarProductVenta">Buscar Producto (Nombre o Código):</label>
@@ -127,7 +129,8 @@
             </div>
         </div>
 
-        <div class="formulario-venta tarjeta-input-producto formulario-venta-flex-1-5">
+        <!-- TARJETA 2: LISTA ACTUAL -->
+        <div class="tarjeta-venta-independiente formulario-venta-flex-1-5">
             <h2>Lista Actual</h2>
             <div class="panel-venta-seccion panel-venta-seccion-transparent-column">
                 <div class="header-carrito">
@@ -150,10 +153,10 @@
                 </div>
             </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Tarjeta Ventas de Hoy — fuera del contenedor -->
+    </div> <!-- FIN DEL CONTENEDOR FLEXIBLE -->
+
+    <!-- Tarjeta Ventas de Hoy -->
     <div class="tarjeta-ventas-hoy-independiente">
       <h2 class="titulo-ventas-hoy-independiente">🧾 Ventas de Hoy</h2>
       <div id="listaVentasHoy" class="lista-ventas-scroll">
@@ -214,8 +217,6 @@
 
       </div>
       
-    <!-- LA CORRECCIÓN ESTÁ AQUÍ. SE ELIMINÓ EL </div> EXTRA QUE CORTABA LA PANTALLA -->
-
     <h2 id="online-pedidos-title">Pedidos</h2>
     <div id="listaPedidosAdmin" class="online-pedidos-lista transparente"></div>
 
