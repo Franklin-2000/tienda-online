@@ -841,12 +841,112 @@ input[type="file"] {
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
 }
 
-/* === VENTAS ONLINE — mismo estilo que INVENTARIO === */
+#pantalla-ventas-fisicas h1 {
+    font-size: 80px;
+    color: #fafcfd;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    margin-top: 20px;
+    margin-bottom: 25px;
+    font-family: 'Pacifico', cursive;
+    font-weight: bold;
+    font-style: italic;
+}
+
+/* --- NUEVOS ESTILOS: VENTAS FÍSICAS INDEPENDIENTES Y RESPONSIVES --- */
+
+.contenedor-ventas-independientes {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 30px; 
+    justify-content: center; 
+    align-items: flex-start; 
+    width: 95%; 
+    max-width: 1400px; 
+    margin: 20px auto; 
+}
+
+.tarjeta-venta-independiente {
+    background-color: rgba(255, 255, 255, 0.96); 
+    border-radius: 15px; 
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); 
+    padding: 30px; 
+    border: 1px solid #ccc;
+    box-sizing: border-box; 
+}
+
+.tarjeta-venta-independiente h2 {
+    color: #0c566c;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.formulario-venta-flex {
+    flex: 1 1 400px; 
+    min-width: 320px; 
+}
+
+.formulario-venta-flex-1-5 {
+    flex: 1.5 1 600px; 
+    min-width: 320px; 
+}
+
+.panel-venta-seccion-transparent {
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+    text-align: left; 
+}
+
+.panel-venta-seccion-transparent-column {
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-align: left;
+}
+
+.input-buscar-producto-venta,
+.select-venta,
+#inputCantidadVenta {
+    width: 100%;
+    padding: 12px; 
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px; 
+    margin-bottom: 15px;
+}
+
+.btn-agregar-al-carrito {
+    width: 100%;
+    margin-top: 10px;
+    padding: 15px; 
+    font-size: 1.1em;
+}
+
+@media (max-width: 900px) {
+    .contenedor-ventas-independientes {
+        flex-direction: column; 
+        align-items: center; 
+    }
+
+    .tarjeta-venta-independiente {
+        width: 100%; 
+        max-width: 600px; 
+    }
+}
+
+/* === VENTAS ONLINE === */
 #pantalla-ventas-online,
 #pantalla-historial-online {
-    /* REEMPLAZA ESTA URL CON TU IMAGEN DE FONDO */
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://static.vecteezy.com/ti/vetor-gratis/p1/5723793-icone-de-compras-linha-compras-simbolo-atraves-de-telefone-movel-isolado-em-fundo-branco-vetor.jpg);
     background-size: cover;
     background-position: center center;
@@ -989,29 +1089,6 @@ input[type="file"] {
     padding-bottom: 10px;
 }
 
-#pantalla-ventas-fisicas h1 {
-    font-size: 80px;
-    color: #fafcfd;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
-    margin-top: 20px;
-    margin-bottom: 25px;
-    font-family: 'Pacifico', cursive;
-    font-weight: bold;
-    font-style: italic;
-}
-
-.contenedor-ventas {
-    border: none;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-    border-radius: 15px;
-    padding: 40px;
-    width: 90%;
-    max-width: 900px;
-    margin-top: 20px;
-    color: #333;
-    background-color: rgba(255, 255, 255, 0.6);
-}
-
 .online-ventas-header {
     display: flex;
     flex-wrap: wrap;
@@ -1110,28 +1187,6 @@ input[type="file"] {
 
 .btn-historial-esquina:hover {
     background-color: #0a4a5a;
-}
-
-.ventas-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 30px;
-    justify-content: space-between;
-}
-
-.formulario-venta {
-    flex: 1;
-    min-width: 300px;
-    background-color: rgba(255, 255, 255, 0.9);
-}
-
-.select-venta {
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    width: 100%;
-    font-size: 16px;
 }
 
 .historial-ventas {
@@ -1410,24 +1465,24 @@ input[type="number"] {
 .btn-filtro-estado {
     padding: 8px 16px;
     border: 2px solid #0c566c;
-    background: #ffffff; /* Fondo blanco sólido para máximo contraste */
-    color: #0c566c; /* Texto oscuro y legible */
+    background: #ffffff; 
+    color: #0c566c; 
     border-radius: 20px;
     cursor: pointer;
     font-weight: bold;
     font-size: 0.9em;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.4); /* Sombra para despegarlo del fondo gris */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4); 
 }
 
 .btn-filtro-estado:hover {
-    background: #e0f4f4; /* Un tono cian muy clarito al pasar el mouse */
+    background: #e0f4f4; 
     transform: translateY(-2px);
 }
 
 .btn-filtro-estado.activo { 
-    background: #0c566c; /* Fondo oscuro sólido para el activo */
-    color: #ffffff; /* Texto blanco puro */
+    background: #0c566c; 
+    color: #ffffff; 
     border-color: #0c566c;
     box-shadow: 0 4px 8px rgba(12, 86, 108, 0.6);
 }
@@ -1442,7 +1497,7 @@ input[type="number"] {
     flex: 1 1 320px;
     max-width: 420px;
     min-width: 320px;
-    background-color: rgba(255, 255, 255, 0.96) !important; /* Casi 100% blanco para bloquear el fondo */
+    background-color: rgba(255, 255, 255, 0.96) !important; 
     border: 1px solid #bbb !important;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
 }
@@ -1451,7 +1506,7 @@ input[type="number"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #e2e8ea !important; /* Gris claro sólido, cero transparencia */
+    background: #e2e8ea !important; 
     padding: 12px 16px;
     border-bottom: 1px solid #ccc;
     flex-wrap: wrap;
@@ -1480,7 +1535,7 @@ input[type="number"] {
     padding: 12px 16px;
     font-size: 0.9em;
     line-height: 1.9;
-    color: #111111 !important; /* Negro intenso para máxima legibilidad */
+    color: #111111 !important; 
     font-weight: 500;
     border-bottom: 1px dashed #ccc;
 }
@@ -1500,7 +1555,7 @@ input[type="number"] {
     text-align: left;
     padding: 5px 8px;
     border-bottom: 2px solid #bbb;
-    color: #000000 !important; /* Negro puro para los títulos de la tabla */
+    color: #000000 !important; 
     font-size: 0.9em;
     font-weight: bold;
 }
@@ -1508,7 +1563,7 @@ input[type="number"] {
 .tabla-items-pedido td {
     padding: 6px 8px;
     border-bottom: 1px solid #eaeaea;
-    color: #222222 !important; /* Gris muy oscuro para los productos */
+    color: #222222 !important; 
 }
 
 .pedido-admin-acciones {
@@ -1616,169 +1671,6 @@ input[type="number"] {
     margin-bottom: 0;
 }
 
-.contenedor-ventas-max-width {
-    max-width: 1200px;
-}
-
-.formulario-venta-flex {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    flex: 1;
-}
-
-.panel-venta-seccion-transparent {
-    background: transparent;
-    padding: 0;
-    box-shadow: none;
-}
-
-.input-buscar-producto-venta {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-.btn-agregar-al-carrito {
-    width: 100%;
-    margin-top: 10px;
-}
-
-.formulario-venta-flex-1-5 {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    flex: 1.5;
-    min-width: 350px;
-}
-
-.panel-venta-seccion-transparent-column {
-    background: transparent;
-    padding: 0;
-    box-shadow: none;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.header-carrito {
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 8px;
-    font-size: 0.9em;
-    color: #353937;
-}
-
-.span-producto {
-    flex: 2;
-}
-
-.span-cantidad {
-    flex: 1;
-    text-align: center;
-}
-
-.span-precio {
-    flex: 1;
-    text-align: right;
-}
-
-.span-eliminar {
-    width: 25px;
-}
-
-.carrito-container-styles {
-    flex-grow: 1;
-    min-height: 150px;
-    background: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    margin-top: 10px;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.no-productos-agregados {
-    color: #666;
-    margin: 0;
-    text-align: center;
-}
-
-.total-venta-preview-styles {
-    margin-top: 15px;
-    background: #f0f0f0;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-.botones-accion-venta-margin {
-    margin-top: 10px;
-}
-
-.btn-limpiar-venta {
-    flex: 1;
-    margin: 0;
-}
-
-.btn-registrar-venta {
-    flex: 2;
-    margin: 0;
-}
-
-.historial-ventas-flex {
-    flex: 1.2;
-}
-
-.header-historial-ventas {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-}
-
-.h2-ventas-hoy {
-    margin: 0;
-    border: none;
-    padding: 0;
-}
-
-.historial-global-section-margin {
-    margin-top: 40px;
-    border-top: 2px dashed #ccc;
-    padding-top: 20px;
-}
-
-.btn-ver-historial {
-    font-size: 1.1em;
-    padding: 10px 30px;
-    margin-bottom: 15px;
-}
-
-.seccion-historial-anterior {
-    display: none;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    text-align: left;
-}
-
-.h3-historial-anterior {
-    color: #0c566c;
-    margin-top: 0;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-}
-
-.lista-historial-acordeon-max-height {
-    max-height: 400px;
-}
-
 .btn-historial-esquina-position {
     position: absolute;
     top: 20px;
@@ -1836,10 +1728,6 @@ input[type="number"] {
     font-size: 1.6em;
     border-bottom: 1px solid rgba(255,255,255,0.3);
     padding-bottom: 10px;
-}
-
-#pantalla-ventas-fisicas {
-    position: relative;
 }
 
 #pantalla-historial-fisicas {
