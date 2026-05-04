@@ -703,8 +703,8 @@ input[type="file"] {
   position: absolute;
   top: calc(50% - 275px);
   left: calc(50% - 6px);
-  width: 12px;
-  height: 32px;
+  width: 18px;
+  height: 50px;
   border-radius: 5px;
   transform-origin: 6px 275px;
   background-color: #0d2233;
