@@ -847,7 +847,7 @@ input[type="file"] {
 #pantalla-ventas-online,
 #pantalla-historial-online {
     /* REEMPLAZA ESTA URL CON TU IMAGEN DE FONDO */
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://static.vecteezy.com/ti/vetor-gratis/p1/5723793-icone-de-compras-linha-compras-simbolo-atraves-de-telefone-movel-isolado-em-fundo-branco-vetor.jpg);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://image.slidesdocs.com/responsive-images/background/website-mobile-app-explore-the-world-of-virtual-shopping-with-digital-marketing-powerpoint-background_bb972eee09__960_540.jpg);
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -862,7 +862,7 @@ input[type="file"] {
 #pantalla-ventas-online h1,
 #pantalla-historial-online h1 {
     font-size: 80px;
-    color: #000c12;
+    color: #fafcfd;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     margin-top: 20px;
     margin-bottom: 25px;
@@ -911,23 +911,6 @@ input[type="file"] {
 #pantalla-historial-online .inventory-header {
     background-color: transparent;
     border-bottom: 1px solid rgba(204, 204, 204, 0.7);
-}
-
-#pantalla-ventas-online .pedido-admin-card {
-    background-color: rgba(255, 255, 255, 0.5);
-    border-color: rgba(200, 200, 200, 0.7);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(5px);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-#pantalla-ventas-online .pedido-admin-card:hover {
-    transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 18px 35px rgba(0,0,0,0.8);
-}
-
-#pantalla-ventas-online .pedido-admin-header {
-    background: rgba(244, 247, 248, 0.8);
 }
 
 #pantalla-ventas-online .boton-volver,
@@ -1422,21 +1405,34 @@ input[type="number"] {
     align-items: center;
     margin-bottom: 20px;
 }
+
+/* --- BOTONES DE FILTRO DE PEDIDOS --- */
 .btn-filtro-estado {
-    padding: 7px 14px;
+    padding: 8px 16px;
     border: 2px solid #0c566c;
-    background: transparent;
-    color: #0c566c;
+    background: #ffffff; /* Fondo blanco sólido para máximo contraste */
+    color: #0c566c; /* Texto oscuro y legible */
     border-radius: 20px;
     cursor: pointer;
-    font-weight: 700;
-    font-size: 0.82em;
-    transition: all 0.2s;
-    font-family: inherit;
+    font-weight: bold;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4); /* Sombra para despegarlo del fondo gris */
 }
-.btn-filtro-estado:hover,
-.btn-filtro-estado.activo { background:#0c566c; color:#fff; }
- 
+
+.btn-filtro-estado:hover {
+    background: #e0f4f4; /* Un tono cian muy clarito al pasar el mouse */
+    transform: translateY(-2px);
+}
+
+.btn-filtro-estado.activo { 
+    background: #0c566c; /* Fondo oscuro sólido para el activo */
+    color: #ffffff; /* Texto blanco puro */
+    border-color: #0c566c;
+    box-shadow: 0 4px 8px rgba(12, 86, 108, 0.6);
+}
+
+/* --- TARJETAS DE PEDIDOS (ADMIN CARDS) --- */
 .pedido-admin-card {
     text-align: left !important;
     padding: 0 !important;
@@ -1446,17 +1442,22 @@ input[type="number"] {
     flex: 1 1 320px;
     max-width: 420px;
     min-width: 320px;
+    background-color: rgba(255, 255, 255, 0.96) !important; /* Casi 100% blanco para bloquear el fondo */
+    border: 1px solid #bbb !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
 }
+
 .pedido-admin-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f4f7f8;
+    background: #e2e8ea !important; /* Gris claro sólido, cero transparencia */
     padding: 12px 16px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #ccc;
     flex-wrap: wrap;
     gap: 8px;
 }
+
 .pedido-admin-id {
     display: flex;
     align-items: center;
@@ -1474,13 +1475,16 @@ input[type="number"] {
     align-items: flex-end;
 }
 .pedido-admin-total small { font-size:0.7em; font-weight:400; color:#555; }
+
 .pedido-admin-cliente {
     padding: 12px 16px;
-    font-size: 0.88em;
+    font-size: 0.9em;
     line-height: 1.9;
-    color: #353937;
-    border-bottom: 1px dashed #e0e0e0;
+    color: #111111 !important; /* Negro intenso para máxima legibilidad */
+    font-weight: 500;
+    border-bottom: 1px dashed #ccc;
 }
+
 .pedido-admin-fecha { color:#888; font-size:0.85em; margin-top:4px; }
 .pedido-admin-items {
     padding: 12px 16px;
@@ -1491,17 +1495,22 @@ input[type="number"] {
     border-collapse: collapse;
     font-size: 0.88em;
 }
+
 .tabla-items-pedido th {
     text-align: left;
     padding: 5px 8px;
-    border-bottom: 2px solid #ddd;
-    color: #555;
-    font-size: 0.85em;
+    border-bottom: 2px solid #bbb;
+    color: #000000 !important; /* Negro puro para los títulos de la tabla */
+    font-size: 0.9em;
+    font-weight: bold;
 }
+
 .tabla-items-pedido td {
     padding: 6px 8px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #eaeaea;
+    color: #222222 !important; /* Gris muy oscuro para los productos */
 }
+
 .pedido-admin-acciones {
     padding: 12px 16px;
     display: flex;
@@ -1510,18 +1519,42 @@ input[type="number"] {
 }
 .pedido-admin-acciones button { flex:1; min-width:160px; margin:0 !important; }
  
+/* --- ESTILO GENERAL DE LA ETIQUETA MEJORADO --- */
 .pedido-estado {
     display: inline-block;
-    font-size: 0.78em;
-    font-weight: 800;
-    padding: 3px 10px;
+    font-size: 0.85em; 
+    font-weight: 900; 
+    padding: 5px 12px;
     border-radius: 50px;
+    text-transform: uppercase; 
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.2);
 }
-.estado-pendiente  { background:#fff3cd; color:#856404; }
-.estado-pagado     { background:#d1e7dd; color:#0f5132; }
-.estado-despachado { background:#cff4fc; color:#055160; }
-.estado-entregado  { background:#d1e7dd; color:#0f5132; }
-.estado-cancelado  { background:#f8d7da; color:#842029; }
+
+/* --- COLORES VIBRANTES CON ALTO CONTRASTE --- */
+.estado-pendiente  { 
+    background: #ffc107; 
+    color: #423000;      
+}
+.estado-pagado     { 
+    background: #198754; 
+    color: #ffffff;      
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); 
+}
+.estado-despachado { 
+    background: #0dcaf0; 
+    color: #032b35;      
+}
+.estado-entregado  { 
+    background: #20c997; 
+    color: #00402e;      
+}
+.estado-cancelado  { 
+    background: #dc3545; 
+    color: #ffffff;      
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
 
 #listaPedidosAdmin {
     display: flex;
