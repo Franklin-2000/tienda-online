@@ -105,8 +105,9 @@
 
   <div id="pantalla-ventas-fisicas" class="pantalla-display-none">
     <h1>Registro de Ventas Físicas</h1>
+    <button id="btnVerHistorial" class="btn-historial-esquina btn-historial-esquina-position">📅 Historial</button>
+
     <div class="contenedor-ventas contenedor-ventas-max-width"> 
-      
       <div class="ventas-grid">
         <div class="formulario-venta tarjeta-input-producto formulario-venta-flex">
             <h2>Punto de Venta</h2>
@@ -129,18 +130,16 @@
         <div class="formulario-venta tarjeta-input-producto formulario-venta-flex-1-5">
             <h2>Lista Actual</h2>
             <div class="panel-venta-seccion panel-venta-seccion-transparent-column">
-                
                 <div class="header-carrito">
                     <span class="span-producto">Producto</span>
                     <span class="span-cantidad">Cant.</span>
                     <span class="span-precio">V. Unit</span>
                     <span class="span-precio">V. Total</span>
-                    <span class="span-eliminar"></span> </div>
-
+                    <span class="span-eliminar"></span>
+                </div>
                 <div id="listaCarrito" class="carrito-container carrito-container-styles">
                     <p class="no-productos-agregados">No hay productos agregados.</p>
                 </div>
-                
                 <div class="total-venta-preview total-venta-preview-styles">
                     <strong>Total de la Compra:</strong>
                     <span class="monto">$<span id="totalCarritoPreview">0</span></span>
@@ -151,32 +150,44 @@
                 </div>
             </div>
         </div>
-
-        <div class="historial-ventas historial-ventas-flex">
-            <div class="header-historial-ventas">
-                <h2 class="h2-ventas-hoy">Ventas de Hoy</h2>
-            </div>
-            <div id="listaVentasHoy" class="lista-ventas-scroll">
-                <p>Aún no hay ventas registradas hoy.</p>
-            </div>
-        </div>
-      </div>
-
-      <div class="historial-global-section historial-global-section-margin">
-          <button id="btnVerHistorial" class="btn-buscar btn-ver-historial">Ver Historial de Días Anteriores 📅</button>
-          <div id="seccionHistorialAnterior" class="seccion-historial-anterior">
-              <h3 class="h3-historial-anterior">Historial Anterior</h3>
-              <div id="listaHistorialAcordeon" class="lista-ventas-scroll lista-historial-acordeon-max-height"></div>
-          </div>
       </div>
     </div>
+
+    <!-- Tarjeta Ventas de Hoy — fuera del contenedor -->
+    <div class="tarjeta-ventas-hoy-independiente">
+      <h2 class="titulo-ventas-hoy-independiente">🧾 Ventas de Hoy</h2>
+      <div id="listaVentasHoy" class="lista-ventas-scroll">
+          <p>Aún no hay ventas registradas hoy.</p>
+      </div>
+    </div>
+
     <button id="btnVolverVentasFisicas" class="boton-volver">← Volver al Menú Ventas</button>
+  </div>
+
+  <!-- NUEVA PÁGINA: Historial Ventas Físicas -->
+  <div id="pantalla-historial-fisicas" class="pantalla-display-none">
+    <h1>Historial de Ventas</h1>
+    <div class="inventory-header">
+      <div class="inventory-actions-group">
+        <div class="inventory-summary-card">
+          <h2>Historial</h2>
+          <p class="summary-count">🧾</p>
+        </div>
+      </div>
+    </div>
+    <h2 id="historial-fisicas-title">Ventas de Días Anteriores</h2>
+    <div class="contenedor-productos" id="contenedorHistorialFisicas">
+      <div class="seccion-historial-online-page" style="min-width:300px; flex:1;">
+        <h3 class="h3-historial-entregas">Historial por Fecha</h3>
+        <div id="listaHistorialAcordeon" class="lista-ventas-scroll lista-historial-acordeon-max-height"></div>
+      </div>
+    </div>
+    <button id="btnVolverDesdeHistorialFisicas" class="boton-volver">← Volver a Ventas Físicas</button>
   </div>
 
   <div id="pantalla-ventas-online" class="pantalla-display-none">
     <h1>Pedidos Online</h1>
-
-    <div class="inventory-header">
+    <button id="btnVerHistorialOnline" class="btn-historial-esquina btn-historial-esquina-position">📅 Historial</button>
       <div class="inventory-actions-group">
 
         <div class="search-summary-group">
@@ -198,7 +209,6 @@
           <div class="online-acciones-wrap">
             <button id="btnRefrescarPedidosAdmin" class="btn-buscar btn-refrescar-online">🔄 Actualizar</button>
             <button id="btnBorrarTodasVentasCanceladas" class="btn-borrar-producto btn-borrar-todas-canceladas">🗑️ Borrar canceladas</button>
-            <button id="btnVerHistorialOnline" class="btn-historial-inline">📅 Ver Historial</button>
           </div>
         </div>
 
