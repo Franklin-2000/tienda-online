@@ -852,6 +852,7 @@ input[type="file"] {
     background-position: center center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    display: block;
     min-height: 100vh;
     padding: 20px;
     box-sizing: border-box;
@@ -1782,6 +1783,95 @@ input[type="number"] {
     max-height: 500px;
 }
 
+.tarjeta-ventas-hoy-independiente {
+    width: 90%;
+    max-width: 1200px;
+    margin: 30px auto 0 auto;
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    padding: 25px 30px;
+    text-align: left;
+}
+
+.titulo-ventas-hoy-independiente {
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.6em;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    padding-bottom: 10px;
+}
+
+#pantalla-ventas-fisicas {
+    position: relative;
+}
+
+#pantalla-historial-fisicas {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://www.loquequierasya.com/wp-content/uploads/2012/09/aumentar-ventas.jpg);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: block;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#pantalla-historial-fisicas h1 {
+    font-size: 80px;
+    color: #fafcfd;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    margin-top: 20px;
+    margin-bottom: 25px;
+    font-family: 'Pacifico', cursive;
+    font-weight: bold;
+    font-style: italic;
+    line-height: 1.2;
+}
+
+#pantalla-historial-fisicas h2 {
+    color: #E0E0E0;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    font-size: 3em;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+#pantalla-historial-fisicas .inventory-header {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(204, 204, 204, 0.7);
+}
+
+#pantalla-historial-fisicas .inventory-summary-card {
+    background-color: transparent;
+    border: none;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    border-radius: 15px;
+}
+
+#pantalla-historial-fisicas .inventory-summary-card h2 {
+    color: #eee2e2;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+    font-size: 1.8em;
+}
+
+#pantalla-historial-fisicas .boton-volver {
+    background-color: rgba(243, 107, 80, 0.85);
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+#pantalla-historial-fisicas .boton-volver:hover {
+    background-color: #e12020;
+}
 .producto-codigo-small {
     font-size: 0.8em;
     color: #555;
