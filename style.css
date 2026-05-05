@@ -1312,12 +1312,34 @@ input[type="number"] {
     text-align: left;
 }
 
-.carrito-item {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid #eee;
-    padding: 5px 0;
+/* HEADER Y FILAS DEL CARRITO — alineación en columnas */
+.header-carrito {
+    display: grid;
+    grid-template-columns: 2fr 0.6fr 0.8fr 0.8fr 30px;
+    gap: 5px;
+    padding: 6px 10px;
+    background-color: #0c566c;
+    border-radius: 5px 5px 0 0;
+    font-weight: bold;
+    font-size: 0.85em;
+    color: #ffffff;
+    text-align: center;
 }
+
+.header-carrito .span-producto { text-align: left; }
+.header-carrito .span-eliminar { width: 30px; }
+
+.carrito-item {
+    display: grid;
+    grid-template-columns: 2fr 0.6fr 0.8fr 0.8fr 30px;
+    gap: 5px;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding: 7px 10px;
+    text-align: center;
+}
+
+.carrito-item > span:first-child { text-align: left; }
 
 .carrito-item-remover {
     background: none;
@@ -1325,7 +1347,7 @@ input[type="number"] {
     color: #dc3545;
     cursor: pointer;
     font-weight: bold;
-    margin-left: 10px;
+    margin-left: 0;
 }
 
 .total-venta-preview {
@@ -1868,4 +1890,302 @@ input[type="number"] {
     font-size: 0.8em;
     color: #555;
     margin: 2px 0;
+}
+
+/* ================================================================
+   RESPONSIVE — Adaptación a todos los dispositivos
+   Breakpoints:
+     1200px → tablets grandes / laptops pequeñas
+      900px → tablets
+      600px → móviles grandes
+      400px → móviles pequeños
+   ================================================================ */
+
+/* ---------------------------------------------------------------
+   TABLET GRANDE / LAPTOP PEQUEÑA — max 1200px
+   --------------------------------------------------------------- */
+@media (max-width: 1200px) {
+
+    /* Títulos principales */
+    h1 { font-size: 60px; }
+
+    #pantalla-inicio .title,
+    #pantalla-menu-ventas .title { font-size: 60px; }
+
+    #pantalla-INVENTARIO h1,
+    #pantalla-ventas-fisicas h1,
+    #pantalla-ventas-online h1,
+    #pantalla-historial-online h1,
+    #pantalla-historial-fisicas h1 { font-size: 55px; }
+
+    #pantalla-INVENTARIO #inventory-products-title,
+    #pantalla-historial-fisicas h2,
+    #pantalla-ventas-online #online-pedidos-title,
+    #pantalla-historial-online #historial-online-title { font-size: 2em; }
+
+    /* Botones menú principal */
+    .boton { font-size: 28px; padding: 25px 20px; }
+
+    /* Login ring */
+    .login-ring-container { width: 560px; height: 560px; }
+    .animated-ring .bar {
+        top: calc(50% - 255px);
+        transform-origin: 6px 255px;
+    }
+    .animated-ring .bar:nth-child(1)  { transform: rotate(0deg); }
+    .login-card { width: 300px; padding: 120px 30px 28px 30px; }
+
+    /* Tarjetas de producto */
+    .tarjeta-producto { width: 190px; }
+
+    /* Tarjetas de venta independientes */
+    .formulario-venta-flex { flex: 1 1 340px; min-width: 280px; }
+    .formulario-venta-flex-1-5 { flex: 1.5 1 500px; min-width: 280px; }
+}
+
+/* ---------------------------------------------------------------
+   TABLET — max 900px
+   --------------------------------------------------------------- */
+@media (max-width: 900px) {
+
+    /* Títulos */
+    h1 { font-size: 44px; }
+
+    #pantalla-inicio .title,
+    #pantalla-menu-ventas .title { font-size: 44px; margin-top: 1.5em; }
+
+    #pantalla-INVENTARIO h1,
+    #pantalla-ventas-fisicas h1,
+    #pantalla-ventas-online h1,
+    #pantalla-historial-online h1,
+    #pantalla-historial-fisicas h1 { font-size: 40px; }
+
+    #pantalla-INVENTARIO #inventory-products-title,
+    #pantalla-historial-fisicas h2,
+    #pantalla-ventas-online #online-pedidos-title,
+    #pantalla-historial-online #historial-online-title { font-size: 1.6em; }
+
+    /* Botones menú principal */
+    .boton { font-size: 22px; padding: 20px 18px; border-radius: 80px; }
+    .botones-container { gap: 20px; }
+
+    /* Login: reducir anillo */
+    .login-ring-container { width: 420px; height: 420px; }
+    .animated-ring .bar {
+        top: calc(50% - 190px);
+        transform-origin: 6px 190px;
+        width: 14px;
+        height: 40px;
+    }
+    .login-card {
+        width: 260px;
+        min-height: 220px;
+        padding: 110px 25px 25px 25px;
+    }
+
+    /* Inventario: header en columna */
+    .inventory-header { flex-direction: column; align-items: stretch; }
+    .inventory-actions-group { flex-direction: column; align-items: stretch; }
+    .tarjeta-input-producto { max-width: 100%; width: 100%; box-sizing: border-box; }
+    .tarjeta-input-producto input[type="text"],
+    .tarjeta-input-producto input[type="number"] { width: 100%; }
+    .search-summary-group { flex-direction: row; flex-wrap: wrap; }
+    .search-section { width: 100%; box-sizing: border-box; }
+
+    /* Productos en grid más pequeño */
+    .contenedor-productos { justify-content: center; }
+    .tarjeta-producto { width: 170px; }
+
+    /* Ventas físicas: columna */
+    .contenedor-ventas-independientes {
+        flex-direction: column;
+        align-items: center;
+        width: 98%;
+    }
+    .tarjeta-venta-independiente {
+        width: 100%;
+        max-width: 600px;
+        box-sizing: border-box;
+    }
+    .formulario-venta-flex,
+    .formulario-venta-flex-1-5 {
+        flex: none;
+        width: 100%;
+        min-width: unset;
+    }
+
+    /* Tarjeta ventas de hoy */
+    .tarjeta-ventas-hoy-independiente { width: 95%; padding: 20px; }
+
+    /* Historial acordeón */
+    #contenedorHistorialFisicas,
+    #contenedorHistorialOnline { flex-direction: column; }
+
+    /* Pedidos online */
+    #listaPedidosAdmin, .online-pedidos-lista { flex-direction: column; }
+    .pedido-admin-card { max-width: 100%; min-width: unset; width: 100%; }
+
+    /* Botón historial esquina */
+    .btn-historial-esquina-position { top: 10px; right: 10px; font-size: 12px; padding: 8px 10px; }
+
+    /* Filtros pedidos online */
+    .filtros-pedidos-wrap { gap: 6px; }
+    .btn-filtro-estado { font-size: 0.8em; padding: 6px 10px; }
+
+    /* Resumen pedidos */
+    .resumen-pedidos-grid { flex-direction: row; }
+    .tarjeta-resumen-online { min-width: 120px; }
+}
+
+/* ---------------------------------------------------------------
+   MÓVIL GRANDE — max 600px
+   --------------------------------------------------------------- */
+@media (max-width: 600px) {
+
+    /* Títulos */
+    h1 { font-size: 32px; }
+
+    #pantalla-inicio .title,
+    #pantalla-menu-ventas .title { font-size: 32px; margin-top: 1em; }
+
+    #pantalla-INVENTARIO h1,
+    #pantalla-ventas-fisicas h1,
+    #pantalla-ventas-online h1,
+    #pantalla-historial-online h1,
+    #pantalla-historial-fisicas h1 { font-size: 28px; margin-top: 15px; margin-bottom: 15px; }
+
+    #pantalla-INVENTARIO #inventory-products-title,
+    #pantalla-historial-fisicas h2,
+    #pantalla-ventas-online #online-pedidos-title,
+    #pantalla-historial-online #historial-online-title { font-size: 1.3em; }
+
+    /* Botones menú */
+    .boton { font-size: 18px; padding: 16px 14px; border-radius: 60px; width: 100%; max-width: 280px; }
+    .botones-container { flex-direction: column; align-items: center; gap: 15px; }
+
+    /* Botón volver */
+    .boton-volver { font-size: 15px; padding: 10px 16px; margin-top: 25px; width: 90%; max-width: 300px; }
+
+    /* Login */
+    .login-ring-container { width: 320px; height: 320px; }
+    .animated-ring .bar {
+        top: calc(50% - 143px);
+        transform-origin: 6px 143px;
+        width: 12px;
+        height: 32px;
+    }
+    .login-card {
+        width: 210px;
+        min-height: 190px;
+        padding: 95px 18px 20px 18px;
+        border-radius: 12px;
+    }
+    .btn-google { font-size: 13px; padding: 9px 12px; gap: 8px; }
+
+    /* Inventario */
+    #pantalla-INVENTARIO { padding: 12px; }
+    .inventory-header { padding: 8px; gap: 12px; }
+    .tarjeta-input-producto { padding: 15px; }
+    .tarjeta-input-producto h2 { font-size: 1.4em; }
+    .search-input-group { flex-direction: column; align-items: stretch; }
+    #inputBuscarProducto { width: 100%; box-sizing: border-box; }
+    .btn-buscar, .btn-limpiar-busqueda { width: 100%; }
+    .export-section { width: 100%; box-sizing: border-box; }
+    .btn-exportar { width: 100%; }
+
+    /* Tarjetas producto */
+    .contenedor-productos { gap: 12px; padding: 5px; }
+    .tarjeta-producto { width: calc(50% - 10px); min-width: 130px; }
+    .tarjeta-producto img { width: 110px; height: 110px; }
+
+    /* Ventas físicas */
+    #pantalla-ventas-fisicas { padding: 12px; }
+    #pantalla-ventas-fisicas h1 { font-size: 26px; margin-top: 40px; }
+    .tarjeta-venta-independiente { padding: 18px; border-radius: 10px; }
+    .tarjeta-venta-independiente h2 { font-size: 1.4em; }
+    .input-buscar-producto-venta,
+    .select-venta,
+    #inputCantidadVenta { font-size: 14px; padding: 10px; }
+    .btn-agregar-al-carrito { padding: 12px; font-size: 1em; }
+    .carrito-container { max-height: 180px; }
+    .botones-accion-venta { flex-direction: column; gap: 8px; }
+    .btn-limpiar-venta,
+    .btn-registrar-venta { width: 100%; }
+    .tarjeta-ventas-hoy-independiente { width: 100%; padding: 15px; margin-top: 15px; box-sizing: border-box; }
+    .titulo-ventas-hoy-independiente { font-size: 1.3em; }
+
+    /* Historial */
+    .acordeon-fecha { font-size: 0.9em; padding: 8px 12px; }
+    .lista-ventas-scroll { max-height: 300px; }
+    #pantalla-historial-fisicas { padding: 12px; }
+    #pantalla-historial-fisicas h1 { font-size: 28px; }
+
+    /* Ventas online */
+    #pantalla-ventas-online { padding: 12px; }
+    .btn-historial-esquina-position { top: 8px; right: 8px; font-size: 11px; padding: 6px 8px; }
+    .filtros-pedidos-wrap { gap: 5px; }
+    .btn-filtro-estado { font-size: 0.75em; padding: 5px 8px; }
+    .online-acciones-wrap { flex-direction: column; width: 100%; }
+    .btn-refrescar-online,
+    .btn-borrar-todas-canceladas { width: 100%; }
+    .pedido-admin-card { border-radius: 10px; }
+    .pedido-admin-acciones { flex-direction: column; }
+    .pedido-admin-acciones button { min-width: unset; width: 100%; }
+
+    /* Resumen pedidos */
+    .resumen-pedidos-grid { gap: 8px; }
+    .tarjeta-resumen-online { min-width: 90px; padding: 10px 12px; }
+    .tarjeta-resumen-online .num { font-size: 1.6em; }
+
+    /* Modal escáner */
+    .modal-contenido { width: 95%; padding: 15px; }
+}
+
+/* ---------------------------------------------------------------
+   MÓVIL PEQUEÑO — max 400px
+   --------------------------------------------------------------- */
+@media (max-width: 400px) {
+
+    /* Títulos */
+    #pantalla-inicio .title,
+    #pantalla-menu-ventas .title { font-size: 26px; }
+
+    #pantalla-INVENTARIO h1,
+    #pantalla-ventas-fisicas h1,
+    #pantalla-ventas-online h1,
+    #pantalla-historial-online h1,
+    #pantalla-historial-fisicas h1 { font-size: 22px; }
+
+    /* Login */
+    .login-ring-container { width: 270px; height: 270px; }
+    .animated-ring .bar {
+        top: calc(50% - 118px);
+        transform-origin: 6px 118px;
+        width: 10px;
+        height: 28px;
+    }
+    .login-card {
+        width: 180px;
+        min-height: 170px;
+        padding: 85px 14px 18px 14px;
+    }
+    .btn-google { font-size: 12px; padding: 8px 10px; }
+
+    /* Botones menú */
+    .boton { font-size: 16px; padding: 14px 12px; }
+
+    /* Tarjetas producto: 1 columna */
+    .tarjeta-producto { width: 100%; max-width: 280px; }
+    .tarjeta-producto img { width: 130px; height: 130px; }
+
+    /* Ventas */
+    .tarjeta-venta-independiente { padding: 14px; }
+    .total-venta-preview { flex-direction: column; align-items: flex-start; gap: 5px; }
+
+    /* Filtros online */
+    .btn-filtro-estado { font-size: 0.7em; padding: 4px 7px; }
+
+    /* Resumen */
+    .tarjeta-resumen-online { min-width: 70px; }
+    .tarjeta-resumen-online .num { font-size: 1.3em; }
 }
