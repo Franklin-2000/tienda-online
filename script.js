@@ -390,7 +390,8 @@ function showScreen(screenId, pushToHistory = true) {
             break;
         case 'pantalla-ventas-fisicas':
             if(pantallaVentasFisicas) pantallaVentasFisicas.style.display = 'block'; 
-            updateSalesDropdown(); 
+            updateSalesDropdown();
+            renderSalesHistory();
             break;
         case 'pantalla-ventas-online':
             if(pantallaVentasOnline) pantallaVentasOnline.style.display = 'block'; 
@@ -703,8 +704,13 @@ if (btnRegistrarVenta) {
                     subtotal:  subtotal
                 });
             }
-            // NOTA: el descuento de inventario lo hace automáticamente
-            // el trigger fn_descontar_inventario() en Supabase al insertar items_venta.
+            // Descuento local inmediato en `inventory` (respaldo visual)
+            // El trigger fn_descontar_inventario() de Supabase también lo hace en BD.
+            for (let item of currentCart) {
+                const prod = inventory.find(p => p.id.toString() === item.id.toString());
+                if (prod) prod.cantidad -= item.qty;
+            }
+            updateSalesDropdown(); // refleja stock actualizado de inmediato
 
             const numeroTicket = await generarNumeroTicket(); // <-- ahora es async
 
@@ -757,6 +763,26 @@ btnVerHistorial.addEventListener('click', (e) => {
 
 // Renderizado Inteligente de Historial
 function renderSalesHistory() {
+    // --- VENTAS DE HOY (bloque dentro de pantalla-ventas-fisicas) ---
+    const listaVentasHoyEl = document.getElementById('listaVentasHoy');
+    if (listaVentasHoyEl) {
+        listaVentasHoyEl.innerHTML = '';
+        const hoy = new Date().toLocaleDateString();
+        const ventasDeHoy = sales.filter(s => {
+            const f = s.fechaLimpia || (s.date ? s.date.split(',')[0].trim() : '');
+            return f === hoy;
+        });
+        if (ventasDeHoy.length === 0) {
+            listaVentasHoyEl.innerHTML = '<p>Aún no hay ventas registradas hoy.</p>';
+        } else {
+            // Mostrar la más reciente primero
+            [...ventasDeHoy].reverse().forEach(sale => {
+                listaVentasHoyEl.appendChild(crearDOMTicket(sale, true));
+            });
+        }
+    }
+
+    // --- HISTORIAL DÍAS ANTERIORES (bloque dentro de pantalla-historial-fisicas) ---
     const listaHistorialAcordeon = document.getElementById('listaHistorialAcordeon');
     if (!listaHistorialAcordeon) return;
 
@@ -771,8 +797,15 @@ function renderSalesHistory() {
     const ventasPasadas = {};
 
     sales.forEach(sale => {
-        const fechaVenta = sale.fechaLimpia || sale.date.split(',')[0].trim();
-        if (fechaVenta !== fechaHoy) {
+        // Normalizar fecha: preferir fechaLimpia (toLocaleDateString guardado en BD)
+        // Si no existe, extraer la parte de fecha del string completo
+        const fechaVenta = sale.fechaLimpia
+            ? sale.fechaLimpia
+            : (sale.date ? sale.date.split(',')[0].trim() : '');
+        if (!sale.fechaLimpia) {
+            console.warn(`[Historial] Venta #${sale.id} sin fechaLimpia, usando fallback:`, fechaVenta);
+        }
+        if (fechaVenta && fechaVenta !== fechaHoy) {
             if (!ventasPasadas[fechaVenta]) ventasPasadas[fechaVenta] = [];
             ventasPasadas[fechaVenta].push(sale);
         }
