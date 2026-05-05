@@ -774,9 +774,9 @@ input[type="file"] {
 
 @keyframes barGlow {
   0%   { background-color: #0d2233; box-shadow: none; }
-  40%  { background-color: #0d2233; box-shadow: none; }
-  50%  { background-color: #00e5ff; box-shadow: 0 0 12px #00e5ff, 0 0 28px #00bcd4; }
-  60%  { background-color: #0d2233; box-shadow: none; }
+  25%  { background-color: #00e5ff; box-shadow: 0 0 12px #00e5ff, 0 0 28px #00bcd4; }
+  50%  { background-color: #0d2233; box-shadow: none; }
+  75%  { background-color: #00e5ff; box-shadow: 0 0 12px #00e5ff, 0 0 28px #00bcd4; }
   100% { background-color: #0d2233; box-shadow: none; }
 }
 
@@ -1698,7 +1698,7 @@ input[type="number"] {
 }
 
 .contenedor-botones-login {
-    margin-top: 0;
+    margin-top: 20px;
 }
 
 .btn-google {
