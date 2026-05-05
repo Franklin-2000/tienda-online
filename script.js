@@ -1894,6 +1894,20 @@ function crearDOMTicketOnline(pedido, esDeHoy) {
 }
  
 // ---------------------------------------------------------------
+// Toggle Ventas de Hoy
+// ---------------------------------------------------------------
+window.addEventListener('load', () => {
+    const headerToggle = document.getElementById('btnToggleVentasHoy');
+    const listaToggle  = document.getElementById('listaVentasHoy');
+    if (headerToggle && listaToggle) {
+        headerToggle.addEventListener('click', () => {
+            listaToggle.classList.toggle('oculto');
+            headerToggle.classList.toggle('cerrado');
+        });
+    }
+});
+
+// ---------------------------------------------------------------
 // Eventos de filtros y botón refrescar
 // ---------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
