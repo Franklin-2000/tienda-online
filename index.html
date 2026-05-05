@@ -294,19 +294,5 @@
 
   <script type="module" src="script.js"></script>
 
-  <script>
-    // Toggle Ventas de Hoy
-    document.addEventListener('DOMContentLoaded', () => {
-        const header = document.getElementById('btnToggleVentasHoy');
-        const lista  = document.getElementById('listaVentasHoy');
-        if (!header || !lista) return;
-
-        header.addEventListener('click', () => {
-            const estaOculto = lista.classList.contains('oculto');
-            lista.classList.toggle('oculto');
-            header.classList.toggle('cerrado');
-        });
-    });
-  </script>
 </body>
 </html>
