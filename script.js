@@ -1936,4 +1936,14 @@ document.addEventListener('DOMContentLoaded', () => {
             showScreen('pantalla-ventas-fisicas');
         });
     }
+
+    // Toggle Ventas de Hoy — mostrar/ocultar lista de tickets
+    const headerToggle = document.getElementById('btnToggleVentasHoy');
+    const listaToggle  = document.getElementById('listaVentasHoy');
+    if (headerToggle && listaToggle) {
+        headerToggle.addEventListener('click', () => {
+            listaToggle.classList.toggle('oculto');
+            headerToggle.classList.toggle('cerrado');
+        });
+    }
 })
