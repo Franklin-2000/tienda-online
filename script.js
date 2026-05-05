@@ -1895,8 +1895,9 @@ function crearDOMTicketOnline(pedido, esDeHoy) {
  
 // ---------------------------------------------------------------
 // Toggle Ventas de Hoy
+// Los módulos se ejecutan después del DOM, no necesita wrapper
 // ---------------------------------------------------------------
-window.addEventListener('load', () => {
+(function initToggleVentasHoy() {
     const headerToggle = document.getElementById('btnToggleVentasHoy');
     const listaToggle  = document.getElementById('listaVentasHoy');
     if (headerToggle && listaToggle) {
@@ -1904,8 +1905,20 @@ window.addEventListener('load', () => {
             listaToggle.classList.toggle('oculto');
             headerToggle.classList.toggle('cerrado');
         });
+    } else {
+        // Si el DOM aún no tiene el elemento, esperar
+        document.addEventListener('DOMContentLoaded', () => {
+            const h = document.getElementById('btnToggleVentasHoy');
+            const l = document.getElementById('listaVentasHoy');
+            if (h && l) {
+                h.addEventListener('click', () => {
+                    l.classList.toggle('oculto');
+                    h.classList.toggle('cerrado');
+                });
+            }
+        });
     }
-});
+})();
 
 // ---------------------------------------------------------------
 // Eventos de filtros y botón refrescar
