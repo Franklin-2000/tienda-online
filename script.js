@@ -965,7 +965,7 @@ function handleImageSelection(event) {
 async function subirImagenSupabase(archivo) {
     const extension = archivo.name.split('.').pop();
     const nombreUnico = `img_${Date.now()}.${extension}`;
-    const rutaArchivo = `inventario/${nombreUnico}`;
+    const rutaArchivo = `${currentUserId}/${nombreUnico}`;
 
     const { data, error } = await supabaseClient
         .storage
