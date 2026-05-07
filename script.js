@@ -1425,17 +1425,8 @@ async function cargarPedidosAdmin() {
 }
 
 async function deletePedidoFromSupabase(pedidoId) {
-    const ids = [pedidoId];
-    const { error: errorItems } = await supabaseClient
-        .from('items_pedido')
-        .delete()
-        .in('pedido_id', ids);
-
-    if (errorItems) {
-        console.error('Error eliminando items del pedido:', errorItems);
-        throw errorItems;
-    }
-
+    // items_pedido se borra en cascada por la FK (ON DELETE CASCADE)
+    // Solo necesitamos borrar el pedido. El admin tiene política DELETE.
     const { error } = await supabaseClient
         .from('pedidos')
         .delete()
@@ -1480,13 +1471,7 @@ async function eliminarTodosLosPedidosCancelados() {
     }
 
     try {
-        const { error: errorItems } = await supabaseClient
-            .from('items_pedido')
-            .delete()
-            .in('pedido_id', ids);
-
-        if (errorItems) throw errorItems;
-
+        // items_pedido se borra en cascada — solo borrar los pedidos
         const { error } = await supabaseClient
             .from('pedidos')
             .delete()
@@ -1501,7 +1486,7 @@ async function eliminarTodosLosPedidosCancelados() {
         alert(`Se eliminaron ${ids.length} ventas canceladas correctamente.`);
     } catch (error) {
         console.error('Error eliminando pedidos cancelados:', error);
-        alert(`No se pudieron eliminar todas las ventas canceladas: ${error.message || error}`);
+        alert(`No se pudieron eliminar las ventas canceladas: ${error.message || error}`);
     } finally {
         if (btn) {
             btn.disabled = false;
@@ -1711,21 +1696,27 @@ async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
     btnEl.disabled    = true;
     btnEl.textContent = '⏳ Procesando...';
 
+    // La RPC cambiar_estado_pedido valida que seas admin y dispara el trigger
+    // que descuenta inventario y registra en historial automáticamente.
+    // p_fecha_confirmacion se omite: el trigger BEFORE UPDATE la asigna.
     const { error } = await supabaseClient.rpc('cambiar_estado_pedido', {
-        p_pedido_id:          pedidoId,
-        p_nuevo_estado:       nuevoEstado,
-        p_fecha_confirmacion: nuevoEstado === 'pago_confirmado' ? new Date().toISOString() : null
+        p_pedido_id:    pedidoId,
+        p_nuevo_estado: nuevoEstado
     });
 
     if (error) {
         console.error('Error actualizando pedido:', error);
-        alert(`Error: ${error.message}`);
+        // Mostrar mensaje amigable si es error de stock insuficiente
+        const msg = error.message.includes('Stock insuficiente')
+            ? `❌ Stock insuficiente:\n${error.message}`
+            : `Error: ${error.message}`;
+        alert(msg);
         btnEl.disabled    = false;
         btnEl.textContent = textoOrig;
         return;
     }
 
-    // Actualizar estado local
+    // Actualizar estado local sin recargar toda la lista
     const idx = pedidosAdmin.findIndex(p => p.id === pedidoId);
     if (idx !== -1) {
         pedidosAdmin[idx].estado = nuevoEstado;
@@ -1736,19 +1727,18 @@ async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
 
     renderResumenAdmin();
     renderPedidosAdmin(filtroEstadoAdmin);
-    
-    // Renderizar historial si se marca como entregado
+
     if (nuevoEstado === 'entregado') {
         renderHistorialOnline();
+        alert(`✅ Pedido #${pedidoId} marcado como entregado.\nAhora aparece en el historial de entregas.`);
     }
 
     if (nuevoEstado === 'pago_confirmado') {
+        // Recargar inventario porque el trigger lo descontó en la BD
         await loadInventory();
-        alert(`✅ Pago del pedido #${pedidoId} confirmado.\nEl inventario fue descontado automáticamente.`);
-    }
-    
-    if (nuevoEstado === 'entregado') {
-        alert(`✅ Pedido #${pedidoId} marcado como entregado.\nAhora aparece en el historial de entregas.`);
+        // Recargar ventas porque el trigger insertó en historial
+        await loadSales();
+        alert(`✅ Pago del pedido #${pedidoId} confirmado.\nInventario descontado e historial actualizado.`);
     }
 }
 
