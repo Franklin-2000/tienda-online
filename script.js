@@ -1099,24 +1099,35 @@ async function handleSaveProduct() {
         if (editingProductId !== null) {
             const { error } = await supabaseClient
                 .from('productos')
-                .update({ codigoBarras: codigo, nombre, precio, cantidad, imagen: urlImagenFinal, categoria })
+                .update({ 
+                    "codigoBarras": codigo, 
+                    nombre, precio, cantidad, 
+                    imagen: urlImagenFinal, 
+                    categoria 
+                })
                 .eq('id', editingProductId);
 
-            if (error) throw error;
+            if (error) {
+                console.error("Supabase UPDATE error:", JSON.stringify(error));
+                throw error;
+            }
             alert(`¡Producto "${nombre}" actualizado!`);
         } 
         else {
             const { error } = await supabaseClient
                 .from('productos')
                 .insert([{ 
-                    codigoBarras: codigo,
+                    "codigoBarras": codigo,
                     nombre, precio, cantidad, 
                     imagen: urlImagenFinal, 
                     user_id: user.id,
                     categoria
                 }]);
 
-            if (error) throw error;
+            if (error) {
+                console.error("Supabase INSERT error:", JSON.stringify(error));
+                throw error;
+            }
             alert(`¡Producto "${nombre}" añadido al inventario!`);
         }
 
@@ -1124,8 +1135,9 @@ async function handleSaveProduct() {
         loadInventory(); 
 
     } catch (error) {
-        console.error("Error en handleSaveProduct:", error);
-        alert("Ocurrió un error al guardar el producto.");
+        console.error("Error completo handleSaveProduct:", error);
+        const msg = error?.message || error?.details || JSON.stringify(error);
+        alert(`Error al guardar el producto:\n${msg}`);
     } finally {
         btnGuardarProducto.textContent = textoOriginalBoton;
         btnGuardarProducto.disabled = false;
