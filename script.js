@@ -400,7 +400,6 @@ function showScreen(screenId, pushToHistory = true) {
         case 'pantalla-ventas-fisicas':
             if(pantallaVentasFisicas) pantallaVentasFisicas.style.display = 'block'; 
             updateSalesDropdown();
-            renderSalesHistory();
             break;
         case 'pantalla-ventas-online':
             if(pantallaVentasOnline) pantallaVentasOnline.style.display = 'block'; 
@@ -2005,13 +2004,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Toggle Ventas de Hoy — mostrar/ocultar lista de tickets
+    // Toggle Ventas de Hoy (ahora en pantalla-historial-fisicas)
     const headerToggle = document.getElementById('btnToggleVentasHoy');
     const listaToggle  = document.getElementById('listaVentasHoy');
     if (headerToggle && listaToggle) {
         headerToggle.addEventListener('click', () => {
             listaToggle.classList.toggle('oculto');
             headerToggle.classList.toggle('cerrado');
+        });
+    }
+
+    // Toggle Días Anteriores — historial físicas
+    const headerHistFisicas = document.getElementById('btnToggleHistorialFisicas');
+    const listaHistFisicas  = document.getElementById('listaHistorialAcordeon');
+    if (headerHistFisicas && listaHistFisicas) {
+        headerHistFisicas.addEventListener('click', () => {
+            listaHistFisicas.classList.toggle('oculto');
+            headerHistFisicas.classList.toggle('cerrado');
+        });
+    }
+
+    // Toggle Entregas de Hoy — historial online
+    const headerEntregasHoy = document.getElementById('btnToggleEntregasHoy');
+    const listaEntregasHoy  = document.getElementById('listaEntregasHoy');
+    if (headerEntregasHoy && listaEntregasHoy) {
+        headerEntregasHoy.addEventListener('click', () => {
+            listaEntregasHoy.classList.toggle('oculto');
+            headerEntregasHoy.classList.toggle('cerrado');
+        });
+    }
+
+    // Toggle Historial Anterior — historial online
+    const headerHistOnline = document.getElementById('btnToggleHistorialOnline');
+    const listaHistOnline  = document.getElementById('listaHistorialEntregasAcordeon');
+    if (headerHistOnline && listaHistOnline) {
+        headerHistOnline.addEventListener('click', () => {
+            listaHistOnline.classList.toggle('oculto');
+            headerHistOnline.classList.toggle('cerrado');
         });
     }
 });

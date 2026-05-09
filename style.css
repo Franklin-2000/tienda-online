@@ -1878,6 +1878,13 @@ input[type="number"] {
     margin-top: 15px;
 }
 
+/* Listas de historial pueden ser más largas */
+.lista-historial-acordeon-max-height,
+.lista-historial-entregas-acordeon,
+.lista-entregas-hoy {
+    max-height: 2000px;
+}
+
 .ventas-hoy-lista.oculto {
     max-height: 0 !important;
     opacity: 0;
