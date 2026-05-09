@@ -1609,7 +1609,7 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
     }
  
     // Cuando el filtro es "todos", mostrar solo pedidos activos (no cancelados ni entregados)
-    const pedidosActivos = ['pendiente', 'esperando_pago', 'pago_confirmado', 'despachado'];
+    const pedidosActivos = ['pendiente', 'esperando_pago', 'pago_confirmado'];
     let lista;
     if (estadoFiltro === 'todos') {
         lista = pedidosAdmin.filter(p => pedidosActivos.includes(p.estado));
@@ -1643,31 +1643,17 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
  
         // Botones según el estado actual del pedido
         let botonesHTML = '';
-        if (pedido.estado === 'pendiente') {
+        if (pedido.estado === 'pendiente' || pedido.estado === 'esperando_pago') {
             botonesHTML = `
-                ${esContraEntrega ? `
                 <button class="btn-añadir btn-accion-pedido"
                         data-id="${pedido.id}" data-nuevo-estado="pago_confirmado">
                     ✅ Confirmar Pago → Descontar Inventario
                 </button>
-                ` : ''}
-                <button class="btn-borrar-producto btn-accion-pedido"
-                        data-id="${pedido.id}" data-nuevo-estado="cancelado">
-                    🚫 Cancelar pedido
-                </button>`;
-        } else if (pedido.estado === 'esperando_pago') {
-            botonesHTML = `
                 <button class="btn-borrar-producto btn-accion-pedido"
                         data-id="${pedido.id}" data-nuevo-estado="cancelado">
                     🚫 Cancelar pedido
                 </button>`;
         } else if (pedido.estado === 'pago_confirmado') {
-            botonesHTML = `
-                <button class="btn-añadir btn-accion-pedido"
-                        data-id="${pedido.id}" data-nuevo-estado="despachado">
-                    🚚 Marcar como Despachado
-                </button>`;
-        } else if (pedido.estado === 'despachado') {
             botonesHTML = `
                 <button class="btn-añadir btn-accion-pedido"
                         data-id="${pedido.id}" data-nuevo-estado="entregado">
@@ -1750,8 +1736,7 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
 async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
     const msgs = {
         pago_confirmado: `¿Confirmar el PAGO del pedido #${pedidoId}?\n\nEl inventario se descontará automáticamente.`,
-        despachado:      `¿Confirmar que el pedido #${pedidoId} fue despachado?`,
-        entregado:       `¿Confirmar la entrega del pedido #${pedidoId}?`,
+        entregado:       `¿Confirmar la entrega del pedido #${pedidoId}?\n\nEl pedido pasará al historial y dejará de aparecer en Activos.`,
         cancelado:       `¿Cancelar el pedido #${pedidoId}?`,
     };
     if (!confirm(msgs[nuevoEstado] || `¿Cambiar estado del pedido #${pedidoId}?`)) return;
