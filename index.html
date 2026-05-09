@@ -191,7 +191,14 @@
 
     </div> <!-- FIN DEL CONTENEDOR FLEXIBLE -->
 
-    <!-- Tarjeta Ventas de Hoy -->
+    <button id="btnVolverVentasFisicas" class="boton-volver">← Volver al Menú Ventas</button>
+  </div>
+
+  <!-- NUEVA PÁGINA: Historial Ventas Físicas -->
+  <div id="pantalla-historial-fisicas" class="pantalla-display-none">
+    <h1>Historial de Ventas</h1>
+
+    <!-- Sección toggle: Ventas de Hoy -->
     <div class="tarjeta-ventas-hoy-independiente">
       <div class="ventas-hoy-header" id="btnToggleVentasHoy">
         <h2 class="titulo-ventas-hoy-independiente">🧾 Ventas de Hoy</h2>
@@ -200,31 +207,22 @@
         </button>
       </div>
       <div id="listaVentasHoy" class="lista-ventas-scroll ventas-hoy-lista">
-          <p>Aún no hay ventas registradas hoy.</p>
+        <p>Aún no hay ventas registradas hoy.</p>
       </div>
     </div>
 
-    <button id="btnVolverVentasFisicas" class="boton-volver">← Volver al Menú Ventas</button>
-  </div>
+    <!-- Sección toggle: Días Anteriores -->
+    <div class="tarjeta-ventas-hoy-independiente">
+      <div class="ventas-hoy-header" id="btnToggleHistorialFisicas">
+        <h2 class="titulo-ventas-hoy-independiente">📅 Ventas de Días Anteriores</h2>
+        <button class="btn-toggle-ventas-hoy" aria-label="Mostrar/Ocultar historial">
+          <span class="toggle-icono">▼</span>
+        </button>
+      </div>
+      <div id="listaHistorialAcordeon" class="lista-ventas-scroll ventas-hoy-lista lista-historial-acordeon-max-height">
+      </div>
+    </div>
 
-  <!-- NUEVA PÁGINA: Historial Ventas Físicas -->
-  <div id="pantalla-historial-fisicas" class="pantalla-display-none">
-    <h1>Historial de Ventas</h1>
-    <div class="inventory-header">
-      <div class="inventory-actions-group">
-        <div class="inventory-summary-card">
-          <h2>Historial</h2>
-          <p class="summary-count">🧾</p>
-        </div>
-      </div>
-    </div>
-    <h2 id="historial-fisicas-title">Ventas de Días Anteriores</h2>
-    <div class="contenedor-productos" id="contenedorHistorialFisicas">
-      <div class="seccion-historial-online-page" style="min-width:300px; flex:1;">
-        <h3 class="h3-historial-entregas">Historial por Fecha</h3>
-        <div id="listaHistorialAcordeon" class="lista-ventas-scroll lista-historial-acordeon-max-height"></div>
-      </div>
-    </div>
     <button id="btnVolverDesdeHistorialFisicas" class="boton-volver">← Volver a Ventas Físicas</button>
   </div>
 
@@ -263,25 +261,28 @@
   <!-- NUEVA PÁGINA: Historial Online -->
   <div id="pantalla-historial-online" class="pantalla-display-none">
     <h1>Historial de Pedidos</h1>
-    <div class="inventory-header">
-      <div class="inventory-actions-group">
-        <div class="inventory-summary-card">
-          <h2>Historial</h2>
-          <p class="summary-count">📦</p>
-        </div>
+
+    <!-- Sección toggle: Entregas de Hoy -->
+    <div class="tarjeta-ventas-hoy-independiente">
+      <div class="ventas-hoy-header" id="btnToggleEntregasHoy">
+        <h2 class="titulo-ventas-hoy-independiente">📦 Entregas de Hoy</h2>
+        <button class="btn-toggle-ventas-hoy" aria-label="Mostrar/Ocultar entregas de hoy">
+          <span class="toggle-icono">▼</span>
+        </button>
+      </div>
+      <div id="listaEntregasHoy" class="lista-ventas-scroll ventas-hoy-lista lista-entregas-hoy">
       </div>
     </div>
 
-    <h2 id="historial-online-title">Entregas y Pedidos Anteriores</h2>
-
-    <div class="contenedor-productos" id="contenedorHistorialOnline">
-      <div class="seccion-historial-online-page">
-        <h3 class="h3-historial-entregas">Entregas de Hoy</h3>
-        <div id="listaEntregasHoy" class="lista-ventas-scroll lista-entregas-hoy"></div>
+    <!-- Sección toggle: Historial Anterior -->
+    <div class="tarjeta-ventas-hoy-independiente">
+      <div class="ventas-hoy-header" id="btnToggleHistorialOnline">
+        <h2 class="titulo-ventas-hoy-independiente">🗂️ Historial Anterior</h2>
+        <button class="btn-toggle-ventas-hoy" aria-label="Mostrar/Ocultar historial anterior">
+          <span class="toggle-icono">▼</span>
+        </button>
       </div>
-      <div class="seccion-historial-online-page">
-        <h3 class="h3-historial-entregas">Historial Anterior</h3>
-        <div id="listaHistorialEntregasAcordeon" class="lista-ventas-scroll lista-historial-entregas-acordeon"></div>
+      <div id="listaHistorialEntregasAcordeon" class="lista-ventas-scroll ventas-hoy-lista lista-historial-entregas-acordeon">
       </div>
     </div>
 
