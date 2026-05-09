@@ -775,6 +775,7 @@ function renderSalesHistory() {
     // --- VENTAS DE HOY (bloque dentro de pantalla-ventas-fisicas) ---
     const listaVentasHoyEl = document.getElementById('listaVentasHoy');
     if (listaVentasHoyEl) {
+        const estabaOculto = listaVentasHoyEl.classList.contains('oculto');
         listaVentasHoyEl.innerHTML = '';
         const hoy = new Date().toLocaleDateString();
         const ventasDeHoy = sales.filter(s => {
@@ -789,6 +790,8 @@ function renderSalesHistory() {
                 listaVentasHoyEl.appendChild(crearDOMTicket(sale, true));
             });
         }
+        // Restaurar estado oculto si estaba cerrado antes de re-renderizar
+        if (estabaOculto) listaVentasHoyEl.classList.add('oculto');
     }
 
     // --- HISTORIAL DÍAS ANTERIORES (bloque dentro de pantalla-historial-fisicas) ---
@@ -1945,31 +1948,8 @@ function crearDOMTicketOnline(pedido, esDeHoy) {
 }
  
 // ---------------------------------------------------------------
-// Toggle Ventas de Hoy
-// Los módulos se ejecutan después del DOM, no necesita wrapper
+// Toggle Ventas de Hoy — registrado en DOMContentLoaded (ver abajo)
 // ---------------------------------------------------------------
-(function initToggleVentasHoy() {
-    const headerToggle = document.getElementById('btnToggleVentasHoy');
-    const listaToggle  = document.getElementById('listaVentasHoy');
-    if (headerToggle && listaToggle) {
-        headerToggle.addEventListener('click', () => {
-            listaToggle.classList.toggle('oculto');
-            headerToggle.classList.toggle('cerrado');
-        });
-    } else {
-        // Si el DOM aún no tiene el elemento, esperar
-        document.addEventListener('DOMContentLoaded', () => {
-            const h = document.getElementById('btnToggleVentasHoy');
-            const l = document.getElementById('listaVentasHoy');
-            if (h && l) {
-                h.addEventListener('click', () => {
-                    l.classList.toggle('oculto');
-                    h.classList.toggle('cerrado');
-                });
-            }
-        });
-    }
-})();
 
 // ---------------------------------------------------------------
 // Eventos de filtros y botón refrescar
@@ -2034,4 +2014,4 @@ document.addEventListener('DOMContentLoaded', () => {
             headerToggle.classList.toggle('cerrado');
         });
     }
-})
+});
