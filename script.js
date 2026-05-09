@@ -1959,6 +1959,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Filtros de categoría en inventario
     document.querySelectorAll('.btn-categoria-filtro').forEach(btn => {
         btn.addEventListener('click', () => {
+            const esTodas = btn.dataset.categoria === 'todas';
+            const yaActivo = btn.classList.contains('activo');
+
+            if (esTodas && yaActivo) {
+                // "Todas" ya estaba activo → ocultar productos
+                contenedorProductos.classList.toggle('oculto-productos');
+                btn.classList.toggle('atenuado');
+                return;
+            }
+
+            // Cualquier otro botón: mostrar productos, quitar ocultado previo
+            contenedorProductos.classList.remove('oculto-productos');
+            document.querySelector('.btn-categoria-filtro[data-categoria="todas"]')
+                ?.classList.remove('atenuado');
+
             document.querySelectorAll('.btn-categoria-filtro').forEach(b => b.classList.remove('activo'));
             btn.classList.add('activo');
             categoriaActivaFiltro = btn.dataset.categoria;
