@@ -1471,7 +1471,7 @@ async function cargarPedidosAdmin() {
         .select(`
             id, estado, total, metodo_pago, fecha, fecha_confirmacion,
             cliente_nombre, cliente_email, cliente_tel,
-            direccion, notas, wompi_transaction_id,
+            direccion, notas,
             items_pedido ( nombre, cantidad, precio, subtotal )
         `)
         .order('id', { ascending: false });
@@ -1666,6 +1666,7 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
                 </button>`;
         }
  
+        const metodoLabel = esContraEntrega ? '💵 Contra entrega' : '💳 Pago online';
         const card = document.createElement('div');
         card.className = 'tarjeta-producto pedido-admin-card';
         card.innerHTML = `
@@ -1676,7 +1677,7 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
                 </div>
                 <div class="pedido-admin-total">
                     $${Number(pedido.total).toLocaleString('es-CO')}
-                    <small>${esContraEntrega ? '💵 Contra entrega' : '💳 Wompi'}</small>
+                    <small>${metodoLabel}</small>
                 </div>
             </div>
  
@@ -1687,9 +1688,6 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
                 <div>📍 ${pedido.direccion}</div>
                 ${pedido.notas ? `<div>📝 <em>${pedido.notas}</em></div>` : ''}
                 <div class="pedido-admin-fecha">📅 ${fecha}</div>
-                ${pedido.wompi_transaction_id
-                    ? `<div style="font-size:0.8em;color:#666;">🔑 Wompi ID: ${pedido.wompi_transaction_id}</div>`
-                    : ''}
                 ${pedido.fecha_confirmacion
                     ? `<div style="font-size:0.8em;color:#1e7e34;">✅ Confirmado el ${new Date(pedido.fecha_confirmacion).toLocaleString('es-CO')}</div>`
                     : ''}
@@ -1982,8 +1980,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Evento para navegar al historial online (nueva pantalla)
     if (btnVerHistorialOnline) {
-        btnVerHistorialOnline.addEventListener('click', (e) => {
+        btnVerHistorialOnline.addEventListener('click', async (e) => {
             e.preventDefault();
+            await cargarPedidosAdmin();
             showScreen('pantalla-historial-online');
         });
     }
