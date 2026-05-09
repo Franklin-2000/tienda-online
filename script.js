@@ -981,12 +981,26 @@ function updateProductCount() {
 // ==========================================
 // LÓGICA DE IMÁGENES
 // ==========================================
+const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024; // 2 MB
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 let archivoImagenFisico = null; 
 
 function handleImageSelection(event) {
     const archivo = event.target.files[0];
 
     if (archivo) {
+        if (!ALLOWED_IMAGE_TYPES.includes(archivo.type)) {
+            alert('El archivo debe ser una imagen JPG, PNG o WEBP.');
+            clearImagePreview();
+            return;
+        }
+
+        if (archivo.size > MAX_IMAGE_SIZE_BYTES) {
+            alert('La imagen seleccionada excede el límite de 2 MB. Elige un archivo más pequeño.');
+            clearImagePreview();
+            return;
+        }
+
         archivoImagenFisico = archivo;
 
         const reader = new FileReader();
@@ -1007,22 +1021,59 @@ function handleImageSelection(event) {
     }
 }
 
+async function compressImageFile(file, maxWidth = 1200, maxHeight = 1200, quality = 0.75) {
+    if (!file.type.startsWith('image/')) return file;
+
+    if (file.size <= MAX_IMAGE_SIZE_BYTES) {
+        return file;
+    }
+
+    const imageBitmap = await createImageBitmap(file);
+    const width = imageBitmap.width;
+    const height = imageBitmap.height;
+    const ratio = Math.min(maxWidth / width, maxHeight / height, 1);
+    const targetWidth = Math.round(width * ratio);
+    const targetHeight = Math.round(height * ratio);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imageBitmap, 0, 0, targetWidth, targetHeight);
+
+    const outputType = 'image/jpeg';
+    const outputName = file.name.replace(/\.[^/.]+$/, '.jpg');
+
+    const blob = await new Promise((resolve) => {
+        canvas.toBlob(resolve, outputType, quality);
+    });
+
+    if (!blob) {
+        return file;
+    }
+
+    const compressedFile = new File([blob], outputName, { type: outputType });
+    return compressedFile.size < file.size ? compressedFile : file;
+}
+
 async function subirImagenSupabase(archivo) {
-    const extension = archivo.name.split('.').pop();
+    const archivoParaSubir = await compressImageFile(archivo);
+    const extension = archivoParaSubir.name.split('.').pop();
     const nombreUnico = `img_${Date.now()}.${extension}`;
     const rutaArchivo = `${currentUserId}/${nombreUnico}`;
 
     const { data, error } = await supabaseClient
         .storage
         .from('productos')
-        .upload(rutaArchivo, archivo);
+        .upload(rutaArchivo, archivoParaSubir);
 
     if (error) {
         console.error("Error subiendo imagen:", error);
-        throw new Error("No se pudo subir la imagen.");
+        const mensaje = error.message || error.details || "No se pudo subir la imagen.";
+        throw new Error(mensaje);
     }
 
-    const { data: publicUrlData } = supabaseClient
+    const { data: publicUrlData } = await supabaseClient
         .storage
         .from('productos')
         .getPublicUrl(rutaArchivo);
