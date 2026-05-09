@@ -1033,7 +1033,7 @@ input[type="file"] {
 #pantalla-ventas-online h1,
 #pantalla-historial-online h1 {
     font-size: 80px;
-    color: #ffffff;
+    color: #0b2aa8;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     margin-top: 20px;
     margin-bottom: 25px;
@@ -1045,7 +1045,7 @@ input[type="file"] {
 
 #pantalla-ventas-online h2,
 #pantalla-historial-online h2 {
-    color: #ffffff;
+    color: #0b2aa8;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
     margin-top: 30px;
     margin-bottom: 15px;
@@ -1864,7 +1864,7 @@ input[type="number"] {
 }
 
 .toggle-icono {
-    color: #fff;
+    color: #0b2aa8;
     font-size: 0.85em;
     display: inline-block;
     transition: transform 0.3s ease;
@@ -1910,7 +1910,7 @@ input[type="number"] {
 
 #pantalla-historial-fisicas h1 {
     font-size: 80px;
-    color: #fafcfd;
+    color: #0b2aa8;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     margin-top: 20px;
     margin-bottom: 25px;
@@ -1921,7 +1921,7 @@ input[type="number"] {
 }
 
 #pantalla-historial-fisicas h2 {
-    color: #E0E0E0;
+    color: #0b2aa8;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
     font-size: 3em;
     margin-top: 30px;
