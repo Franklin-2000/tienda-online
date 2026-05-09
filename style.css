@@ -2257,6 +2257,20 @@ input[type="number"] {
 /* ==========================================
    FILTROS DE CATEGORÍA — INVENTARIO
    ========================================== */
+
+/* Ocultar grid de productos al hacer clic en "Todas" cuando ya está activo */
+#contenedorProductos.oculto-productos {
+    display: none;
+}
+
+/* Botón "Todas" atenuado mientras los productos están ocultos */
+.btn-categoria-filtro.atenuado {
+    opacity: 0.55;
+    background: #fff;
+    color: #0c566c;
+    box-shadow: none;
+}
+
 .categorias-filtro-bar {
     display: flex;
     flex-wrap: wrap;
