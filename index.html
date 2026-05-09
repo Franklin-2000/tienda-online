@@ -86,6 +86,17 @@
                 <input type="text" id="inputNombreProducto" placeholder="Nombre del Producto">
                 <label for="inputPrecioProducto">Precio:</label>
                 <input type="number" id="inputPrecioProducto" placeholder="$ 0" min="0" step="1">
+                <label for="inputCategoriaProducto">Categoría:</label>
+                <select id="inputCategoriaProducto" class="select-categoria-producto">
+                  <option value="">-- Selecciona una categoría --</option>
+                  <option value="Perecederos">🥦 Perecederos (Frescos)</option>
+                  <option value="Abarrotes">🛒 Abarrotes / Despensa (Secos)</option>
+                  <option value="Bebidas">🥤 Bebidas</option>
+                  <option value="Congelados">🧊 Congelados</option>
+                  <option value="Hogar">🧹 Cuidado del Hogar y Limpieza</option>
+                  <option value="Higiene">🧴 Cuidado Personal / Higiene</option>
+                  <option value="Otras">📦 Otras categorías</option>
+                </select>
                 <label for="inputCantidadProducto">Cantidad:</label>
                 <input type="number" id="inputCantidadProducto" placeholder="Ej: 1" min="1" step="1">
                 <button class="btn-añadir btn-limpiar-formulario" id="btnLimpiarFormulario">Limpiar</button>
@@ -112,6 +123,16 @@
         </div>
     </div>
     <h2 id="inventory-products-title">Productos en Inventario</h2>
+    <div class="categorias-filtro-bar" id="categoriasFiltroBar">
+      <button class="btn-categoria-filtro activo" data-categoria="todas">🏪 Todas</button>
+      <button class="btn-categoria-filtro" data-categoria="Perecederos">🥦 Perecederos</button>
+      <button class="btn-categoria-filtro" data-categoria="Abarrotes">🛒 Abarrotes</button>
+      <button class="btn-categoria-filtro" data-categoria="Bebidas">🥤 Bebidas</button>
+      <button class="btn-categoria-filtro" data-categoria="Congelados">🧊 Congelados</button>
+      <button class="btn-categoria-filtro" data-categoria="Hogar">🧹 Hogar</button>
+      <button class="btn-categoria-filtro" data-categoria="Higiene">🧴 Higiene</button>
+      <button class="btn-categoria-filtro" data-categoria="Otras">📦 Otras</button>
+    </div>
     <div class="contenedor-productos" id="contenedorProductos"></div>
     <button id="btnVolverInicio" class="boton-volver">← Volver al Inicio</button>
   </div>
