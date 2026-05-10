@@ -600,7 +600,7 @@ function showScreen(screenId, pushToHistory = true) {
     }
 
     if (pushToHistory) {
-        history.pushState({ screen: screenId }, '', '#' + screenId);
+        try { history.pushState({ screen: screenId }, '', '#' + screenId); } catch(e) {}
     }
 }
 
@@ -611,14 +611,14 @@ async function checkAuthStatus(pushToHistory = true) {
     if (session) {
         currentLoggedInUserEmail = session.user.email;
         currentUserId = session.user.id; // <-- guardamos el user_id
-        if (pushToHistory) history.replaceState({ screen: 'pantalla-inicio' }, '', '#pantalla-inicio');
+        if (pushToHistory) try { history.replaceState({ screen: 'pantalla-inicio' }, '', '#pantalla-inicio'); } catch(e) {}
         showScreen('pantalla-inicio', false); 
         loadInventory(); 
         loadSales(); // <-- Ahora carga desde Supabase
     } else {
         currentLoggedInUserEmail = null;
         currentUserId = null;
-        if (pushToHistory) history.replaceState({ screen: 'pantalla-login' }, '', '#pantalla-login');
+        if (pushToHistory) try { history.replaceState({ screen: 'pantalla-login' }, '', '#pantalla-login'); } catch(e) {}
         showScreen('pantalla-login', false);
     }
 }
