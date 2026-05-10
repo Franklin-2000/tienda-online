@@ -729,13 +729,23 @@ input[type="file"] {
     center/cover no-repeat;
 }
 
+/* =====================================================
+   ANILLO LOGIN — 100% RESPONSIVO CON CSS CUSTOM PROPS
+   Usa --ring-size para escalar todo desde un solo valor
+   ===================================================== */
 .login-ring-container {
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 700px;
-  height: 700px;
+  /* Tamaño adaptable: 85% del lado más pequeño del viewport, máx 700px */
+  --ring-size: min(85vmin, 700px);
+  width: var(--ring-size);
+  height: var(--ring-size);
+  /* Asegura que siempre quepa en pantalla */
+  max-width: 100vw;
+  max-height: 100vh;
+  flex-shrink: 0;
 }
 
 .animated-ring {
@@ -747,12 +757,14 @@ input[type="file"] {
 
 .animated-ring .bar {
   position: absolute;
-  top: calc(50% - 325px);
+  /* Radio = 46.4% del tamaño del contenedor (igual que 325/700) */
+  top: calc(50% - var(--ring-size) * 0.464);
   left: calc(50% - 6px);
-  width: 18px;
-  height: 50px;
+  /* Barras proporcionales al tamaño */
+  width: clamp(10px, calc(var(--ring-size) * 0.026), 20px);
+  height: clamp(28px, calc(var(--ring-size) * 0.071), 55px);
   border-radius: 5px;
-  transform-origin: 6px 325px;
+  transform-origin: 6px calc(var(--ring-size) * 0.464);
   background-color: #0d2233;
   animation: barGlow 10s ease-in-out infinite;
 }
@@ -829,14 +841,15 @@ input[type="file"] {
 .login-card {
   position: relative;
   z-index: 10;
-  width: 340px;
-  min-height: 260px;
-  padding: 140px 35px 30px 35px;
+  /* La tarjeta ocupa ~55% del anillo (proporcional) */
+  width: clamp(180px, calc(var(--ring-size, min(85vmin, 700px)) * 0.52), 360px);
+  min-height: clamp(170px, calc(var(--ring-size, min(85vmin, 700px)) * 0.38), 280px);
+  padding: clamp(70px, calc(var(--ring-size, min(85vmin, 700px)) * 0.18), 145px) clamp(14px, 4vw, 35px) clamp(18px, 3vw, 30px);
   border-radius: 16px;
   box-shadow: 0 0 40px rgba(0, 229, 255, 0.15), 0 4px 30px rgba(0,0,0,0.6);
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
   text-align: center;
   animation: slideIn 0.5s ease;
   background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.00)),
@@ -2111,14 +2124,7 @@ input[type="number"] {
     /* Botones menú principal */
     .boton { font-size: 28px; padding: 25px 20px; }
 
-    /* Login ring */
-    .login-ring-container { width: 560px; height: 560px; }
-    .animated-ring .bar {
-        top: calc(50% - 255px);
-        transform-origin: 6px 255px;
-    }
-    .animated-ring .bar:nth-child(1)  { transform: rotate(0deg); }
-    .login-card { width: 300px; padding: 120px 30px 28px 30px; }
+    /* Login ring — card ya adaptada con clamp() en la definición base */
 
     /* Tarjetas de producto */
     .tarjeta-producto { width: 190px; }
@@ -2154,19 +2160,7 @@ input[type="number"] {
     .boton { font-size: 22px; padding: 20px 18px; border-radius: 80px; }
     .botones-container { gap: 20px; }
 
-    /* Login: reducir anillo */
-    .login-ring-container { width: 420px; height: 420px; }
-    .animated-ring .bar {
-        top: calc(50% - 190px);
-        transform-origin: 6px 190px;
-        width: 14px;
-        height: 40px;
-    }
-    .login-card {
-        width: 260px;
-        min-height: 220px;
-        padding: 110px 25px 25px 25px;
-    }
+    /* Login: card adaptada con clamp() base */
 
     /* Inventario: header en columna */
     .inventory-header { flex-direction: column; align-items: stretch; }
@@ -2251,20 +2245,7 @@ input[type="number"] {
     /* Botón volver */
     .boton-volver { font-size: 15px; padding: 10px 16px; margin-top: 25px; width: 90%; max-width: 300px; }
 
-    /* Login */
-    .login-ring-container { width: 320px; height: 320px; }
-    .animated-ring .bar {
-        top: calc(50% - 143px);
-        transform-origin: 6px 143px;
-        width: 12px;
-        height: 32px;
-    }
-    .login-card {
-        width: 210px;
-        min-height: 190px;
-        padding: 95px 18px 20px 18px;
-        border-radius: 12px;
-    }
+    /* Login — card adaptada con clamp() */
     .btn-google { font-size: 13px; padding: 9px 12px; gap: 8px; }
 
     /* Inventario */
@@ -2341,19 +2322,7 @@ input[type="number"] {
     #pantalla-historial-online h1,
     #pantalla-historial-fisicas h1 { font-size: 22px; }
 
-    /* Login */
-    .login-ring-container { width: 270px; height: 270px; }
-    .animated-ring .bar {
-        top: calc(50% - 118px);
-        transform-origin: 6px 118px;
-        width: 10px;
-        height: 28px;
-    }
-    .login-card {
-        width: 180px;
-        min-height: 170px;
-        padding: 85px 14px 18px 14px;
-    }
+    /* Login — card adaptada con clamp() */
     .btn-google { font-size: 12px; padding: 8px 10px; }
 
     /* Botones menú */
