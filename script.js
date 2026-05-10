@@ -1,3 +1,154 @@
+// ================================================================
+// SISTEMA DE ALERTAS Y CONFIRMACIONES PERSONALIZADAS
+// Enter = Aceptar / Escape = Cancelar
+// ================================================================
+
+// Inyectar estilos una sola vez
+(function inyectarEstilosAlerta() {
+    if (document.getElementById('__alerta-styles')) return;
+    const style = document.createElement('style');
+    style.id = '__alerta-styles';
+    style.textContent = `
+        @keyframes __fadeIn  { from { opacity:0 } to { opacity:1 } }
+        @keyframes __scaleIn { from { transform:scale(.85); opacity:0 } to { transform:scale(1); opacity:1 } }
+        @keyframes __fadeOut { from { opacity:1 } to { opacity:0 } }
+
+        .__alerta-overlay {
+            position:fixed; inset:0;
+            background:rgba(0,0,0,.5);
+            display:flex; align-items:center; justify-content:center;
+            z-index:99999;
+            animation:__fadeIn .18s ease;
+        }
+        .__alerta-overlay.cerrando {
+            animation:__fadeOut .18s ease forwards;
+        }
+        .__alerta-box {
+            background:#fff;
+            border-radius:20px;
+            padding:32px 28px 24px;
+            max-width:390px; width:92%;
+            box-shadow:0 10px 50px rgba(0,0,0,.25);
+            text-align:center;
+            font-family:'Nunito', 'Segoe UI', sans-serif;
+            animation:__scaleIn .2s cubic-bezier(.34,1.56,.64,1);
+        }
+        .__alerta-icono {
+            font-size:2.4rem; margin-bottom:10px; display:block;
+        }
+        .__alerta-msg {
+            margin:0 0 22px;
+            font-size:1rem; color:#222;
+            line-height:1.65; white-space:pre-line;
+        }
+        .__alerta-btns {
+            display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
+        }
+        .__alerta-btn {
+            border:none; border-radius:50px;
+            padding:11px 32px;
+            font-size:.97rem; font-weight:700;
+            cursor:pointer;
+            font-family:'Nunito','Segoe UI',sans-serif;
+            transition:transform .12s, box-shadow .12s;
+            outline:none;
+        }
+        .__alerta-btn:focus { box-shadow:0 0 0 3px rgba(108,99,255,.4); }
+        .__alerta-btn:hover { transform:scale(1.04); }
+        .__alerta-btn-ok {
+            background:linear-gradient(135deg,#6c63ff,#a78bfa);
+            color:#fff;
+            box-shadow:0 4px 14px rgba(108,99,255,.35);
+        }
+        .__alerta-btn-cancel {
+            background:#f0f0f0; color:#444;
+        }
+        .__alerta-btn-danger {
+            background:linear-gradient(135deg,#e53935,#f06292);
+            color:#fff;
+            box-shadow:0 4px 14px rgba(229,57,53,.3);
+        }
+    `;
+    document.head.appendChild(style);
+})();
+
+/**
+ * Muestra una alerta personalizada. Enter / click = Aceptar.
+ * @param {string} mensaje
+ * @param {'info'|'success'|'error'|'warn'} [tipo='info']
+ * @returns {Promise<void>}
+ */
+function mostrarAlerta(mensaje, tipo = 'info') {
+    return new Promise(resolve => {
+        const iconos = { info:'ℹ️', success:'✅', error:'❌', warn:'⚠️' };
+        const overlay = document.createElement('div');
+        overlay.className = '__alerta-overlay';
+        overlay.innerHTML = `
+            <div class="__alerta-box">
+                <span class="__alerta-icono">${iconos[tipo] || '📢'}</span>
+                <p class="__alerta-msg">${mensaje}</p>
+                <div class="__alerta-btns">
+                    <button class="__alerta-btn __alerta-btn-ok" id="__btn-ok">Aceptar</button>
+                </div>
+            </div>`;
+
+        const cerrar = () => {
+            overlay.classList.add('cerrando');
+            document.removeEventListener('keydown', onKey);
+            setTimeout(() => { document.body.removeChild(overlay); resolve(); }, 170);
+        };
+
+        const onKey = (e) => {
+            if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); cerrar(); }
+        };
+
+        overlay.querySelector('#__btn-ok').addEventListener('click', cerrar);
+        document.addEventListener('keydown', onKey);
+        document.body.appendChild(overlay);
+        setTimeout(() => overlay.querySelector('#__btn-ok').focus(), 60);
+    });
+}
+
+/**
+ * Confirmación personalizada. Enter = Aceptar / Escape = Cancelar.
+ * @param {string} mensaje
+ * @param {'warn'|'danger'|'info'} [tipo='warn']
+ * @returns {Promise<boolean>}
+ */
+function mostrarConfirm(mensaje, tipo = 'warn') {
+    return new Promise(resolve => {
+        const iconos = { warn:'⚠️', danger:'🗑️', info:'❓' };
+        const overlay = document.createElement('div');
+        overlay.className = '__alerta-overlay';
+        overlay.innerHTML = `
+            <div class="__alerta-box">
+                <span class="__alerta-icono">${iconos[tipo] || '❓'}</span>
+                <p class="__alerta-msg">${mensaje}</p>
+                <div class="__alerta-btns">
+                    <button class="__alerta-btn __alerta-btn-cancel" id="__btn-cancel">Cancelar</button>
+                    <button class="__alerta-btn ${tipo === 'danger' ? '__alerta-btn-danger' : '__alerta-btn-ok'}" id="__btn-ok">Aceptar</button>
+                </div>
+            </div>`;
+
+        const cerrar = (resultado) => {
+            overlay.classList.add('cerrando');
+            document.removeEventListener('keydown', onKey);
+            setTimeout(() => { document.body.removeChild(overlay); resolve(resultado); }, 170);
+        };
+
+        const onKey = (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); cerrar(true); }
+            if (e.key === 'Escape') { e.preventDefault(); cerrar(false); }
+        };
+
+        overlay.querySelector('#__btn-ok').addEventListener('click', () => cerrar(true));
+        overlay.querySelector('#__btn-cancel').addEventListener('click', () => cerrar(false));
+        document.addEventListener('keydown', onKey);
+        document.body.appendChild(overlay);
+        setTimeout(() => overlay.querySelector('#__btn-ok').focus(), 60);
+    });
+}
+
 // ==========================================
 // CONFIGURACIÓN DE SUPABASE
 const SB_URL = "https://mhnhfdtdpryrjaeaymsa.supabase.co";
@@ -592,13 +743,13 @@ if (btnLimpiarVenta) {
 }
 
 if (btnAgregarAlCarrito) {
-    btnAgregarAlCarrito.addEventListener("click", () => {
+    btnAgregarAlCarrito.addEventListener("click", async () => {
         const productId = selectProductoVenta.value;
         let qty = parseInt(inputCantidadVenta.value);
 
         if (isNaN(qty) || qty <= 0) qty = 1; 
 
-        if (!productId) { alert("Selecciona un producto."); return; }
+        if (!productId) { await mostrarAlerta("Selecciona un producto.", 'warn'); return; }
 
         const product = inventory.find(p => p.id.toString() === productId.toString());
         if (!product) return;
@@ -607,7 +758,7 @@ if (btnAgregarAlCarrito) {
         const currentCartQty = cartItem ? cartItem.qty : 0;
         
         if (currentCartQty + qty > product.cantidad) {
-            alert(`Stock insuficiente. Solo quedan ${product.cantidad - currentCartQty} unidades disponibles de ${product.nombre}.`);
+            await mostrarAlerta(`Stock insuficiente. Solo quedan ${product.cantidad - currentCartQty} unidades disponibles de ${product.nombre}.`, 'warn');
             return;
         }
 
@@ -650,7 +801,7 @@ inputBuscarProductVenta.addEventListener("keydown", function(event) {
 
 // Función para ELIMINAR un ticket y DEVOLVER al inventario
 window.eliminarTicket = async function(ticketGlobalId) {
-    if(!confirm("¿Estás seguro de eliminar este ticket? Los productos volverán al inventario.")) return;
+    if(!await mostrarConfirm("¿Estás seguro de eliminar este ticket? Los productos volverán al inventario.", 'danger')) return;
 
     try {
         const sale = sales.find(s => s.globalId === ticketGlobalId);
@@ -670,13 +821,11 @@ window.eliminarTicket = async function(ticketGlobalId) {
         updateSalesDropdown();
         renderSalesHistory();
         
-        setTimeout(() => {
-            alert("Ticket eliminado exitosamente y stock repuesto al inventario.");
-        }, 100);
+        await mostrarAlerta("Ticket eliminado exitosamente y stock repuesto al inventario.", 'success');
 
     } catch (err) {
         console.error("Error al eliminar ticket:", err);
-        alert("Hubo un error al eliminar el ticket. Intenta de nuevo.");
+        await mostrarAlerta("Hubo un error al eliminar el ticket. Intenta de nuevo.", 'error');
     }
 };
 
@@ -686,7 +835,7 @@ window.eliminarTicket = async function(ticketGlobalId) {
 if (btnRegistrarVenta) {
     btnRegistrarVenta.addEventListener("click", async () => {
         if (currentCart.length === 0) {
-            alert("Añade al menos un producto a la lista antes de registrar.");
+            await mostrarAlerta("Añade al menos un producto a la lista antes de registrar.", 'warn');
             return;
         }
 
@@ -724,7 +873,7 @@ if (btnRegistrarVenta) {
 
             const newSale = {
                 globalId:    Date.now(), 
-                id:          numeroTicket, 
+                id:          `V-${numeroTicket}`,   // prefijo V- para distinguir de ONLINE-
                 total:       totalSale,
                 date:        saleDateStr,
                 fechaLimpia: soloFechaStr, 
@@ -742,20 +891,18 @@ if (btnRegistrarVenta) {
             await loadInventory();
             renderSalesHistory();
 
-            if (confirm("¿Desea imprimir la factura de esta venta?")) {
+            if (await mostrarConfirm("¿Desea imprimir la factura de esta venta?", 'info')) {
                  imprimirFacturaTicket(newSale);
             }
 
             limpiarTodaLaVenta();
             if(inputBuscarProductVenta) inputBuscarProductVenta.focus();
 
-            setTimeout(() => {
-                alert(`¡Venta registrada con éxito! Ticket #${newSale.id} por $${totalSale}`);
-            }, 100);
+            await mostrarAlerta(`¡Venta registrada con éxito!\nTicket #${newSale.id} por $${totalSale.toLocaleString('es-CO')}`, 'success');
 
         } catch (err) {
             console.error("Error al registrar venta:", err);
-            alert("Hubo un error al registrar la venta. Por favor intenta de nuevo.");
+            await mostrarAlerta("Hubo un error al registrar la venta. Por favor intenta de nuevo.", 'error');
         } finally {
             btnRegistrarVenta.disabled = false;
             btnRegistrarVenta.textContent = "Registrar Venta";
@@ -990,13 +1137,13 @@ function handleImageSelection(event) {
 
     if (archivo) {
         if (!ALLOWED_IMAGE_TYPES.includes(archivo.type)) {
-            alert('El archivo debe ser una imagen JPG, PNG o WEBP.');
+            mostrarAlerta('El archivo debe ser una imagen JPG, PNG o WEBP.', 'warn');
             clearImagePreview();
             return;
         }
 
         if (archivo.size > MAX_IMAGE_SIZE_BYTES) {
-            alert('La imagen seleccionada excede el límite de 2 MB. Elige un archivo más pequeño.');
+            mostrarAlerta('La imagen seleccionada excede el límite de 2 MB. Elige un archivo más pequeño.', 'warn');
             clearImagePreview();
             return;
         }
@@ -1011,7 +1158,7 @@ function handleImageSelection(event) {
             previewProductoImagen.style.display = "block"; // forzar visible
         };
         reader.onerror = function() {
-            alert("No se pudo leer el archivo de imagen. Intenta con otro.");
+            mostrarAlerta("No se pudo leer el archivo de imagen. Intenta con otro.", 'error');
             clearImagePreview();
         };
         reader.readAsDataURL(archivo);
@@ -1116,14 +1263,14 @@ async function handleSaveProduct() {
     const cantidad = parseInt(inputCantidadProducto.value);
     const categoria = inputCategoriaProducto ? inputCategoriaProducto.value : '';
   
-    if (!nombre) { alert("Por favor, ingresa el nombre del producto."); return; }
-    if (isNaN(precio) || precio <= 0) { alert("Por favor, ingresa un precio válido."); return; }
-    if (isNaN(cantidad) || cantidad <= 0 || !Number.isInteger(cantidad)) { alert("Por favor, ingresa una cantidad válida."); return; }
-    if (!categoria) { alert("Por favor, selecciona una categoría para el producto."); return; }
+    if (!nombre) { await mostrarAlerta("Por favor, ingresa el nombre del producto.", 'warn'); return; }
+    if (isNaN(precio) || precio <= 0) { await mostrarAlerta("Por favor, ingresa un precio válido.", 'warn'); return; }
+    if (isNaN(cantidad) || cantidad <= 0 || !Number.isInteger(cantidad)) { await mostrarAlerta("Por favor, ingresa una cantidad válida.", 'warn'); return; }
+    if (!categoria) { await mostrarAlerta("Por favor, selecciona una categoría para el producto.", 'warn'); return; }
 
     const { data: { user } } = await supabaseClient.auth.getUser();
     if (!user) {
-        alert("Debes iniciar sesión para guardar productos.");
+        await mostrarAlerta("Debes iniciar sesión para guardar productos.", 'warn');
         showScreen('pantalla-login');
         return;
     }
@@ -1143,7 +1290,7 @@ async function handleSaveProduct() {
             urlImagenFinal = await subirImagenSupabase(archivoImagenFisico);
         } 
         else {
-            alert("Por favor, selecciona una imagen para el producto.");
+            await mostrarAlerta("Por favor, selecciona una imagen para el producto.", 'warn');
             btnGuardarProducto.textContent = textoOriginalBoton;
             btnGuardarProducto.disabled = false;
             return;
@@ -1164,7 +1311,7 @@ async function handleSaveProduct() {
                 console.error("Supabase UPDATE error:", JSON.stringify(error));
                 throw error;
             }
-            alert(`¡Producto "${nombre}" actualizado!`);
+            await mostrarAlerta(`¡Producto "${nombre}" actualizado!`, 'success');
         } 
         else {
             const { error } = await supabaseClient
@@ -1181,7 +1328,7 @@ async function handleSaveProduct() {
                 console.error("Supabase INSERT error:", JSON.stringify(error));
                 throw error;
             }
-            alert(`¡Producto "${nombre}" añadido al inventario!`);
+            await mostrarAlerta(`¡Producto "${nombre}" añadido al inventario!`, 'success');
         }
 
         resetFormAndMode(); 
@@ -1190,7 +1337,7 @@ async function handleSaveProduct() {
     } catch (error) {
         console.error("Error completo handleSaveProduct:", error);
         const msg = error?.message || error?.details || JSON.stringify(error);
-        alert(`Error al guardar el producto:\n${msg}`);
+        await mostrarAlerta(`Error al guardar el producto:\n${msg}`, 'error');
     } finally {
         btnGuardarProducto.textContent = textoOriginalBoton;
         btnGuardarProducto.disabled = false;
@@ -1218,7 +1365,7 @@ function editProduct(productId) {
 
 btnLimpiarFormulario.addEventListener('click', function() {
     if (editingProductId !== null) {
-        alert("Edición cancelada.");
+        mostrarAlerta("Edición cancelada.", 'info');
     } else { 
          clearSearch();
     }
@@ -1313,16 +1460,16 @@ if (contenedorProductos) {
         const productId = cardDiv.dataset.id;
 
         if (event.target.classList.contains('btn-borrar-producto')) {
-            if(confirm("¿Estás seguro de que quieres eliminar este producto?")){
+            if(await mostrarConfirm("¿Estás seguro de que quieres eliminar este producto?", 'danger')){
                 const { error } = await supabaseClient.from('productos').delete().eq('id', productId);
                 
                 if (!error) {
                     if (productId === editingProductId) resetFormAndMode();
-                    alert("Producto eliminado.");
+                    await mostrarAlerta("Producto eliminado.", 'success');
                     loadInventory(); 
                 } else {
                     console.error("Error al eliminar producto:", error);
-                    alert("Error al eliminar el producto.");
+                    await mostrarAlerta("Error al eliminar el producto.", 'error');
                 }
             }
         } else if (event.target.classList.contains('btn-editar-producto')) {
@@ -1336,7 +1483,7 @@ if (contenedorProductos) {
 // ==========================================
 function exportInventoryToCSV() {
     if (inventory.length === 0) {
-        alert("El inventario está vacío. No hay datos para exportar.");
+        await mostrarAlerta("El inventario está vacío. No hay datos para exportar.", 'warn');
         return;
     }
 
@@ -1363,7 +1510,7 @@ function exportInventoryToCSV() {
     link.click();
     document.body.removeChild(link); 
     URL.revokeObjectURL(link.href); 
-    alert("¡Inventario exportado exitosamente a inventario.csv!");
+    mostrarAlerta("¡Inventario exportado exitosamente a inventario.csv!", 'success');
 }
 
 btnExportarDatos.addEventListener("click", exportInventoryToCSV);
@@ -1390,10 +1537,10 @@ async function handleLogout() {
         sales = [];
         currentUserId = null;
         showScreen('pantalla-login');
-        alert("Sesión cerrada correctamente.");
+        mostrarAlerta("Sesión cerrada correctamente.", 'info');
     } else {
         console.error("Error al cerrar sesión:", error);
-        alert("Hubo un error al cerrar la sesión.");
+        mostrarAlerta("Hubo un error al cerrar la sesión.", 'error');
     }
 }
 
@@ -1471,7 +1618,7 @@ const descargarReporteDiario = () => {
     
     const ventasHoy = sales.filter(s => (s.fechaLimpia || s.date.split(',')[0].trim()) === hoy);
 
-    if (ventasHoy.length === 0) return alert("No hay ventas registradas hoy.");
+    if (ventasHoy.length === 0) return mostrarAlerta("No hay ventas registradas hoy.", 'info');
 
     doc.text(`Reporte Diario de Ventas - ${hoy}`, 14, 20);
 
@@ -1553,7 +1700,7 @@ async function deletePedidoFromSupabase(pedidoId) {
 }
 
 async function eliminarPedidoCancelado(pedidoId) {
-    if (!confirm(`¿Eliminar permanentemente la venta cancelada #${pedidoId}?`)) return;
+    if (!await mostrarConfirm(`¿Eliminar permanentemente la venta cancelada #${pedidoId}?`, 'danger')) return;
 
     try {
         await deletePedidoFromSupabase(pedidoId);
@@ -1561,20 +1708,20 @@ async function eliminarPedidoCancelado(pedidoId) {
         renderResumenAdmin();
         renderPedidosAdmin(filtroEstadoAdmin);
         renderHistorialOnline();
-        alert(`Venta cancelada #${pedidoId} eliminada correctamente.`);
+        await mostrarAlerta(`Venta cancelada #${pedidoId} eliminada correctamente.`, 'success');
     } catch (error) {
-        alert(`No se pudo eliminar la venta cancelada: ${error.message || error}`);
+        await mostrarAlerta(`No se pudo eliminar la venta cancelada: ${error.message || error}`, 'error');
     }
 }
 
 async function eliminarTodosLosPedidosCancelados() {
     const cancelados = pedidosAdmin.filter(p => p.estado === 'cancelado');
     if (cancelados.length === 0) {
-        alert('No hay ventas canceladas para eliminar.');
+        await mostrarAlerta('No hay ventas canceladas para eliminar.', 'info');
         return;
     }
 
-    if (!confirm(`¿Eliminar todas las ventas canceladas? Se borrarán ${cancelados.length} pedidos.`)) return;
+    if (!await mostrarConfirm(`¿Eliminar todas las ventas canceladas? Se borrarán ${cancelados.length} pedidos.`, 'danger')) return;
 
     const ids = cancelados.map(p => p.id);
     const btn = btnBorrarTodasVentasCanceladas;
@@ -1597,10 +1744,10 @@ async function eliminarTodosLosPedidosCancelados() {
         renderResumenAdmin();
         renderPedidosAdmin(filtroEstadoAdmin);
         renderHistorialOnline();
-        alert(`Se eliminaron ${ids.length} ventas canceladas correctamente.`);
+        await mostrarAlerta(`Se eliminaron ${ids.length} ventas canceladas correctamente.`, 'success');
     } catch (error) {
         console.error('Error eliminando pedidos cancelados:', error);
-        alert(`No se pudieron eliminar las ventas canceladas: ${error.message || error}`);
+        await mostrarAlerta(`No se pudieron eliminar las ventas canceladas: ${error.message || error}`, 'error');
     } finally {
         if (btn) {
             btn.disabled = false;
@@ -1787,7 +1934,7 @@ async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
         entregado:       `¿Confirmar la entrega del pedido #${pedidoId}?\n\nEl pedido pasará al historial y dejará de aparecer en Activos.`,
         cancelado:       `¿Cancelar el pedido #${pedidoId}?`,
     };
-    if (!confirm(msgs[nuevoEstado] || `¿Cambiar estado del pedido #${pedidoId}?`)) return;
+    if (!await mostrarConfirm(msgs[nuevoEstado] || `¿Cambiar estado del pedido #${pedidoId}?`, nuevoEstado === 'cancelado' ? 'danger' : 'warn')) return;
 
     const textoOrig   = btnEl.textContent;
     btnEl.disabled    = true;
@@ -1807,7 +1954,7 @@ async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
         const msg = error.message.includes('Stock insuficiente')
             ? `❌ Stock insuficiente:\n${error.message}`
             : `Error: ${error.message}`;
-        alert(msg);
+        await mostrarAlerta(msg, 'error');
         btnEl.disabled    = false;
         btnEl.textContent = textoOrig;
         return;
@@ -1827,15 +1974,13 @@ async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
 
     if (nuevoEstado === 'entregado') {
         renderHistorialOnline();
-        alert(`✅ Pedido #${pedidoId} marcado como entregado.\nAhora aparece en el historial de entregas.`);
+        await mostrarAlerta(`✅ Pedido #${pedidoId} marcado como entregado.\nAhora aparece en el historial de entregas.`, 'success');
     }
 
     if (nuevoEstado === 'pago_confirmado') {
-        // Recargar inventario porque el trigger lo descontó en la BD
         await loadInventory();
-        // Recargar ventas porque el trigger insertó en historial
         await loadSales();
-        alert(`✅ Pago del pedido #${pedidoId} confirmado.\nInventario descontado e historial actualizado.`);
+        await mostrarAlerta(`✅ Pago del pedido #${pedidoId} confirmado.\nInventario descontado e historial actualizado.`, 'success');
     }
 }
 
