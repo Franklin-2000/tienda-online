@@ -216,6 +216,8 @@ const inputCategoriaProducto = document.querySelector("#inputCategoriaProducto")
 
 // Categoría activa para el filtro de inventario
 let categoriaActivaFiltro = 'todas';
+// Resultados de búsqueda activa (null = sin búsqueda activa)
+let searchResults = null;
 
 const btnGuardarProducto = document.querySelector("#btnGuardarProducto");
 const btnLimpiarFormulario = document.querySelector("#btnLimpiarFormulario");
@@ -515,58 +517,72 @@ btnCerrarScanner.addEventListener('click', (e) => {
 // ==========================================
 
 function showScreen(screenId, pushToHistory = true) {
-    pantallaLogin.style.display = 'none';
-    pantallaInicio.style.display = 'none';
-    pantallaInventario.style.display = 'none';
-    if(pantallaMenuVentas) pantallaMenuVentas.style.display = 'none';
-    if(pantallaVentasFisicas) pantallaVentasFisicas.style.display = 'none';
-    if(pantallaVentasOnline) pantallaVentasOnline.style.display = 'none';
-    const pantallaHistorialOnline = document.querySelector('#pantalla-historial-online');
-    if(pantallaHistorialOnline) pantallaHistorialOnline.style.display = 'none';
-    const pantallaHistorialFisicas = document.querySelector('#pantalla-historial-fisicas');
-    if(pantallaHistorialFisicas) pantallaHistorialFisicas.style.display = 'none';
+    // Ocultar TODAS las pantallas quitando clase activa
+    document.querySelectorAll(
+        '#pantalla-login, #pantalla-inicio, #pantalla-menu-ventas, ' +
+        '#pantalla-INVENTARIO, #pantalla-ventas-fisicas, #pantalla-historial-fisicas, ' +
+        '#pantalla-ventas-online, #pantalla-historial-online'
+    ).forEach(el => {
+        el.classList.remove('activa');
+        el.style.display = 'none';
+    });
+
+    const show = (el, displayType = 'block') => {
+        if (!el) return;
+        el.style.display = displayType;
+        el.classList.add('activa');
+        el.scrollTop = 0; // siempre desde el tope
+    };
 
     switch (screenId) {
         case 'pantalla-login':
-            pantallaLogin.style.display = 'flex'; 
+            show(pantallaLogin, 'flex');
             break;
         case 'pantalla-inicio':
-            pantallaInicio.style.display = 'block'; 
-            clearSearch(); 
+            show(pantallaInicio, 'flex');
+            clearSearch();
             resetFormAndMode();
             break;
         case 'pantalla-INVENTARIO':
-            pantallaInventario.style.display = 'block'; 
-            resetFormAndMode(); 
-            // Reset category filter
+            show(pantallaInventario, 'block');
+            resetFormAndMode();
             categoriaActivaFiltro = 'todas';
+            searchResults = null;
             document.querySelectorAll('.btn-categoria-filtro').forEach(b => b.classList.remove('activo'));
             const btnTodasCat = document.querySelector('.btn-categoria-filtro[data-categoria="todas"]');
             if (btnTodasCat) btnTodasCat.classList.add('activo');
             loadInventory();
             break;
         case 'pantalla-menu-ventas':
-            if(pantallaMenuVentas) pantallaMenuVentas.style.display = '';
+            show(pantallaMenuVentas, 'flex');
             break;
-        case 'pantalla-ventas-fisicas':
-            if(pantallaVentasFisicas) pantallaVentasFisicas.style.display = 'block'; 
+        case 'pantalla-ventas-fisicas': {
+            show(pantallaVentasFisicas, 'block');
+            categoriaActivaVenta = 'todas';
+            productoSeleccionadoVentaId = null;
+            document.querySelectorAll('.btn-cat-venta').forEach(b => b.classList.remove('activo'));
+            const btnTodasVenta = document.querySelector('.btn-cat-venta[data-cat="todas"]');
+            if (btnTodasVenta) btnTodasVenta.classList.add('activo');
+            const panelCant = document.getElementById('panelCantidadVenta');
+            if (panelCant) panelCant.style.display = 'none';
             updateSalesDropdown();
             break;
+        }
         case 'pantalla-ventas-online':
-            if(pantallaVentasOnline) pantallaVentasOnline.style.display = 'block'; 
+            show(pantallaVentasOnline, 'block');
             break;
-        case 'pantalla-historial-online':
-            if(pantallaHistorialOnline) {
-                pantallaHistorialOnline.style.display = 'block';
-                renderHistorialOnline();
-            }
+        case 'pantalla-historial-online': {
+            const ph = document.querySelector('#pantalla-historial-online');
+            show(ph, 'block');
+            renderHistorialOnline();
             break;
-        case 'pantalla-historial-fisicas':
-            if(pantallaHistorialFisicas) {
-                pantallaHistorialFisicas.style.display = 'block';
-                renderSalesHistory();
-            }
+        }
+        case 'pantalla-historial-fisicas': {
+            const phf = document.querySelector('#pantalla-historial-fisicas');
+            show(phf, 'block');
+            renderSalesHistory();
             break;
+        }
     }
 
     if (pushToHistory) {
@@ -657,37 +673,114 @@ if (btnVolverVentasOnline) {
 // ==========================================
 // LÓGICA DEL CARRITO
 // ==========================================
-function updateSalesDropdown(searchTerm = '') {
-    selectProductoVenta.innerHTML = '<option value="">-- Selecciona un producto --</option>';
-    const normalizedTerm = normalizeStringForSearch(searchTerm);
-    const rawSearchTerm = searchTerm.trim(); 
-    
-    let seleccionAutomatica = false; 
+// ==========================================
+// PUNTO DE VENTA — Grid de tarjetas de productos
+// ==========================================
+let categoriaActivaVenta = 'todas';
+let productoSeleccionadoVentaId = null;
 
+function renderGridProductosVenta(searchTerm = '') {
+    const grid = document.getElementById('gridProductosVenta');
+    if (!grid) return;
+
+    const normalizedTerm = normalizeStringForSearch(searchTerm);
+    const rawSearchTerm = searchTerm.trim();
+
+    let productos = inventory.filter(p => p.cantidad > 0);
+
+    // Filtro de categoría
+    if (categoriaActivaVenta && categoriaActivaVenta !== 'todas') {
+        productos = productos.filter(p => p.categoria === categoriaActivaVenta);
+    }
+
+    // Filtro de búsqueda
+    if (normalizedTerm !== '') {
+        productos = productos.filter(p => {
+            const coincideNombre = normalizeStringForSearch(p.nombre).includes(normalizedTerm);
+            const coincideCodigo = p.codigoBarras && p.codigoBarras.includes(rawSearchTerm);
+            return coincideNombre || coincideCodigo;
+        });
+        // Si coincide exactamente con código de barras → selección automática
+        const exacto = inventory.find(p => p.codigoBarras && p.codigoBarras === rawSearchTerm && p.cantidad > 0);
+        if (exacto) {
+            seleccionarProductoVenta(exacto.id);
+        }
+    }
+
+    grid.innerHTML = '';
+
+    if (productos.length === 0) {
+        grid.innerHTML = `<p class="venta-grid-vacio">No se encontraron productos${categoriaActivaVenta !== 'todas' ? ' en esta categoría' : ''}.</p>`;
+        return;
+    }
+
+    productos.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'tarjeta-prod-venta' + (productoSeleccionadoVentaId === p.id ? ' seleccionada' : '');
+        card.dataset.id = p.id;
+        card.innerHTML = `
+            <img src="${p.imagen || 'https://via.placeholder.com/80'}" alt="${p.nombre}" class="prod-venta-img">
+            <div class="prod-venta-info">
+                <span class="prod-venta-nombre">${p.nombre}</span>
+                <span class="prod-venta-precio">$${Number(p.precio).toLocaleString('es-CO')}</span>
+                <span class="prod-venta-stock">Disp: ${p.cantidad}</span>
+            </div>
+        `;
+        card.addEventListener('click', () => seleccionarProductoVenta(p.id));
+        grid.appendChild(card);
+    });
+}
+
+function seleccionarProductoVenta(productId) {
+    productoSeleccionadoVentaId = productId;
+    const product = inventory.find(p => p.id.toString() === productId.toString());
+    if (!product) return;
+
+    // Sincronizar el select oculto (para compatibilidad)
+    selectProductoVenta.value = productId;
+
+    // Mostrar panel de cantidad
+    const panelCantidad = document.getElementById('panelCantidadVenta');
+    const infoEl = document.getElementById('productoSeleccionadoInfo');
+    if (panelCantidad) panelCantidad.style.display = 'block';
+    if (infoEl) {
+        infoEl.innerHTML = `
+            <img src="${product.imagen || 'https://via.placeholder.com/50'}" alt="${product.nombre}">
+            <div>
+                <strong>${product.nombre}</strong>
+                <span>$${Number(product.precio).toLocaleString('es-CO')} · Stock: ${product.cantidad}</span>
+            </div>
+        `;
+    }
+
+    // Resaltar tarjeta seleccionada
+    document.querySelectorAll('.tarjeta-prod-venta').forEach(c => c.classList.remove('seleccionada'));
+    const selCard = document.querySelector(`.tarjeta-prod-venta[data-id="${productId}"]`);
+    if (selCard) selCard.classList.add('seleccionada');
+
+    // Enfocar cantidad
+    const inputCant = document.getElementById('inputCantidadVenta');
+    if (inputCant) { inputCant.value = '1'; inputCant.focus(); }
+}
+
+function updateSalesDropdown(searchTerm = '') {
+    // Actualizar select oculto para compatibilidad interna
+    selectProductoVenta.innerHTML = '<option value="">-- Selecciona un producto --</option>';
     inventory.forEach(product => {
         if (product.cantidad > 0) {
-            const coincidenciaNombre = normalizeStringForSearch(product.nombre).includes(normalizedTerm);
-            const coincidenciaCodigo = product.codigoBarras && product.codigoBarras === rawSearchTerm;
-
-            if (normalizedTerm === '' || coincidenciaNombre || coincidenciaCodigo) {
-                const option = document.createElement('option');
-                option.value = product.id;
-                option.textContent = `${product.nombre} (Disp: ${product.cantidad} | $${product.precio})`;
-                
-                selectProductoVenta.appendChild(option);
-
-                if (normalizedTerm !== '' && !seleccionAutomatica) {
-                    option.selected = true; 
-                    seleccionAutomatica = true; 
-                }
-            }
+            const option = document.createElement('option');
+            option.value = product.id;
+            option.textContent = `${product.nombre} (Disp: ${product.cantidad} | $${product.precio})`;
+            selectProductoVenta.appendChild(option);
         }
     });
+    // Actualizar grid visual
+    renderGridProductosVenta(searchTerm);
 }
 
 if(inputBuscarProductVenta) {
     inputBuscarProductVenta.addEventListener("input", (e) => {
-        updateSalesDropdown(e.target.value);
+        renderGridProductosVenta(e.target.value);
     });
 }
 
@@ -734,7 +827,10 @@ function limpiarTodaLaVenta() {
     inputBuscarProductVenta.value = '';
     selectProductoVenta.value = '';
     inputCantidadVenta.value = '';
-    updateSalesDropdown(); 
+    productoSeleccionadoVentaId = null;
+    const panelCantidad = document.getElementById('panelCantidadVenta');
+    if (panelCantidad) panelCantidad.style.display = 'none';
+    renderGridProductosVenta(); 
     inputBuscarProductVenta.focus(); 
 }
 
@@ -777,7 +873,10 @@ if (btnAgregarAlCarrito) {
         
         inputCantidadVenta.value = ''; 
         inputBuscarProductVenta.value = ''; 
-        selectProductoVenta.value = ''; 
+        selectProductoVenta.value = '';
+        productoSeleccionadoVentaId = null;
+        const panelCantidad = document.getElementById('panelCantidadVenta');
+        if (panelCantidad) panelCantidad.style.display = 'none';
         updateSalesDropdown(); 
         inputBuscarProductVenta.focus(); 
     });
@@ -1053,13 +1152,15 @@ function crearDOMTicket(sale, esDeHoy) {
 // ==========================================
 // FUNCIONES DE RENDERIZADO (INVENTARIO)
 // ==========================================
-function renderProducts(productsToRender = inventory) {
+function renderProducts(productsToRender = null) {
     if (!contenedorProductos) return;
 
-    // Aplicar filtro de categoría activa
-    let productosFiltrados = productsToRender;
+    // Si no se pasan productos, aplicar categoría sobre inventario completo
+    // Si se pasan productos (búsqueda), sólo filtrar categoría encima de ellos
+    let base = productsToRender !== null ? productsToRender : inventory;
+    let productosFiltrados = base;
     if (categoriaActivaFiltro && categoriaActivaFiltro !== 'todas') {
-        productosFiltrados = productsToRender.filter(p => p.categoria === categoriaActivaFiltro);
+        productosFiltrados = base.filter(p => p.categoria === categoriaActivaFiltro);
     }
 
     contenedorProductos.innerHTML = ''; 
@@ -1419,22 +1520,24 @@ function searchProducts() {
     const searchTerm = normalizeStringForSearch(searchTermRaw);
 
     if (searchTerm === '') {
-        renderProducts(inventory);
+        searchResults = null;
+        renderProducts();
         return;
     }
 
-    const filteredProducts = inventory.filter(product => {
+    searchResults = inventory.filter(product => {
         const coincidenciaNombre = normalizeStringForSearch(product.nombre).includes(searchTerm);
         const coincidenciaCodigo = product.codigoBarras && product.codigoBarras.includes(searchTermRaw);
         return coincidenciaNombre || coincidenciaCodigo;
     });
 
-    renderProducts(filteredProducts);
+    renderProducts(searchResults);
 }
 
 function clearSearch() {
     inputBuscarProducto.value = '';
-    renderProducts(inventory);
+    searchResults = null;
+    renderProducts();
 }
 
 btnBuscarProducto.addEventListener("click", searchProducts);
@@ -2134,6 +2237,16 @@ function crearDOMTicketOnline(pedido, esDeHoy) {
 // ---------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
 
+    // Filtros de categoría en ventas físicas
+    document.querySelectorAll('.btn-cat-venta').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.btn-cat-venta').forEach(b => b.classList.remove('activo'));
+            btn.classList.add('activo');
+            categoriaActivaVenta = btn.dataset.cat;
+            renderGridProductosVenta(inputBuscarProductVenta ? inputBuscarProductVenta.value : '');
+        });
+    });
+
     // Filtros de categoría en inventario
     document.querySelectorAll('.btn-categoria-filtro').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -2155,7 +2268,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.btn-categoria-filtro').forEach(b => b.classList.remove('activo'));
             btn.classList.add('activo');
             categoriaActivaFiltro = btn.dataset.categoria;
-            renderProducts(inventory);
+            // Respetar búsqueda activa si existe
+            renderProducts(searchResults);
         });
     });
  

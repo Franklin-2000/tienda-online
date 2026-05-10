@@ -1,8 +1,61 @@
+/* =============================================
+   SISTEMA DE PANTALLAS — UNA SOLA A LA VEZ
+   Cada div de pantalla ocupa exactamente el 
+   viewport y hace su propio scroll interno.
+   ============================================= */
+
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: Arial, sans-serif;
   text-align: center;
   margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
 }
+
+/* Contenedor raíz que ocupa todo el viewport */
+#app-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Cada pantalla: ocupa todo el viewport, scroll interno propio */
+#pantalla-login,
+#pantalla-inicio,
+#pantalla-menu-ventas,
+#pantalla-INVENTARIO,
+#pantalla-ventas-fisicas,
+#pantalla-historial-fisicas,
+#pantalla-ventas-online,
+#pantalla-historial-online {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  display: none; /* ocultas por defecto */
+}
+
+/* Cuando JS pone display, usar flex o block según convenga */
+#pantalla-login.activa       { display: flex; }
+#pantalla-inicio.activa,
+#pantalla-menu-ventas.activa { display: flex; }
+
+#pantalla-INVENTARIO.activa,
+#pantalla-ventas-fisicas.activa,
+#pantalla-historial-fisicas.activa,
+#pantalla-ventas-online.activa,
+#pantalla-historial-online.activa { display: block; }
 
 h1 {
   font-size: 100px;
@@ -18,15 +71,12 @@ h1 {
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
-    min-height: 100vh;
-    width: 100vw;
-    display: flex;
+    background-attachment: scroll;
+    padding: 20px;
+    box-sizing: border-box;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
 }
 
 #pantalla-inicio .title, #pantalla-menu-ventas .title {
@@ -54,8 +104,7 @@ h1 {
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
-    min-height: 100vh;
+    background-attachment: scroll;
     padding: 20px;
     box-sizing: border-box;
     text-align: center;
@@ -672,11 +721,8 @@ input[type="file"] {
 
 /* --- ESTILOS PARA LA PANTALLA DE LOGIN --- */
 #pantalla-login {
-  display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  width: 100vw;
   background: 
     linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.00)),
     url(https://preview.redd.it/futuristic-city-at-dusk-4k-v0-0l8pcbaab7n51.jpg?auto=webp&s=cd5621e05c5bbe95fb4e97f685f7dedae0e41d87) 
@@ -904,14 +950,10 @@ input[type="file"] {
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
-    min-height: 100vh;
+    background-attachment: scroll;
     padding: 20px;
     box-sizing: border-box;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     position: relative;
 }
 
@@ -1022,9 +1064,7 @@ input[type="file"] {
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
-    display: block;
-    min-height: 100vh;
+    background-attachment: scroll;
     padding: 20px;
     box-sizing: border-box;
     text-align: center;
@@ -1900,9 +1940,7 @@ input[type="number"] {
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
-    display: block;
-    min-height: 100vh;
+    background-attachment: scroll;
     padding: 20px;
     box-sizing: border-box;
     text-align: center;
@@ -2262,8 +2300,161 @@ input[type="number"] {
     .tarjeta-resumen-online .num { font-size: 1.3em; }
 }
 /* ==========================================
-   FILTROS DE CATEGORÍA — INVENTARIO
+   GRID DE PRODUCTOS — VENTAS FÍSICAS
    ========================================== */
+
+.categorias-venta-bar {
+    margin: 10px 0 12px 0;
+    padding: 8px 10px;
+    background: rgba(12, 86, 108, 0.08);
+    max-width: 100%;
+}
+
+.btn-cat-venta {
+    background: #fff;
+    border: 2px solid #0c566c;
+    color: #0c566c;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 0.78em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.btn-cat-venta:hover { background: #0c566c; color: #fff; }
+.btn-cat-venta.activo { background: #0c566c; color: #fff; box-shadow: 0 2px 8px rgba(12,86,108,0.3); }
+
+.grid-productos-venta {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 4px 2px;
+    margin-bottom: 12px;
+}
+
+.tarjeta-prod-venta {
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 10px 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    text-align: center;
+}
+
+.tarjeta-prod-venta:hover {
+    border-color: #0c566c;
+    box-shadow: 0 4px 12px rgba(12,86,108,0.2);
+    transform: translateY(-2px);
+}
+
+.tarjeta-prod-venta.seleccionada {
+    border-color: #28a745;
+    background: #f0fff4;
+    box-shadow: 0 4px 14px rgba(40,167,69,0.3);
+}
+
+.prod-venta-img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.prod-venta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.prod-venta-nombre {
+    font-size: 0.78em;
+    font-weight: 700;
+    color: #111;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.prod-venta-precio {
+    font-size: 0.82em;
+    color: #0c566c;
+    font-weight: 800;
+}
+
+.prod-venta-stock {
+    font-size: 0.72em;
+    color: #888;
+}
+
+.venta-grid-vacio {
+    grid-column: 1/-1;
+    text-align: center;
+    color: #888;
+    font-size: 0.9em;
+    padding: 20px 0;
+}
+
+/* Panel cantidad + producto seleccionado */
+.panel-cantidad-venta {
+    background: #f0fff4;
+    border: 2px solid #28a745;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 4px;
+    animation: fadeIn 0.2s ease;
+}
+
+.producto-seleccionado-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #28a745;
+}
+
+.producto-seleccionado-info img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.producto-seleccionado-info div {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.producto-seleccionado-info strong {
+    font-size: 0.95em;
+    color: #111;
+}
+
+.producto-seleccionado-info span {
+    font-size: 0.82em;
+    color: #555;
+}
+
+@media (max-width: 600px) {
+    .grid-productos-venta {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        max-height: 240px;
+    }
+    .prod-venta-img { width: 56px; height: 56px; }
+    .categorias-venta-bar { gap: 5px; padding: 6px 8px; }
+    .btn-cat-venta { font-size: 0.7em; padding: 4px 9px; }
+}
 
 /* Ocultar grid de productos al hacer clic en "Todas" cuando ya está activo */
 #contenedorProductos.oculto-productos {

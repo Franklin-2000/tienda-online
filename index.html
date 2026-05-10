@@ -13,6 +13,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+<div id="app-root">
   <div id="pantalla-login">
     <div class="login-ring-container">
        <div class="animated-ring">
@@ -154,13 +155,30 @@
                     <input type="text" id="inputBuscarProductVenta" placeholder="Ej: arroz o 123456" class="input-buscar-producto-venta">
                     <button id="btnEscanearVenta" class="btn-escanear" title="Escanear Código">📷</button>
                 </div>
-                <label for="selectProductoVenta">Seleccionar Producto:</label>
-                <select id="selectProductoVenta" class="select-venta">
+                <!-- Filtros de categoría para ventas -->
+                <div class="categorias-filtro-bar categorias-venta-bar" id="categoriasVentaBar">
+                  <button class="btn-cat-venta activo" data-cat="todas">🏪 Todas</button>
+                  <button class="btn-cat-venta" data-cat="Perecederos">🥦 Perecederos</button>
+                  <button class="btn-cat-venta" data-cat="Abarrotes">🛒 Abarrotes</button>
+                  <button class="btn-cat-venta" data-cat="Bebidas">🥤 Bebidas</button>
+                  <button class="btn-cat-venta" data-cat="Congelados">🧊 Congelados</button>
+                  <button class="btn-cat-venta" data-cat="Hogar">🧹 Hogar</button>
+                  <button class="btn-cat-venta" data-cat="Higiene">🧴 Higiene</button>
+                  <button class="btn-cat-venta" data-cat="Otras">📦 Otras</button>
+                </div>
+                <!-- Grid de productos -->
+                <div id="gridProductosVenta" class="grid-productos-venta"></div>
+                <!-- Cantidad -->
+                <div id="panelCantidadVenta" class="panel-cantidad-venta" style="display:none;">
+                  <div class="producto-seleccionado-info" id="productoSeleccionadoInfo"></div>
+                  <label for="inputCantidadVenta">Cantidad a vender:</label>
+                  <input type="number" id="inputCantidadVenta" placeholder="Ej: 1" min="1" step="1">
+                  <button class="btn-buscar btn-agregar-al-carrito" id="btnAgregarAlCarrito">+ Añadir a la Lista</button>
+                </div>
+                <!-- Select oculto para compatibilidad con el JS existente -->
+                <select id="selectProductoVenta" style="display:none;">
                     <option value="">-- Selecciona un producto --</option>
                 </select>
-                <label for="inputCantidadVenta">Cantidad a vender:</label>
-                <input type="number" id="inputCantidadVenta" placeholder="Ej: 1" min="1" step="1">
-                <button class="btn-buscar btn-agregar-al-carrito" id="btnAgregarAlCarrito">+ Añadir a la Lista</button>
             </div>
         </div>
 
@@ -314,5 +332,6 @@
 
   <script type="module" src="script.js"></script>
 
+</div><!-- fin app-root -->
 </body>
 </html>
