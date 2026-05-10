@@ -486,9 +486,18 @@ function onScanSuccess(decodedText, decodedResult) {
         inputCodigoBarras.dispatchEvent(new Event('input', { bubbles: true }));
         inputNombreProducto.focus(); 
     } else if (objetivoEscaneo === 'ventas') {
-        inputBuscarProductVenta.value = codigoLimpio;
-        inputBuscarProductVenta.dispatchEvent(new Event('input', { bubbles: true }));
-        updateSalesDropdown(codigoLimpio);
+        // Buscar producto por código exacto y seleccionarlo directo
+        const productoEscaneado = inventory.find(p => p.codigoBarras && p.codigoBarras === codigoLimpio && p.cantidad > 0);
+        if (productoEscaneado) {
+            // Coincidencia exacta → ir directo al panel de cantidad sin mostrar dropdown
+            inputBuscarProductVenta.value = productoEscaneado.nombre;
+            seleccionarProductoVenta(productoEscaneado.id);
+        } else {
+            // No encontrado → mostrar el código en el input para búsqueda manual
+            inputBuscarProductVenta.value = codigoLimpio;
+            inputBuscarProductVenta.dispatchEvent(new Event('input', { bubbles: true }));
+            updateSalesDropdown(codigoLimpio);
+        }
     }
 }
 
@@ -685,55 +694,14 @@ let categoriaActivaVenta = 'todas';
 let productoSeleccionadoVentaId = null;
 
 function renderGridProductosVenta(searchTerm = '') {
-    const grid = document.getElementById('gridProductosVenta');
-    if (!grid) return;
-
-    const normalizedTerm = normalizeStringForSearch(searchTerm);
-    const rawSearchTerm = searchTerm.trim();
-
-    let productos = inventory.filter(p => p.cantidad > 0);
-
-    // Filtro de categoría
-    if (categoriaActivaVenta && categoriaActivaVenta !== 'todas') {
-        productos = productos.filter(p => p.categoria === categoriaActivaVenta);
-    }
-
-    // Filtro de búsqueda
-    if (normalizedTerm !== '') {
-        productos = productos.filter(p => {
-            const coincideNombre = normalizeStringForSearch(p.nombre).includes(normalizedTerm);
-            const coincideCodigo = p.codigoBarras && p.codigoBarras.includes(rawSearchTerm);
-            return coincideNombre || coincideCodigo;
-        });
-        // Si coincide exactamente con código de barras → selección automática
+    // El grid de tarjetas fue eliminado — solo se mantiene la selección automática por código de barras exacto
+    const rawSearchTerm = (searchTerm || '').trim();
+    if (rawSearchTerm !== '') {
         const exacto = inventory.find(p => p.codigoBarras && p.codigoBarras === rawSearchTerm && p.cantidad > 0);
         if (exacto) {
             seleccionarProductoVenta(exacto.id);
         }
     }
-
-    grid.innerHTML = '';
-
-    if (productos.length === 0) {
-        grid.innerHTML = `<p class="venta-grid-vacio">No se encontraron productos${categoriaActivaVenta !== 'todas' ? ' en esta categoría' : ''}.</p>`;
-        return;
-    }
-
-    productos.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'tarjeta-prod-venta' + (productoSeleccionadoVentaId === p.id ? ' seleccionada' : '');
-        card.dataset.id = p.id;
-        card.innerHTML = `
-            <img src="${p.imagen || 'https://via.placeholder.com/80'}" alt="${p.nombre}" class="prod-venta-img">
-            <div class="prod-venta-info">
-                <span class="prod-venta-nombre">${p.nombre}</span>
-                <span class="prod-venta-precio">$${Number(p.precio).toLocaleString('es-CO')}</span>
-                <span class="prod-venta-stock">Disp: ${p.cantidad}</span>
-            </div>
-        `;
-        card.addEventListener('click', () => seleccionarProductoVenta(p.id));
-        grid.appendChild(card);
-    });
 }
 
 function seleccionarProductoVenta(productId) {
@@ -757,11 +725,6 @@ function seleccionarProductoVenta(productId) {
             </div>
         `;
     }
-
-    // Resaltar tarjeta seleccionada
-    document.querySelectorAll('.tarjeta-prod-venta').forEach(c => c.classList.remove('seleccionada'));
-    const selCard = document.querySelector(`.tarjeta-prod-venta[data-id="${productId}"]`);
-    if (selCard) selCard.classList.add('seleccionada');
 
     // Enfocar cantidad
     const inputCant = document.getElementById('inputCantidadVenta');
@@ -853,7 +816,6 @@ function updateSalesDropdown(searchTerm = '') {
         inputBuscarProductVenta.value = producto.nombre;
         listaSugerencias.classList.remove('visible');
         indiceSugerencia = -1;
-        renderGridProductosVenta(producto.nombre);
         seleccionarProductoVenta(producto.id);
     }
 
@@ -864,8 +826,9 @@ function updateSalesDropdown(searchTerm = '') {
     }
 
     inputBuscarProductVenta.addEventListener('input', (e) => {
-        renderGridProductosVenta(e.target.value);
         mostrarSugerencias(e.target.value);
+        // Selección automática si el texto coincide exactamente con un código de barras
+        renderGridProductosVenta(e.target.value);
     });
 
     inputBuscarProductVenta.addEventListener('keydown', (e) => {
