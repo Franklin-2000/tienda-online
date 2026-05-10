@@ -704,6 +704,18 @@ function renderGridProductosVenta(searchTerm = '') {
     }
 }
 
+function limpiarProductoSeleccionado() {
+    productoSeleccionadoVentaId = null;
+    if (selectProductoVenta) selectProductoVenta.value = '';
+    const panelCantidad = document.getElementById('panelCantidadVenta');
+    if (panelCantidad) panelCantidad.style.display = 'none';
+    // Limpiar el input y enfocar para nueva búsqueda
+    if (inputBuscarProductVenta) {
+        inputBuscarProductVenta.value = '';
+        inputBuscarProductVenta.focus();
+    }
+}
+
 function seleccionarProductoVenta(productId) {
     productoSeleccionadoVentaId = productId;
     const product = inventory.find(p => p.id.toString() === productId.toString());
@@ -712,18 +724,23 @@ function seleccionarProductoVenta(productId) {
     // Sincronizar el select oculto (para compatibilidad)
     selectProductoVenta.value = productId;
 
-    // Mostrar panel de cantidad
+    // Mostrar panel de cantidad con botón eliminar
     const panelCantidad = document.getElementById('panelCantidadVenta');
     const infoEl = document.getElementById('productoSeleccionadoInfo');
     if (panelCantidad) panelCantidad.style.display = 'block';
     if (infoEl) {
         infoEl.innerHTML = `
             <img src="${product.imagen || 'https://via.placeholder.com/50'}" alt="${product.nombre}">
-            <div>
+            <div class="producto-seleccionado-datos">
                 <strong>${product.nombre}</strong>
                 <span>$${Number(product.precio).toLocaleString('es-CO')} · Stock: ${product.cantidad}</span>
+                <button class="btn-eliminar-seleccion" id="btnEliminarSeleccion">✕ Eliminar</button>
             </div>
         `;
+        // Evento del botón eliminar
+        document.getElementById('btnEliminarSeleccion').addEventListener('click', () => {
+            limpiarProductoSeleccionado();
+        });
     }
 
     // Enfocar cantidad
@@ -847,9 +864,13 @@ function updateSalesDropdown(searchTerm = '') {
             const itemActivo = listaSugerencias.querySelector('.autocomplete-item.activo');
             if (itemActivo) itemActivo.scrollIntoView({ block: 'nearest' });
         } else if (e.key === 'Enter') {
+            e.preventDefault();
             if (indiceSugerencia >= 0 && sugerenciasActuales[indiceSugerencia]) {
-                e.preventDefault();
+                // Hay una sugerencia resaltada → seleccionarla
                 seleccionarDesdeSugerencia(sugerenciasActuales[indiceSugerencia]);
+            } else if (sugerenciasActuales.length === 1) {
+                // Solo hay un resultado → seleccionar automáticamente
+                seleccionarDesdeSugerencia(sugerenciasActuales[0]);
             }
         } else if (e.key === 'Escape') {
             listaSugerencias.classList.remove('visible');

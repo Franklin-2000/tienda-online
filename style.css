@@ -2481,6 +2481,33 @@ input[type="number"] {
     color: #555;
 }
 
+.producto-seleccionado-datos {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 2px;
+}
+
+/* Botón "Eliminar" dentro del panel de producto seleccionado */
+.btn-eliminar-seleccion {
+    margin-top: 6px;
+    background: none;
+    border: none;
+    color: #c0392b;
+    font-size: 0.8em;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
+    text-decoration: underline;
+    letter-spacing: 0.02em;
+    transition: color 0.15s;
+    width: fit-content;
+}
+.btn-eliminar-seleccion:hover {
+    color: #e74c3c;
+}
+
 @media (max-width: 600px) {
     .grid-productos-venta {
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
