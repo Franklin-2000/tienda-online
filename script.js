@@ -517,76 +517,81 @@ btnCerrarScanner.addEventListener('click', (e) => {
 // ==========================================
 
 function showScreen(screenId, pushToHistory = true) {
-    // Ocultar TODAS las pantallas quitando clase activa
+    // Ocultar TODAS las pantallas — solo manipulamos la clase CSS
+    // El CSS en style.css define display:none por defecto y display:flex/block con .activa
     document.querySelectorAll(
         '#pantalla-login, #pantalla-inicio, #pantalla-menu-ventas, ' +
         '#pantalla-INVENTARIO, #pantalla-ventas-fisicas, #pantalla-historial-fisicas, ' +
         '#pantalla-ventas-online, #pantalla-historial-online'
-    ).forEach(el => {
+    ).forEach(function(el) {
         el.classList.remove('activa');
-        el.style.display = 'none';
     });
 
-    const show = (el, displayType = 'block') => {
+    // Muestra la pantalla pedida y vuelve al tope
+    function show(el) {
         if (!el) return;
-        el.style.display = displayType;
         el.classList.add('activa');
-        el.scrollTop = 0; // siempre desde el tope
-    };
+        el.scrollTop = 0;
+    }
 
     switch (screenId) {
-        case 'pantalla-login':
-            show(pantallaLogin, 'flex');
+        case 'pantalla-login': {
+            show(pantallaLogin);
             break;
-        case 'pantalla-inicio':
-            show(pantallaInicio, 'flex');
+        }
+        case 'pantalla-inicio': {
+            show(pantallaInicio);
             clearSearch();
             resetFormAndMode();
             break;
-        case 'pantalla-INVENTARIO':
-            show(pantallaInventario, 'block');
+        }
+        case 'pantalla-INVENTARIO': {
+            show(pantallaInventario);
             resetFormAndMode();
             categoriaActivaFiltro = 'todas';
             searchResults = null;
-            document.querySelectorAll('.btn-categoria-filtro').forEach(b => b.classList.remove('activo'));
-            const btnTodasCat = document.querySelector('.btn-categoria-filtro[data-categoria="todas"]');
+            document.querySelectorAll('.btn-categoria-filtro').forEach(function(b) { b.classList.remove('activo'); });
+            var btnTodasCat = document.querySelector('.btn-categoria-filtro[data-categoria="todas"]');
             if (btnTodasCat) btnTodasCat.classList.add('activo');
             loadInventory();
             break;
-        case 'pantalla-menu-ventas':
-            show(pantallaMenuVentas, 'flex');
+        }
+        case 'pantalla-menu-ventas': {
+            show(pantallaMenuVentas);
             break;
+        }
         case 'pantalla-ventas-fisicas': {
-            show(pantallaVentasFisicas, 'block');
+            show(pantallaVentasFisicas);
             categoriaActivaVenta = 'todas';
             productoSeleccionadoVentaId = null;
-            document.querySelectorAll('.btn-cat-venta').forEach(b => b.classList.remove('activo'));
-            const btnTodasVenta = document.querySelector('.btn-cat-venta[data-cat="todas"]');
+            document.querySelectorAll('.btn-cat-venta').forEach(function(b) { b.classList.remove('activo'); });
+            var btnTodasVenta = document.querySelector('.btn-cat-venta[data-cat="todas"]');
             if (btnTodasVenta) btnTodasVenta.classList.add('activo');
-            const panelCant = document.getElementById('panelCantidadVenta');
+            var panelCant = document.getElementById('panelCantidadVenta');
             if (panelCant) panelCant.style.display = 'none';
             updateSalesDropdown();
             break;
         }
-        case 'pantalla-ventas-online':
-            show(pantallaVentasOnline, 'block');
+        case 'pantalla-ventas-online': {
+            show(pantallaVentasOnline);
             break;
+        }
         case 'pantalla-historial-online': {
-            const ph = document.querySelector('#pantalla-historial-online');
-            show(ph, 'block');
+            var ph = document.querySelector('#pantalla-historial-online');
+            show(ph);
             renderHistorialOnline();
             break;
         }
         case 'pantalla-historial-fisicas': {
-            const phf = document.querySelector('#pantalla-historial-fisicas');
-            show(phf, 'block');
+            var phf = document.querySelector('#pantalla-historial-fisicas');
+            show(phf);
             renderSalesHistory();
             break;
         }
     }
 
     if (pushToHistory) {
-        history.pushState({ screen: screenId }, '', `#${screenId}`);
+        history.pushState({ screen: screenId }, '', '#' + screenId);
     }
 }
 
@@ -1584,7 +1589,7 @@ if (contenedorProductos) {
 // ==========================================
 // LÓGICA DE EXPORTACIÓN (CSV)
 // ==========================================
-function exportInventoryToCSV() {
+async function exportInventoryToCSV() {
     if (inventory.length === 0) {
         await mostrarAlerta("El inventario está vacío. No hay datos para exportar.", 'warn');
         return;
