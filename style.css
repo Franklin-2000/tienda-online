@@ -844,11 +844,12 @@ input[type="file"] {
   /* La tarjeta ocupa ~55% del anillo (proporcional) */
   width: clamp(180px, calc(var(--ring-size, min(85vmin, 700px)) * 0.52), 360px);
   min-height: clamp(170px, calc(var(--ring-size, min(85vmin, 700px)) * 0.38), 280px);
-  padding: clamp(70px, calc(var(--ring-size, min(85vmin, 700px)) * 0.18), 145px) clamp(14px, 4vw, 35px) clamp(18px, 3vw, 30px);
+  padding: clamp(14px, 3vw, 24px) clamp(14px, 4vw, 35px) clamp(22px, 4vw, 38px);
   border-radius: 16px;
   box-shadow: 0 0 40px rgba(0, 229, 255, 0.15), 0 4px 30px rgba(0,0,0,0.6);
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   gap: 12px;
   text-align: center;
   animation: slideIn 0.5s ease;
@@ -1848,7 +1849,7 @@ input[type="number"] {
 }
 
 .contenedor-botones-login {
-    margin-top: 20px;
+    margin-top: 0;
 }
 
 .btn-google {

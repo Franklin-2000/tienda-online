@@ -150,6 +150,22 @@ function mostrarConfirm(mensaje, tipo = 'warn') {
 }
 
 // ==========================================
+// DETECCIÓN DE MODO PREVISUALIZACIÓN
+// Si corre en un iframe sin origen HTTP real (ej: previsualizador Yachai Codex),
+// se salta el checkAuthStatus() inicial para evitar el bloqueo de Supabase,
+// pero todo lo demás (botón Google, navegación, etc.) sigue funcionando.
+// ==========================================
+const EN_IFRAME_PREVIEW = (() => {
+    try {
+        const enIframe = window.self !== window.top;
+        const sinOrigenReal = window.location.protocol !== 'http:' && window.location.protocol !== 'https:';
+        return enIframe && sinOrigenReal;
+    } catch(e) {
+        return true;
+    }
+})();
+
+// ==========================================
 // CONFIGURACIÓN DE SUPABASE
 const SB_URL = "https://mhnhfdtdpryrjaeaymsa.supabase.co";
 const SB_KEY = "sb_publishable_tiKyjeMyir7LD0EmFCdo8g_CqAXoM8R"; 
@@ -600,7 +616,7 @@ function showScreen(screenId, pushToHistory = true) {
     }
 
     if (pushToHistory) {
-        history.pushState({ screen: screenId }, '', '#' + screenId);
+        try { history.pushState({ screen: screenId }, '', '#' + screenId); } catch(e) {}
     }
 }
 
@@ -611,14 +627,14 @@ async function checkAuthStatus(pushToHistory = true) {
     if (session) {
         currentLoggedInUserEmail = session.user.email;
         currentUserId = session.user.id; // <-- guardamos el user_id
-        if (pushToHistory) history.replaceState({ screen: 'pantalla-inicio' }, '', '#pantalla-inicio');
+        if (pushToHistory) try { history.replaceState({ screen: 'pantalla-inicio' }, '', '#pantalla-inicio'); } catch(e) {}
         showScreen('pantalla-inicio', false); 
         loadInventory(); 
         loadSales(); // <-- Ahora carga desde Supabase
     } else {
         currentLoggedInUserEmail = null;
         currentUserId = null;
-        if (pushToHistory) history.replaceState({ screen: 'pantalla-login' }, '', '#pantalla-login');
+        if (pushToHistory) try { history.replaceState({ screen: 'pantalla-login' }, '', '#pantalla-login'); } catch(e) {}
         showScreen('pantalla-login', false);
     }
 }
@@ -1759,7 +1775,11 @@ btnLogout.addEventListener("click", handleLogout);
 // INICIALIZACIÓN DE LA APP
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    checkAuthStatus();
+    if (!EN_IFRAME_PREVIEW) {
+        checkAuthStatus();
+    }
+    // En modo preview: la pantalla de login ya es visible por defecto en el HTML,
+    // el botón de Google y la navegación siguen funcionando normalmente.
 });
 
 // =========================================================
