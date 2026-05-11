@@ -1,3 +1,154 @@
+// ================================================================
+// SISTEMA DE ALERTAS Y CONFIRMACIONES PERSONALIZADAS
+// Enter = Aceptar / Escape = Cancelar
+// ================================================================
+
+// Inyectar estilos una sola vez
+(function inyectarEstilosAlerta() {
+    if (document.getElementById('__alerta-styles')) return;
+    const style = document.createElement('style');
+    style.id = '__alerta-styles';
+    style.textContent = `
+        @keyframes __fadeIn  { from { opacity:0 } to { opacity:1 } }
+        @keyframes __scaleIn { from { transform:scale(.85); opacity:0 } to { transform:scale(1); opacity:1 } }
+        @keyframes __fadeOut { from { opacity:1 } to { opacity:0 } }
+
+        .__alerta-overlay {
+            position:fixed; inset:0;
+            background:rgba(0,0,0,.5);
+            display:flex; align-items:center; justify-content:center;
+            z-index:99999;
+            animation:__fadeIn .18s ease;
+        }
+        .__alerta-overlay.cerrando {
+            animation:__fadeOut .18s ease forwards;
+        }
+        .__alerta-box {
+            background:#fff;
+            border-radius:20px;
+            padding:32px 28px 24px;
+            max-width:390px; width:92%;
+            box-shadow:0 10px 50px rgba(0,0,0,.25);
+            text-align:center;
+            font-family:'Nunito', 'Segoe UI', sans-serif;
+            animation:__scaleIn .2s cubic-bezier(.34,1.56,.64,1);
+        }
+        .__alerta-icono {
+            font-size:2.4rem; margin-bottom:10px; display:block;
+        }
+        .__alerta-msg {
+            margin:0 0 22px;
+            font-size:1rem; color:#222;
+            line-height:1.65; white-space:pre-line;
+        }
+        .__alerta-btns {
+            display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
+        }
+        .__alerta-btn {
+            border:none; border-radius:50px;
+            padding:11px 32px;
+            font-size:.97rem; font-weight:700;
+            cursor:pointer;
+            font-family:'Nunito','Segoe UI',sans-serif;
+            transition:transform .12s, box-shadow .12s;
+            outline:none;
+        }
+        .__alerta-btn:focus { box-shadow:0 0 0 3px rgba(108,99,255,.4); }
+        .__alerta-btn:hover { transform:scale(1.04); }
+        .__alerta-btn-ok {
+            background:linear-gradient(135deg,#6c63ff,#a78bfa);
+            color:#fff;
+            box-shadow:0 4px 14px rgba(108,99,255,.35);
+        }
+        .__alerta-btn-cancel {
+            background:#f0f0f0; color:#444;
+        }
+        .__alerta-btn-danger {
+            background:linear-gradient(135deg,#e53935,#f06292);
+            color:#fff;
+            box-shadow:0 4px 14px rgba(229,57,53,.3);
+        }
+    `;
+    document.head.appendChild(style);
+})();
+
+/**
+ * Muestra una alerta personalizada. Enter / click = Aceptar.
+ * @param {string} mensaje
+ * @param {'info'|'success'|'error'|'warn'} [tipo='info']
+ * @returns {Promise<void>}
+ */
+function mostrarAlerta(mensaje, tipo = 'info') {
+    return new Promise(resolve => {
+        const iconos = { info:'ℹ️', success:'✅', error:'❌', warn:'⚠️' };
+        const overlay = document.createElement('div');
+        overlay.className = '__alerta-overlay';
+        overlay.innerHTML = `
+            <div class="__alerta-box">
+                <span class="__alerta-icono">${iconos[tipo] || '📢'}</span>
+                <p class="__alerta-msg">${mensaje}</p>
+                <div class="__alerta-btns">
+                    <button class="__alerta-btn __alerta-btn-ok" id="__btn-ok">Aceptar</button>
+                </div>
+            </div>`;
+
+        const cerrar = () => {
+            overlay.classList.add('cerrando');
+            document.removeEventListener('keydown', onKey);
+            setTimeout(() => { document.body.removeChild(overlay); resolve(); }, 170);
+        };
+
+        const onKey = (e) => {
+            if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); cerrar(); }
+        };
+
+        overlay.querySelector('#__btn-ok').addEventListener('click', cerrar);
+        document.addEventListener('keydown', onKey);
+        document.body.appendChild(overlay);
+        setTimeout(() => overlay.querySelector('#__btn-ok').focus(), 60);
+    });
+}
+
+/**
+ * Confirmación personalizada. Enter = Aceptar / Escape = Cancelar.
+ * @param {string} mensaje
+ * @param {'warn'|'danger'|'info'} [tipo='warn']
+ * @returns {Promise<boolean>}
+ */
+function mostrarConfirm(mensaje, tipo = 'warn') {
+    return new Promise(resolve => {
+        const iconos = { warn:'⚠️', danger:'🗑️', info:'❓' };
+        const overlay = document.createElement('div');
+        overlay.className = '__alerta-overlay';
+        overlay.innerHTML = `
+            <div class="__alerta-box">
+                <span class="__alerta-icono">${iconos[tipo] || '❓'}</span>
+                <p class="__alerta-msg">${mensaje}</p>
+                <div class="__alerta-btns">
+                    <button class="__alerta-btn __alerta-btn-cancel" id="__btn-cancel">Cancelar</button>
+                    <button class="__alerta-btn ${tipo === 'danger' ? '__alerta-btn-danger' : '__alerta-btn-ok'}" id="__btn-ok">Aceptar</button>
+                </div>
+            </div>`;
+
+        const cerrar = (resultado) => {
+            overlay.classList.add('cerrando');
+            document.removeEventListener('keydown', onKey);
+            setTimeout(() => { document.body.removeChild(overlay); resolve(resultado); }, 170);
+        };
+
+        const onKey = (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); cerrar(true); }
+            if (e.key === 'Escape') { e.preventDefault(); cerrar(false); }
+        };
+
+        overlay.querySelector('#__btn-ok').addEventListener('click', () => cerrar(true));
+        overlay.querySelector('#__btn-cancel').addEventListener('click', () => cerrar(false));
+        document.addEventListener('keydown', onKey);
+        document.body.appendChild(overlay);
+        setTimeout(() => overlay.querySelector('#__btn-ok').focus(), 60);
+    });
+}
+
 // ==========================================
 // CONFIGURACIÓN DE SUPABASE
 const SB_URL = "https://mhnhfdtdpryrjaeaymsa.supabase.co";
@@ -449,7 +600,7 @@ function showScreen(screenId, pushToHistory = true) {
     }
 
     if (pushToHistory) {
-        try { history.pushState({ screen: screenId }, '', '#' + screenId); } catch(e) {}
+        history.pushState({ screen: screenId }, '', '#' + screenId);
     }
 }
 
@@ -460,14 +611,14 @@ async function checkAuthStatus(pushToHistory = true) {
     if (session) {
         currentLoggedInUserEmail = session.user.email;
         currentUserId = session.user.id; // <-- guardamos el user_id
-        if (pushToHistory) try { history.replaceState({ screen: 'pantalla-inicio' }, '', '#pantalla-inicio'); } catch(e) {}
+        if (pushToHistory) history.replaceState({ screen: 'pantalla-inicio' }, '', '#pantalla-inicio');
         showScreen('pantalla-inicio', false); 
         loadInventory(); 
         loadSales(); // <-- Ahora carga desde Supabase
     } else {
         currentLoggedInUserEmail = null;
         currentUserId = null;
-        if (pushToHistory) try { history.replaceState({ screen: 'pantalla-login' }, '', '#pantalla-login'); } catch(e) {}
+        if (pushToHistory) history.replaceState({ screen: 'pantalla-login' }, '', '#pantalla-login');
         showScreen('pantalla-login', false);
     }
 }
@@ -2307,154 +2458,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
-// ================================================================
-// SISTEMA DE ALERTAS Y CONFIRMACIONES PERSONALIZADAS
-// Enter = Aceptar / Escape = Cancelar
-// ================================================================
-
-// Inyectar estilos una sola vez
-(function inyectarEstilosAlerta() {
-    if (document.getElementById('__alerta-styles')) return;
-    const style = document.createElement('style');
-    style.id = '__alerta-styles';
-    style.textContent = `
-        @keyframes __fadeIn  { from { opacity:0 } to { opacity:1 } }
-        @keyframes __scaleIn { from { transform:scale(.85); opacity:0 } to { transform:scale(1); opacity:1 } }
-        @keyframes __fadeOut { from { opacity:1 } to { opacity:0 } }
-
-        .__alerta-overlay {
-            position:fixed; inset:0;
-            background:rgba(0,0,0,.5);
-            display:flex; align-items:center; justify-content:center;
-            z-index:99999;
-            animation:__fadeIn .18s ease;
-        }
-        .__alerta-overlay.cerrando {
-            animation:__fadeOut .18s ease forwards;
-        }
-        .__alerta-box {
-            background:#fff;
-            border-radius:20px;
-            padding:32px 28px 24px;
-            max-width:390px; width:92%;
-            box-shadow:0 10px 50px rgba(0,0,0,.25);
-            text-align:center;
-            font-family:'Nunito', 'Segoe UI', sans-serif;
-            animation:__scaleIn .2s cubic-bezier(.34,1.56,.64,1);
-        }
-        .__alerta-icono {
-            font-size:2.4rem; margin-bottom:10px; display:block;
-        }
-        .__alerta-msg {
-            margin:0 0 22px;
-            font-size:1rem; color:#222;
-            line-height:1.65; white-space:pre-line;
-        }
-        .__alerta-btns {
-            display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
-        }
-        .__alerta-btn {
-            border:none; border-radius:50px;
-            padding:11px 32px;
-            font-size:.97rem; font-weight:700;
-            cursor:pointer;
-            font-family:'Nunito','Segoe UI',sans-serif;
-            transition:transform .12s, box-shadow .12s;
-            outline:none;
-        }
-        .__alerta-btn:focus { box-shadow:0 0 0 3px rgba(108,99,255,.4); }
-        .__alerta-btn:hover { transform:scale(1.04); }
-        .__alerta-btn-ok {
-            background:linear-gradient(135deg,#6c63ff,#a78bfa);
-            color:#fff;
-            box-shadow:0 4px 14px rgba(108,99,255,.35);
-        }
-        .__alerta-btn-cancel {
-            background:#f0f0f0; color:#444;
-        }
-        .__alerta-btn-danger {
-            background:linear-gradient(135deg,#e53935,#f06292);
-            color:#fff;
-            box-shadow:0 4px 14px rgba(229,57,53,.3);
-        }
-    `;
-    document.head.appendChild(style);
-})();
-
-/**
- * Muestra una alerta personalizada. Enter / click = Aceptar.
- * @param {string} mensaje
- * @param {'info'|'success'|'error'|'warn'} [tipo='info']
- * @returns {Promise<void>}
- */
-function mostrarAlerta(mensaje, tipo = 'info') {
-    return new Promise(resolve => {
-        const iconos = { info:'ℹ️', success:'✅', error:'❌', warn:'⚠️' };
-        const overlay = document.createElement('div');
-        overlay.className = '__alerta-overlay';
-        overlay.innerHTML = `
-            <div class="__alerta-box">
-                <span class="__alerta-icono">${iconos[tipo] || '📢'}</span>
-                <p class="__alerta-msg">${mensaje}</p>
-                <div class="__alerta-btns">
-                    <button class="__alerta-btn __alerta-btn-ok" id="__btn-ok">Aceptar</button>
-                </div>
-            </div>`;
-
-        const cerrar = () => {
-            overlay.classList.add('cerrando');
-            document.removeEventListener('keydown', onKey);
-            setTimeout(() => { document.body.removeChild(overlay); resolve(); }, 170);
-        };
-
-        const onKey = (e) => {
-            if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); cerrar(); }
-        };
-
-        overlay.querySelector('#__btn-ok').addEventListener('click', cerrar);
-        document.addEventListener('keydown', onKey);
-        document.body.appendChild(overlay);
-        setTimeout(() => overlay.querySelector('#__btn-ok').focus(), 60);
-    });
-}
-
-/**
- * Confirmación personalizada. Enter = Aceptar / Escape = Cancelar.
- * @param {string} mensaje
- * @param {'warn'|'danger'|'info'} [tipo='warn']
- * @returns {Promise<boolean>}
- */
-function mostrarConfirm(mensaje, tipo = 'warn') {
-    return new Promise(resolve => {
-        const iconos = { warn:'⚠️', danger:'🗑️', info:'❓' };
-        const overlay = document.createElement('div');
-        overlay.className = '__alerta-overlay';
-        overlay.innerHTML = `
-            <div class="__alerta-box">
-                <span class="__alerta-icono">${iconos[tipo] || '❓'}</span>
-                <p class="__alerta-msg">${mensaje}</p>
-                <div class="__alerta-btns">
-                    <button class="__alerta-btn __alerta-btn-cancel" id="__btn-cancel">Cancelar</button>
-                    <button class="__alerta-btn ${tipo === 'danger' ? '__alerta-btn-danger' : '__alerta-btn-ok'}" id="__btn-ok">Aceptar</button>
-                </div>
-            </div>`;
-
-        const cerrar = (resultado) => {
-            overlay.classList.add('cerrando');
-            document.removeEventListener('keydown', onKey);
-            setTimeout(() => { document.body.removeChild(overlay); resolve(resultado); }, 170);
-        };
-
-        const onKey = (e) => {
-            if (e.key === 'Enter') { e.preventDefault(); cerrar(true); }
-            if (e.key === 'Escape') { e.preventDefault(); cerrar(false); }
-        };
-
-        overlay.querySelector('#__btn-ok').addEventListener('click', () => cerrar(true));
-        overlay.querySelector('#__btn-cancel').addEventListener('click', () => cerrar(false));
-        document.addEventListener('keydown', onKey);
-        document.body.appendChild(overlay);
-        setTimeout(() => overlay.querySelector('#__btn-ok').focus(), 60);
-    });
-}
