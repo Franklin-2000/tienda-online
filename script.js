@@ -151,15 +151,24 @@ function mostrarConfirm(mensaje, tipo = 'warn') {
 
 // ==========================================
 // DETECCIÓN DE MODO PREVISUALIZACIÓN
-// Si corre en un iframe sin origen HTTP real (ej: previsualizador Yachai Codex),
-// se salta el checkAuthStatus() inicial para evitar el bloqueo de Supabase,
-// pero todo lo demás (botón Google, navegación, etc.) sigue funcionando.
+// Detecta si corre dentro de un iframe previsualizador (ej: Yachai Codex)
+// para saltar el checkAuthStatus() y mostrar pantalla-inicio directamente.
 // ==========================================
 const EN_IFRAME_PREVIEW = (() => {
     try {
-        const enIframe = window.self !== window.top;
-        const sinOrigenReal = window.location.protocol !== 'http:' && window.location.protocol !== 'https:';
-        return enIframe && sinOrigenReal;
+        // Si no está en iframe, nunca es preview
+        if (window.self === window.top) return false;
+        // Iframe sin protocolo real (blob:, data:, file:, etc.)
+        if (window.location.protocol !== 'http:' && window.location.protocol !== 'https:') return true;
+        // Iframe con https pero el padre es inaccesible (cross-origin) → previsualizador
+        try {
+            // Si podemos leer window.top.location, es same-origin (dev local con live server)
+            const _ = window.top.location.href;
+            return false;
+        } catch(e) {
+            // Cross-origin iframe con https → Yachai Codex u otro previsualizador externo
+            return true;
+        }
     } catch(e) {
         return true;
     }
@@ -1775,11 +1784,13 @@ btnLogout.addEventListener("click", handleLogout);
 // INICIALIZACIÓN DE LA APP
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    if (!EN_IFRAME_PREVIEW) {
+    if (EN_IFRAME_PREVIEW) {
+        // Modo previsualizador (ej: Yachai Codex): mostrar pantalla de inicio directamente
+        // sin pasar por Supabase, para que la previsualización funcione correctamente.
+        showScreen('pantalla-inicio', false);
+    } else {
         checkAuthStatus();
     }
-    // En modo preview: la pantalla de login ya es visible por defecto en el HTML,
-    // el botón de Google y la navegación siguen funcionando normalmente.
 });
 
 // =========================================================
