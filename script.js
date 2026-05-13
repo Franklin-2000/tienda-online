@@ -177,7 +177,7 @@ const EN_IFRAME_PREVIEW = (() => {
 // ==========================================
 // CONFIGURACIÓN DE SUPABASE
 const SB_URL = "https://mhnhfdtdpryrjaeaymsa.supabase.co";
-const SB_KEY = "sb_publishable_tiKyjeMyir7LD0EmFCdo8g_CqAXoM8R"; 
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1obmhmZHRkcHJ5cmphZWF5bXNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1NDE3MjAsImV4cCI6MjA5MjExNzcyMH0.UINKafSUr0jI1_NGrh3Z-Uzhwi6Euqot3WQMsliteug";
 const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
 // ==========================================
