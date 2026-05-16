@@ -27,6 +27,48 @@ body {
   overflow: hidden;
 }
 
+/* ==============================
+   SIDEBAR GLOBAL — siempre visible cuando hay sesión
+   ============================== */
+#sidebar-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(3,14,35,0.98) 0%, rgba(5,30,60,0.96) 60%, rgba(8,20,45,0.99) 100%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-right: 1px solid rgba(122, 228, 214, 0.15);
+  display: none; /* oculto hasta que el usuario inicia sesión */
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 22px 0 24px 0;
+  box-sizing: border-box;
+  z-index: 200;
+  box-shadow: 6px 0 36px rgba(0,0,0,0.55);
+}
+
+/* El sidebar se muestra con clase .activo puesta por JS */
+#sidebar-menu.activo {
+  display: flex;
+}
+
+/* Marca el ítem activo en el sidebar */
+.sidebar-boton.sidebar-activo {
+  background: rgba(122, 228, 214, 0.20);
+  color: #fff;
+  border-color: #7ae4d6;
+  box-shadow: 0 4px 18px rgba(122, 228, 214, 0.20);
+}
+
+.sidebar-boton-secondary.sidebar-activo {
+  background: rgba(180, 140, 255, 0.20);
+  color: #fff;
+  border-color: #c9aaff;
+}
+
 /* Cada pantalla: ocupa todo el viewport, scroll interno propio */
 #pantalla-login,
 #pantalla-inicio,
@@ -39,13 +81,32 @@ body {
 #pantalla-estadisticas,
 #pantalla-combos {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
   display: none; /* ocultas por defecto */
+}
+
+/* Pantallas con sidebar: se desplazan para no quedar bajo el menú */
+#pantalla-inicio.activa,
+#pantalla-INVENTARIO.activa,
+#pantalla-ventas-fisicas.activa,
+#pantalla-historial-fisicas.activa,
+#pantalla-ventas-online.activa,
+#pantalla-historial-online.activa,
+#pantalla-estadisticas.activa,
+#pantalla-combos.activa {
+  left: 240px;
+  width: calc(100% - 240px);
+  /* Garantizar que el contenido no quede oculto detrás del sidebar */
+  min-height: 100%;
+  box-sizing: border-box;
 }
 
 /* Cuando JS pone display, usar flex o block según convenga */
@@ -103,27 +164,9 @@ h1 {
 }
 
 /* ==============================
-   MENÚ LATERAL IZQUIERDO
+   MENÚ LATERAL — estilos internos
+   (posición y display se definen arriba en la sección global)
    ============================== */
-#sidebar-menu {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 240px;
-  height: 100%;
-  background: linear-gradient(180deg, rgba(3,14,35,0.96) 0%, rgba(5,30,60,0.93) 60%, rgba(8,20,45,0.97) 100%);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border-right: 1px solid rgba(122, 228, 214, 0.15);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: stretch;
-  padding: 22px 0 24px 0;
-  box-sizing: border-box;
-  z-index: 20;
-  box-shadow: 6px 0 36px rgba(0,0,0,0.55);
-}
 
 /* --- Perfil de usuario --- */
 .sidebar-user-profile {
@@ -284,6 +327,211 @@ h1 {
   box-shadow: 0 3px 10px rgba(192,57,43,0.4);
 }
 
+/* ==============================
+   BOTÓN MODO DE TRABAJO (offline)
+   ============================== */
+.sidebar-modo-trabajo {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 8px 14px 0 14px;
+}
+
+.sidebar-modo-trabajo-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 11px 14px;
+  background: rgba(255, 180, 50, 0.08);
+  color: #ffd580;
+  border: 1.5px solid rgba(255, 180, 50, 0.22);
+  border-radius: 12px 12px 0 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.sidebar-modo-trabajo-btn:hover {
+  background: rgba(255, 180, 50, 0.18);
+  border-color: #ffd580;
+}
+
+.sidebar-modo-trabajo-btn .sidebar-icon {
+  font-size: 1.2em;
+  flex-shrink: 0;
+}
+
+.sidebar-modo-trabajo-panel {
+  background: rgba(255, 180, 50, 0.05);
+  border: 1.5px solid rgba(255, 180, 50, 0.18);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 10px 14px 12px 14px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-modo-trabajo-panel.abierto {
+  display: flex;
+}
+
+.offline-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.offline-switch-label {
+  font-size: 0.78em;
+  color: rgba(255, 210, 120, 0.8);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* Toggle switch */
+.offline-toggle {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.offline-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.offline-toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.12);
+  border-radius: 24px;
+  transition: background 0.25s;
+  border: 1.5px solid rgba(255, 180, 50, 0.3);
+}
+
+.offline-toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 2px;
+  top: 1px;
+  background: rgba(255, 210, 120, 0.6);
+  border-radius: 50%;
+  transition: transform 0.25s, background 0.25s;
+}
+
+.offline-toggle input:checked + .offline-toggle-slider {
+  background: rgba(52, 211, 153, 0.3);
+  border-color: #34d399;
+}
+
+.offline-toggle input:checked + .offline-toggle-slider::before {
+  transform: translateX(22px);
+  background: #34d399;
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.7);
+}
+
+.offline-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7em;
+  color: rgba(255, 200, 100, 0.6);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.offline-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(52, 211, 153, 0.5);
+  flex-shrink: 0;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+/* .activo = sin internet (offline) */
+.offline-status-dot.activo {
+  background: #ffb020;
+  box-shadow: 0 0 6px rgba(255, 176, 32, 0.8);
+}
+
+.offline-sync-btn {
+  display: none;
+  width: 100%;
+  padding: 8px;
+  background: linear-gradient(135deg, #ff8c00, #ffb020);
+  color: #1a0a00;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.78em;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: opacity 0.2s, transform 0.15s;
+  box-sizing: border-box;
+}
+
+.offline-sync-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.offline-sync-btn.visible {
+  display: block;
+}
+
+.offline-pending-count {
+  font-size: 0.68em;
+  color: rgba(255, 200, 100, 0.5);
+  text-align: center;
+}
+
+/* Indicador global modo offline */
+#offline-indicator {
+  position: fixed;
+  bottom: 14px;
+  right: 14px;
+  background: rgba(30,16,0,0.92);
+  border: 1.5px solid #ffb020;
+  color: #ffb020;
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 0.78em;
+  font-weight: 700;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 4px 16px rgba(255, 176, 32, 0.25);
+  animation: __fadeIn 0.3s ease;
+}
+
+#offline-indicator.visible {
+  display: flex;
+}
+
+/* Responsive offline */
+@media (max-width: 600px) {
+  .sidebar-modo-trabajo { margin: 6px 10px 0 10px; }
+  .sidebar-modo-trabajo-btn { font-size: 11px; padding: 9px 10px; }
+  .offline-sync-btn { font-size: 0.72em; padding: 7px; }
+}
+
 /* Compatibilidad con título viejo */
 #pantalla-inicio .title, #pantalla-menu-ventas .title {
   margin-bottom: 30px;
@@ -302,6 +550,17 @@ h1 {
   #sidebar-menu {
     width: 190px;
     padding: 16px 0 16px 0;
+  }
+  #pantalla-inicio.activa,
+  #pantalla-INVENTARIO.activa,
+  #pantalla-ventas-fisicas.activa,
+  #pantalla-historial-fisicas.activa,
+  #pantalla-ventas-online.activa,
+  #pantalla-historial-online.activa,
+  #pantalla-estadisticas.activa,
+  #pantalla-combos.activa {
+    left: 190px;
+    width: calc(100% - 190px);
   }
   #pantalla-inicio .softvent-logo {
     font-size: 34px;
@@ -2799,147 +3058,233 @@ input[type="number"] {
     .btn-categoria-filtro { font-size: 0.75em; padding: 5px 11px; }
 }
 /* ============================================================
-   PANTALLA ESTADÍSTICAS
+   PANTALLA ESTADÍSTICAS — Rediseño limpio y profesional
    ============================================================ */
 #pantalla-estadisticas {
-  background: linear-gradient(135deg, #020b18 0%, #041830 50%, #061428 100%);
+  background: #080f1a;
   padding: 0;
-  font-family: Arial, sans-serif;
-  color: #e0f7f4;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #e2eaf5;
 }
 
+/* — Header — */
 .stats-header {
-  padding: 28px 36px 10px 36px;
-  border-bottom: 1px solid rgba(122,228,214,0.12);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 28px 32px 20px 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  background: linear-gradient(180deg, rgba(10,22,45,0.95) 0%, transparent 100%);
 }
+
+.stats-header-left { display: flex; flex-direction: column; gap: 3px; }
 
 .stats-title {
   font-family: 'Pacifico', cursive;
-  font-size: 48px !important;
+  font-size: 38px !important;
   color: #7ae4d6 !important;
-  text-shadow: 0 0 24px rgba(122,228,214,0.45) !important;
-  margin: 0 0 4px 0 !important;
+  text-shadow: 0 0 30px rgba(122,228,214,0.3) !important;
+  margin: 0 !important;
   text-align: left !important;
+  line-height: 1 !important;
 }
 
 .stats-subtitle {
-  color: rgba(180,230,225,0.6);
-  font-size: 0.95em;
+  font-size: 0.82em;
+  color: rgba(160,210,220,0.55);
+  font-weight: 500;
+  letter-spacing: 0.04em;
   margin: 0;
 }
 
-/* Selector de período */
+/* — Selector de período — */
 .stats-period-selector {
   display: flex;
-  gap: 12px;
-  padding: 20px 36px 0 36px;
+  gap: 6px;
+  padding: 0;
   flex-wrap: wrap;
 }
 
 .btn-period {
-  padding: 10px 26px;
-  border-radius: 50px;
-  border: 2px solid rgba(122,228,214,0.25);
-  background: rgba(122,228,214,0.07);
-  color: #a8f0e8;
-  font-size: 0.9em;
-  font-weight: 700;
-  letter-spacing: 0.05em;
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(122,228,214,0.18);
+  background: rgba(122,228,214,0.05);
+  color: rgba(180,230,225,0.7);
+  font-size: 0.82em;
+  font-weight: 600;
+  letter-spacing: 0.03em;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.18s;
+  font-family: inherit;
 }
 
 .btn-period:hover {
-  background: rgba(122,228,214,0.18);
-  border-color: #7ae4d6;
-  color: #fff;
+  background: rgba(122,228,214,0.12);
+  border-color: rgba(122,228,214,0.45);
+  color: #e0f7f4;
 }
 
 .btn-period.activo {
-  background: linear-gradient(135deg, #0c8ea4, #7ae4d6);
-  border-color: transparent;
-  color: #021018;
-  box-shadow: 0 4px 18px rgba(122,228,214,0.35);
+  background: rgba(122,228,214,0.15);
+  border-color: #7ae4d6;
+  color: #7ae4d6;
+  font-weight: 700;
 }
 
-/* KPI Cards */
+/* — KPI Cards — */
 .stats-kpi-row {
-  display: flex;
-  gap: 16px;
-  padding: 20px 36px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 12px;
+  padding: 20px 32px;
 }
 
 .stats-kpi-card {
-  flex: 1;
-  min-width: 140px;
-  background: rgba(122,228,214,0.06);
-  border: 1px solid rgba(122,228,214,0.18);
-  border-radius: 16px;
-  padding: 18px 20px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 18px 20px 14px 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  backdrop-filter: blur(8px);
-  transition: transform 0.2s, box-shadow 0.2s;
+  gap: 2px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.stats-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(122,228,214,0.6), rgba(122,228,214,0.1));
+  border-radius: 14px 14px 0 0;
 }
 
 .stats-kpi-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(122,228,214,0.15);
+  border-color: rgba(122,228,214,0.25);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.3);
 }
 
-.kpi-icon { font-size: 1.6em; }
+.stats-kpi-primary {
+  background: rgba(122,228,214,0.06);
+  border-color: rgba(122,228,214,0.2);
+}
+
+.stats-kpi-primary::before {
+  background: linear-gradient(90deg, #7ae4d6, rgba(122,228,214,0.2));
+}
+
+.kpi-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
 
 .kpi-label {
-  font-size: 0.72em;
-  color: rgba(180,230,225,0.65);
-  text-align: center;
+  font-size: 0.7em;
+  color: rgba(180,210,220,0.5);
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.09em;
   font-weight: 600;
 }
 
-.kpi-value {
-  font-size: 1.55em;
-  font-weight: 900;
-  color: #7ae4d6;
-  text-shadow: 0 0 12px rgba(122,228,214,0.4);
+.kpi-trend {
+  font-size: 0.72em;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.06);
+  color: rgba(180,210,220,0.5);
 }
 
-/* Grid de gráficos */
+.kpi-trend.positivo {
+  background: rgba(52,211,153,0.12);
+  color: #34d399;
+}
+
+.kpi-trend.negativo {
+  background: rgba(248,113,113,0.12);
+  color: #f87171;
+}
+
+.kpi-value {
+  font-size: 1.7em;
+  font-weight: 800;
+  color: #e2eaf5;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.stats-kpi-primary .kpi-value {
+  font-size: 2em;
+  color: #7ae4d6;
+}
+
+.kpi-compare {
+  font-size: 0.68em;
+  color: rgba(160,200,210,0.4);
+  margin-top: 2px;
+}
+
+/* — Grid de gráficos — */
 .stats-charts-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  padding: 0 36px 20px 36px;
+  gap: 14px;
+  padding: 0 32px 20px 32px;
 }
 
 .stats-chart-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(122,228,214,0.12);
-  border-radius: 18px;
-  padding: 20px 22px;
-  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 18px 20px 16px 20px;
+  transition: border-color 0.2s;
+}
+
+.stats-chart-card:hover {
+  border-color: rgba(122,228,214,0.18);
 }
 
 .stats-chart-wide {
   grid-column: 1 / -1;
 }
 
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
 .chart-title {
-  font-size: 1em;
+  font-size: 0.82em;
   font-weight: 700;
-  color: #a8f0e8;
-  margin: 0 0 14px 0;
-  letter-spacing: 0.04em;
+  color: rgba(180,225,220,0.8);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.chart-badge {
+  font-size: 0.72em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(122,228,214,0.08);
+  border: 1px solid rgba(122,228,214,0.18);
+  color: rgba(122,228,214,0.7);
+  font-weight: 600;
 }
 
 .chart-wrap {
   position: relative;
   width: 100%;
-  height: 220px;
+  height: 210px;
 }
 
 .chart-wrap canvas {
@@ -2947,20 +3292,148 @@ input[type="number"] {
   height: 100% !important;
 }
 
-/* Volver desde estadísticas */
-#btnVolverDesdeEstadisticas {
-  margin: 10px 36px 30px 36px;
+/* — Tabla de productos — */
+.stats-tabla-section {
+  margin: 0 32px 32px 32px;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.025);
 }
 
-@media (max-width: 768px) {
-  .stats-charts-grid { grid-template-columns: 1fr; padding: 0 16px 16px 16px; }
+.stats-tabla-titulo {
+  font-size: 0.78em;
+  font-weight: 700;
+  color: rgba(180,225,220,0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+}
+
+.stats-tabla-wrap {
+  overflow-x: auto;
+}
+
+.stats-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85em;
+}
+
+.stats-tabla thead th {
+  padding: 11px 16px;
+  text-align: left;
+  font-size: 0.72em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(160,200,210,0.45);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  white-space: nowrap;
+}
+
+.stats-tabla thead th:first-child { width: 36px; text-align: center; }
+.stats-tabla thead th:nth-child(3),
+.stats-tabla thead th:nth-child(4),
+.stats-tabla thead th:nth-child(5) { text-align: right; }
+
+.stats-tabla tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.15s;
+}
+
+.stats-tabla tbody tr:last-child { border-bottom: none; }
+
+.stats-tabla tbody tr:hover {
+  background: rgba(122,228,214,0.04);
+}
+
+.stats-tabla tbody td {
+  padding: 11px 16px;
+  color: rgba(220,235,240,0.8);
+  vertical-align: middle;
+}
+
+.stats-tabla tbody td:first-child {
+  text-align: center;
+  color: rgba(160,200,210,0.35);
+  font-size: 0.78em;
+  font-weight: 700;
+}
+
+.stats-tabla tbody td:nth-child(3),
+.stats-tabla tbody td:nth-child(4),
+.stats-tabla tbody td:nth-child(5) { text-align: right; }
+
+.stats-tabla tbody td:nth-child(4) {
+  font-weight: 700;
+  color: #7ae4d6;
+}
+
+/* Barra de porcentaje dentro de la celda */
+.stats-pct-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.stats-pct-track {
+  width: 60px;
+  height: 4px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.stats-pct-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7ae4d6, rgba(122,228,214,0.5));
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.stats-tabla-empty {
+  text-align: center !important;
+  color: rgba(160,200,210,0.25) !important;
+  font-size: 0.85em;
+  padding: 28px !important;
+}
+
+/* — Botón volver — */
+#btnVolverDesdeEstadisticas {
+  display: none; /* botón volver oculto — el sidebar ya hace esa función */
+}
+
+/* — Responsive — */
+@media (max-width: 900px) {
+  .stats-kpi-row {
+    grid-template-columns: 1fr 1fr;
+    padding: 16px;
+    gap: 10px;
+  }
+  .stats-charts-grid {
+    grid-template-columns: 1fr;
+    padding: 0 16px 16px 16px;
+    gap: 12px;
+  }
   .stats-chart-wide { grid-column: 1; }
-  .stats-kpi-row { padding: 16px; gap: 10px; }
-  .stats-kpi-card { min-width: 120px; padding: 14px 12px; }
-  .kpi-value { font-size: 1.25em; }
-  .stats-header { padding: 20px 16px 10px 16px; }
-  .stats-title { font-size: 34px !important; }
-  .stats-period-selector { padding: 14px 16px 0 16px; }
+  .stats-header { padding: 20px 16px 16px 16px; }
+  .stats-title { font-size: 30px !important; }
+  .stats-tabla-section { margin: 0 16px 24px 16px; }
+}
+
+@media (max-width: 600px) {
+  .stats-kpi-row { grid-template-columns: 1fr 1fr; }
+  .stats-kpi-primary { grid-column: 1 / -1; }
+  .kpi-value { font-size: 1.4em; }
+  .stats-kpi-primary .kpi-value { font-size: 1.7em; }
+  .stats-header { flex-direction: column; align-items: flex-start; }
+  .stats-period-selector { width: 100%; }
+  .btn-period { flex: 1; text-align: center; }
 }
 
 /* ============================================================
