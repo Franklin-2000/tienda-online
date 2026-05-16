@@ -50,57 +50,57 @@
     </div>
   </div>
 
+  <!-- Menú lateral GLOBAL — visible en todas las pantallas autenticadas -->
+  <nav id="sidebar-menu">
+
+    <!-- Perfil de usuario -->
+    <div class="sidebar-user-profile">
+      <img id="sidebar-user-avatar" class="sidebar-avatar" src="" alt="Avatar">
+      <div class="sidebar-user-info">
+        <span id="sidebar-user-name" class="sidebar-user-name">Usuario</span>
+        <span id="sidebar-user-email" class="sidebar-user-email">cuenta@gmail.com</span>
+      </div>
+    </div>
+
+    <!-- Título sección -->
+    <div class="sidebar-section-title">
+      <span class="sidebar-title-icon">⚡</span>
+      <span>Operaciones Frecuentes</span>
+    </div>
+
+    <!-- Botones de navegación -->
+    <div class="sidebar-nav-links">
+      <a href="#" class="sidebar-boton" id="btn-Inventario">
+        <span class="sidebar-icon">📦</span>
+        <span class="sidebar-label">INVENTARIO</span>
+      </a>
+      <a href="#" class="sidebar-boton" id="btn-Menu-Ventas-Fisicas">
+        <span class="sidebar-icon">🛒</span>
+        <span class="sidebar-label">VENTAS FÍSICAS</span>
+      </a>
+      <a href="#" class="sidebar-boton" id="btn-Menu-Ventas-Online">
+        <span class="sidebar-icon">🌐</span>
+        <span class="sidebar-label">VENTAS ONLINE</span>
+      </a>
+      <a href="#" class="sidebar-boton sidebar-boton-secondary" id="btn-Estadisticas">
+        <span class="sidebar-icon">📊</span>
+        <span class="sidebar-label">ESTADÍSTICAS</span>
+      </a>
+      <a href="#" class="sidebar-boton sidebar-boton-secondary" id="btn-Combos">
+        <span class="sidebar-icon">🎁</span>
+        <span class="sidebar-label">COMBOS</span>
+      </a>
+    </div>
+
+    <!-- Cerrar Sesión -->
+    <button id="btnLogout" class="sidebar-logout">
+      <span class="sidebar-icon">🚪</span>
+      <span class="sidebar-label">Cerrar Sesión</span>
+    </button>
+  </nav>
+
   <div id="pantalla-inicio">
     <h1 class="title softvent-logo">SOFTVENT</h1>
-
-    <!-- Menú lateral IZQUIERDO -->
-    <nav id="sidebar-menu">
-
-      <!-- Perfil de usuario -->
-      <div class="sidebar-user-profile">
-        <img id="sidebar-user-avatar" class="sidebar-avatar" src="" alt="Avatar">
-        <div class="sidebar-user-info">
-          <span id="sidebar-user-name" class="sidebar-user-name">Usuario</span>
-          <span id="sidebar-user-email" class="sidebar-user-email">cuenta@gmail.com</span>
-        </div>
-      </div>
-
-      <!-- Título sección -->
-      <div class="sidebar-section-title">
-        <span class="sidebar-title-icon">⚡</span>
-        <span>Operaciones Frecuentes</span>
-      </div>
-
-      <!-- Botones de navegación -->
-      <div class="sidebar-nav-links">
-        <a href="#" class="sidebar-boton" id="btn-Inventario">
-          <span class="sidebar-icon">📦</span>
-          <span class="sidebar-label">INVENTARIO</span>
-        </a>
-        <a href="#" class="sidebar-boton" id="btn-Menu-Ventas-Fisicas">
-          <span class="sidebar-icon">🛒</span>
-          <span class="sidebar-label">VENTAS FÍSICAS</span>
-        </a>
-        <a href="#" class="sidebar-boton" id="btn-Menu-Ventas-Online">
-          <span class="sidebar-icon">🌐</span>
-          <span class="sidebar-label">VENTAS ONLINE</span>
-        </a>
-        <a href="#" class="sidebar-boton sidebar-boton-secondary" id="btn-Estadisticas">
-          <span class="sidebar-icon">📊</span>
-          <span class="sidebar-label">ESTADÍSTICAS</span>
-        </a>
-        <a href="#" class="sidebar-boton sidebar-boton-secondary" id="btn-Combos">
-          <span class="sidebar-icon">🎁</span>
-          <span class="sidebar-label">COMBOS</span>
-        </a>
-      </div>
-
-      <!-- Cerrar Sesión -->
-      <button id="btnLogout" class="sidebar-logout">
-        <span class="sidebar-icon">🚪</span>
-        <span class="sidebar-label">Cerrar Sesión</span>
-      </button>
-    </nav>
   </div>
 
   <!-- pantalla-menu-ventas se mantiene vacía para compatibilidad con JS -->
@@ -336,67 +336,114 @@
        PANTALLA: ESTADÍSTICAS
        ============================ -->
   <div id="pantalla-estadisticas">
+
+    <!-- Header -->
     <div class="stats-header">
-      <h1 class="stats-title">📊 Estadísticas</h1>
-      <p class="stats-subtitle">Análisis de tus ventas en tiempo real</p>
+      <div class="stats-header-left">
+        <h1 class="stats-title">Estadísticas</h1>
+        <p class="stats-subtitle" id="stats-fecha-label">Hoy</p>
+      </div>
+      <div class="stats-period-selector">
+        <button class="btn-period activo" data-period="diaria">Hoy</button>
+        <button class="btn-period" data-period="semanal">Esta semana</button>
+        <button class="btn-period" data-period="mensual">Este mes</button>
+      </div>
     </div>
 
-    <!-- Selector de período -->
-    <div class="stats-period-selector">
-      <button class="btn-period activo" data-period="diaria">📅 Diarias</button>
-      <button class="btn-period" data-period="semanal">📆 Semanales</button>
-      <button class="btn-period" data-period="mensual">🗓️ Mensuales</button>
-    </div>
-
-    <!-- Tarjetas de resumen KPI -->
+    <!-- KPI Cards principales -->
     <div class="stats-kpi-row">
-      <div class="stats-kpi-card">
-        <span class="kpi-icon">💰</span>
-        <span class="kpi-label">Total Ventas</span>
+      <div class="stats-kpi-card stats-kpi-primary">
+        <div class="kpi-top">
+          <span class="kpi-label">Ingresos Totales</span>
+          <span class="kpi-trend" id="kpi-trend-ventas">—</span>
+        </div>
         <span class="kpi-value" id="kpi-total-ventas">$0</span>
+        <span class="kpi-compare" id="kpi-compare-ventas">vs período anterior</span>
       </div>
       <div class="stats-kpi-card">
-        <span class="kpi-icon">🧾</span>
-        <span class="kpi-label">Nº Transacciones</span>
+        <div class="kpi-top">
+          <span class="kpi-label">Transacciones</span>
+          <span class="kpi-trend" id="kpi-trend-trans">—</span>
+        </div>
         <span class="kpi-value" id="kpi-num-transacciones">0</span>
+        <span class="kpi-compare" id="kpi-compare-trans">vs período anterior</span>
       </div>
       <div class="stats-kpi-card">
-        <span class="kpi-icon">📦</span>
-        <span class="kpi-label">Productos Vendidos</span>
+        <div class="kpi-top">
+          <span class="kpi-label">Unidades Vendidas</span>
+          <span class="kpi-trend" id="kpi-trend-prod">—</span>
+        </div>
         <span class="kpi-value" id="kpi-productos-vendidos">0</span>
+        <span class="kpi-compare" id="kpi-compare-prod">vs período anterior</span>
       </div>
       <div class="stats-kpi-card">
-        <span class="kpi-icon">⭐</span>
-        <span class="kpi-label">Ticket Promedio</span>
+        <div class="kpi-top">
+          <span class="kpi-label">Ticket Promedio</span>
+          <span class="kpi-trend" id="kpi-trend-ticket">—</span>
+        </div>
         <span class="kpi-value" id="kpi-ticket-promedio">$0</span>
+        <span class="kpi-compare" id="kpi-compare-ticket">vs período anterior</span>
       </div>
     </div>
 
-    <!-- Gráficos -->
+    <!-- Fila de gráficos principales -->
     <div class="stats-charts-grid">
-      <!-- Gráfico 1: Tendencia de ventas (línea) -->
+      <!-- Tendencia de ventas — ancho completo -->
       <div class="stats-chart-card stats-chart-wide">
-        <h3 class="chart-title">📈 Tendencia de Ventas</h3>
+        <div class="chart-header">
+          <h3 class="chart-title">Tendencia de Ingresos</h3>
+          <span class="chart-badge" id="chart-badge-tendencia">—</span>
+        </div>
         <div class="chart-wrap"><canvas id="chartTendencia"></canvas></div>
       </div>
-      <!-- Gráfico 2: Productos más vendidos (barras) -->
+
+      <!-- Productos más vendidos -->
       <div class="stats-chart-card">
-        <h3 class="chart-title">🏆 Productos Más Vendidos</h3>
+        <div class="chart-header">
+          <h3 class="chart-title">Top Productos</h3>
+        </div>
         <div class="chart-wrap"><canvas id="chartProductos"></canvas></div>
       </div>
-      <!-- Gráfico 3: Distribución por categoría (dona) -->
+
+      <!-- Distribución por categoría -->
       <div class="stats-chart-card">
-        <h3 class="chart-title">🍩 Ventas por Categoría</h3>
+        <div class="chart-header">
+          <h3 class="chart-title">Por Categoría</h3>
+        </div>
         <div class="chart-wrap"><canvas id="chartCategorias"></canvas></div>
       </div>
-      <!-- Gráfico 4: Ingresos por hora/día (barras) -->
+
+      <!-- Ingresos por hora/día -->
       <div class="stats-chart-card stats-chart-wide">
-        <h3 class="chart-title">⏰ Ingresos por Período</h3>
+        <div class="chart-header">
+          <h3 class="chart-title">Distribución de Ingresos</h3>
+          <span class="chart-badge" id="chart-badge-ingresos">—</span>
+        </div>
         <div class="chart-wrap"><canvas id="chartIngresos"></canvas></div>
       </div>
     </div>
 
-    <button id="btnVolverDesdeEstadisticas" class="boton-volver">← Volver al Inicio</button>
+    <!-- Tabla resumen de top productos -->
+    <div class="stats-tabla-section">
+      <h3 class="stats-tabla-titulo">Detalle de Ventas por Producto</h3>
+      <div class="stats-tabla-wrap">
+        <table class="stats-tabla" id="stats-tabla-productos">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Producto</th>
+              <th>Unidades</th>
+              <th>Ingresos</th>
+              <th>% del Total</th>
+            </tr>
+          </thead>
+          <tbody id="stats-tabla-body">
+            <tr><td colspan="5" class="stats-tabla-empty">Sin datos para este período</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
   <!-- ============================
