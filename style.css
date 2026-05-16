@@ -137,7 +137,7 @@ body {
 #pantalla-combos.activa { display: block; }
 
 h1 {
-  font-size: 100px;
+  font-size: 120px;
   font-family:'Pacifico', cursive;
   font-weight: bold;
   font-style: italic;
@@ -1688,7 +1688,7 @@ input[type="file"] {
 
 #pantalla-ventas-fisicas h1 {
     font-size: 80px;
-    color: #0c566c;
+    color: #0d0a63;
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(12, 86, 108, 0.4);
     margin-top: 20px;
     margin-bottom: 25px;
