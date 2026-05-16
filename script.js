@@ -814,57 +814,7 @@ if (btnEstadisticasOnline) {
     });
 }
 
-// ============================================================
-// MÓDULO: SELECTOR DE DISPOSITIVO
-// Aplica clase al <body> que activa breakpoints CSS manuales
-// ============================================================
-(function initSelectorDispositivo() {
-    const STORAGE_KEY = 'softvent_device_mode';
-    const btnPanel    = document.getElementById('btnSelectorDispositivo');
-    const panel       = document.getElementById('panelSelectorDispositivo');
-    const labelActivo = document.getElementById('dispositivoActivoLabel');
 
-    const nombresModo = { auto: 'Auto', mobile: 'Móvil', tablet: 'Tablet', desktop: 'Escritorio' };
-
-    function aplicarModo(modo) {
-        // Eliminar clases anteriores
-        document.body.classList.remove('device-mobile', 'device-tablet', 'device-desktop', 'device-auto');
-        if (modo && modo !== 'auto') {
-            document.body.classList.add('device-' + modo);
-        } else {
-            document.body.classList.add('device-auto');
-        }
-        // Actualizar label
-        if (labelActivo) labelActivo.textContent = nombresModo[modo] || 'Auto';
-        // Marcar botón activo
-        document.querySelectorAll('.btn-dispositivo').forEach(b => {
-            b.classList.toggle('activo', b.dataset.device === modo);
-        });
-        // Guardar preferencia
-        try { localStorage.setItem(STORAGE_KEY, modo); } catch(e) {}
-    }
-
-    // Toggle panel
-    if (btnPanel && panel) {
-        btnPanel.addEventListener('click', () => {
-            panel.classList.toggle('abierto');
-            const flecha = btnPanel.querySelector('span:last-child');
-            if (flecha) flecha.textContent = panel.classList.contains('abierto') ? '▲' : '▼';
-        });
-    }
-
-    // Botones de modo
-    document.querySelectorAll('.btn-dispositivo').forEach(btn => {
-        btn.addEventListener('click', () => {
-            aplicarModo(btn.dataset.device);
-        });
-    });
-
-    // Cargar preferencia guardada o detectar automáticamente
-    let modoGuardado = 'auto';
-    try { modoGuardado = localStorage.getItem(STORAGE_KEY) || 'auto'; } catch(e) {}
-    aplicarModo(modoGuardado);
-})();
 
 // Sidebar: Combos
 const btnCombos = document.getElementById('btn-Combos');
