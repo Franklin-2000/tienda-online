@@ -635,11 +635,26 @@ async function checkAuthStatus(pushToHistory = true) {
     
     if (session) {
         currentLoggedInUserEmail = session.user.email;
-        currentUserId = session.user.id; // <-- guardamos el user_id
+        currentUserId = session.user.id;
+
+        // ---- Perfil sidebar ----
+        const meta = session.user.user_metadata || {};
+        const avatarUrl = meta.avatar_url || meta.picture || '';
+        const fullName  = meta.full_name || meta.name || currentLoggedInUserEmail;
+
+        const avatarEl = document.getElementById('sidebar-user-avatar');
+        const nameEl   = document.getElementById('sidebar-user-name');
+        const emailEl  = document.getElementById('sidebar-user-email');
+
+        if (avatarEl) avatarEl.src = avatarUrl || 'https://ui-avatars.com/api/?background=0c566c&color=fff&name=' + encodeURIComponent(fullName);
+        if (nameEl)   nameEl.textContent  = fullName;
+        if (emailEl)  emailEl.textContent = currentLoggedInUserEmail;
+        // ------------------------
+
         if (pushToHistory) try { history.replaceState({ screen: 'pantalla-inicio' }, '', '#pantalla-inicio'); } catch(e) {}
         showScreen('pantalla-inicio', false); 
         loadInventory(); 
-        loadSales(); // <-- Ahora carga desde Supabase
+        loadSales();
     } else {
         currentLoggedInUserEmail = null;
         currentUserId = null;
@@ -690,6 +705,24 @@ if (btnMenuVentasOnline) {
         e.preventDefault();
         showScreen('pantalla-ventas-online');
         cargarPedidosAdmin();
+    });
+}
+
+// Sidebar: Estadísticas (próximamente)
+const btnEstadisticas = document.getElementById('btn-Estadisticas');
+if (btnEstadisticas) {
+    btnEstadisticas.addEventListener("click", function(e) {
+        e.preventDefault();
+        mostrarAlerta('📊 El módulo de Estadísticas estará disponible próximamente.', 'info');
+    });
+}
+
+// Sidebar: Combos (próximamente)
+const btnCombos = document.getElementById('btn-Combos');
+if (btnCombos) {
+    btnCombos.addEventListener("click", function(e) {
+        e.preventDefault();
+        mostrarAlerta('🎁 El módulo de Combos estará disponible próximamente.', 'info');
     });
 }
 

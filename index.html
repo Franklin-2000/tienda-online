@@ -53,8 +53,25 @@
   <div id="pantalla-inicio">
     <h1 class="title softvent-logo">SOFTVENT</h1>
 
-    <!-- Menú lateral derecho -->
+    <!-- Menú lateral IZQUIERDO -->
     <nav id="sidebar-menu">
+
+      <!-- Perfil de usuario -->
+      <div class="sidebar-user-profile">
+        <img id="sidebar-user-avatar" class="sidebar-avatar" src="" alt="Avatar">
+        <div class="sidebar-user-info">
+          <span id="sidebar-user-name" class="sidebar-user-name">Usuario</span>
+          <span id="sidebar-user-email" class="sidebar-user-email">cuenta@gmail.com</span>
+        </div>
+      </div>
+
+      <!-- Título sección -->
+      <div class="sidebar-section-title">
+        <span class="sidebar-title-icon">⚡</span>
+        <span>Operaciones Frecuentes</span>
+      </div>
+
+      <!-- Botones de navegación -->
       <div class="sidebar-nav-links">
         <a href="#" class="sidebar-boton" id="btn-Inventario">
           <span class="sidebar-icon">📦</span>
@@ -68,7 +85,17 @@
           <span class="sidebar-icon">🌐</span>
           <span class="sidebar-label">VENTAS ONLINE</span>
         </a>
+        <a href="#" class="sidebar-boton sidebar-boton-secondary" id="btn-Estadisticas">
+          <span class="sidebar-icon">📊</span>
+          <span class="sidebar-label">ESTADÍSTICAS</span>
+        </a>
+        <a href="#" class="sidebar-boton sidebar-boton-secondary" id="btn-Combos">
+          <span class="sidebar-icon">🎁</span>
+          <span class="sidebar-label">COMBOS</span>
+        </a>
       </div>
+
+      <!-- Cerrar Sesión -->
       <button id="btnLogout" class="sidebar-logout">
         <span class="sidebar-icon">🚪</span>
         <span class="sidebar-label">Cerrar Sesión</span>
