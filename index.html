@@ -375,7 +375,7 @@
     <div class="stats-kpi-row">
       <div class="stats-kpi-card stats-kpi-primary">
         <div class="kpi-top">
-          <span class="kpi-label">Ingresos Totales</span>
+          <span class="kpi-label">💰 Dinero recaudado</span>
           <span class="kpi-trend" id="kpi-trend-ventas">—</span>
         </div>
         <span class="kpi-value" id="kpi-total-ventas">$0</span>
@@ -383,7 +383,7 @@
       </div>
       <div class="stats-kpi-card">
         <div class="kpi-top">
-          <span class="kpi-label">Transacciones</span>
+          <span class="kpi-label">🛍️ Ventas realizadas</span>
           <span class="kpi-trend" id="kpi-trend-trans">—</span>
         </div>
         <span class="kpi-value" id="kpi-num-transacciones">0</span>
@@ -391,7 +391,7 @@
       </div>
       <div class="stats-kpi-card">
         <div class="kpi-top">
-          <span class="kpi-label">Unidades Vendidas</span>
+          <span class="kpi-label">📦 Productos despachados</span>
           <span class="kpi-trend" id="kpi-trend-prod">—</span>
         </div>
         <span class="kpi-value" id="kpi-productos-vendidos">0</span>
@@ -399,11 +399,11 @@
       </div>
       <div class="stats-kpi-card">
         <div class="kpi-top">
-          <span class="kpi-label">Ticket Promedio</span>
+          <span class="kpi-label">🧾 Valor por venta</span>
           <span class="kpi-trend" id="kpi-trend-ticket">—</span>
         </div>
         <span class="kpi-value" id="kpi-ticket-promedio">$0</span>
-        <span class="kpi-compare" id="kpi-compare-ticket">vs período anterior</span>
+        <span class="kpi-compare" id="kpi-compare-ticket">promedio por transacción</span>
       </div>
     </div>
 
@@ -412,7 +412,7 @@
       <!-- Tendencia de ventas — ancho completo -->
       <div class="stats-chart-card stats-chart-wide">
         <div class="chart-header">
-          <h3 class="chart-title">Tendencia de Ingresos</h3>
+          <h3 class="chart-title">📈 Ingresos a lo largo del día</h3>
           <span class="chart-badge" id="chart-badge-tendencia">—</span>
         </div>
         <div class="chart-wrap"><canvas id="chartTendencia"></canvas></div>
@@ -421,7 +421,7 @@
       <!-- Productos más vendidos -->
       <div class="stats-chart-card">
         <div class="chart-header">
-          <h3 class="chart-title">Top Productos</h3>
+          <h3 class="chart-title">🏆 Productos más vendidos</h3>
         </div>
         <div class="chart-wrap"><canvas id="chartProductos"></canvas></div>
       </div>
@@ -429,7 +429,7 @@
       <!-- Distribución por categoría -->
       <div class="stats-chart-card">
         <div class="chart-header">
-          <h3 class="chart-title">Por Categoría</h3>
+          <h3 class="chart-title">🗂️ Ventas por categoría</h3>
         </div>
         <div class="chart-wrap"><canvas id="chartCategorias"></canvas></div>
       </div>
@@ -437,7 +437,7 @@
       <!-- Ingresos por hora/día -->
       <div class="stats-chart-card stats-chart-wide">
         <div class="chart-header">
-          <h3 class="chart-title">Distribución de Ingresos</h3>
+          <h3 class="chart-title">📊 ¿Cuándo vendiste más?</h3>
           <span class="chart-badge" id="chart-badge-ingresos">—</span>
         </div>
         <div class="chart-wrap"><canvas id="chartIngresos"></canvas></div>
@@ -446,7 +446,7 @@
 
     <!-- Tabla resumen de top productos -->
     <div class="stats-tabla-section">
-      <h3 class="stats-tabla-titulo">Detalle de Ventas por Producto</h3>
+      <h3 class="stats-tabla-titulo">📋 Detalle por producto</h3>
       <div class="stats-tabla-wrap">
         <table class="stats-tabla" id="stats-tabla-productos">
           <thead>
