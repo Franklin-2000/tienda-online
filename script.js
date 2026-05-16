@@ -2999,7 +2999,7 @@ function renderEstadisticas(periodo) {
             maintainAspectRatio: false,
             cutout: '62%',
             plugins: {
-                legend: { position: 'right', labels: { color: '#ffffff', font: { size: 14 }, boxWidth: 14, padding: 16 } }
+                legend: { position: 'right', labels: { color: '#ffffff', font: { size: 22, weight: 'bold' }, boxWidth: 22, padding: 24 } }
             }
         }
     });
@@ -3290,7 +3290,7 @@ function renderEstadisticasOnline(periodo) {
         type: 'doughnut',
         data: { labels: Object.keys(catMap), datasets: [{ data: Object.values(catMap), backgroundColor: COLORS_GRAD, borderColor: 'rgba(8,15,26,0.8)', borderWidth: 2, hoverOffset: 6 }] },
         options: { responsive: true, maintainAspectRatio: false, cutout: '62%',
-            plugins: { legend: { position: 'right', labels: { color: '#ffffff', font: { size: 14 }, boxWidth: 14, padding: 16 } } }
+            plugins: { legend: { position: 'right', labels: { color: '#ffffff', font: { size: 22, weight: 'bold' }, boxWidth: 22, padding: 24 } } }
         }
     });
 
