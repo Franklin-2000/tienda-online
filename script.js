@@ -74,6 +74,8 @@
 
 /**
  * Muestra una alerta personalizada. Enter / click = Aceptar.
+ * La alerta NO se cierra sola — siempre espera una acción deliberada del usuario.
+ * Protección de 350ms contra teclas heredadas del contexto anterior.
  * @param {string} mensaje
  * @param {'info'|'success'|'error'|'warn'} [tipo='info']
  * @returns {Promise<void>}
@@ -92,25 +94,44 @@ function mostrarAlerta(mensaje, tipo = 'info') {
                 </div>
             </div>`;
 
+        let puedesCerrar = false;
+
         const cerrar = () => {
+            if (!puedesCerrar) return;          // bloquear cierres prematuros
             overlay.classList.add('cerrando');
             document.removeEventListener('keydown', onKey);
-            setTimeout(() => { document.body.removeChild(overlay); resolve(); }, 170);
+            setTimeout(() => {
+                if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                resolve();
+            }, 170);
         };
 
         const onKey = (e) => {
-            if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); cerrar(); }
+            if (!puedesCerrar) return;          // ignorar teclas heredadas
+            if (e.key === 'Enter' || e.key === 'Escape') {
+                e.preventDefault();
+                cerrar();
+            }
         };
 
         overlay.querySelector('#__btn-ok').addEventListener('click', cerrar);
         document.addEventListener('keydown', onKey);
         document.body.appendChild(overlay);
-        setTimeout(() => overlay.querySelector('#__btn-ok').focus(), 60);
+
+        // Dar foco al botón y habilitar cierre tras 350ms
+        // (tiempo suficiente para que cualquier keydown previo ya pasó)
+        setTimeout(() => {
+            const btn = overlay.querySelector('#__btn-ok');
+            if (btn) btn.focus();
+            puedesCerrar = true;
+        }, 350);
     });
 }
 
 /**
  * Confirmación personalizada. Enter = Aceptar / Escape = Cancelar.
+ * La confirmación NO se cierra sola — siempre espera una acción deliberada del usuario.
+ * Protección de 350ms contra teclas heredadas del contexto anterior.
  * @param {string} mensaje
  * @param {'warn'|'danger'|'info'} [tipo='warn']
  * @returns {Promise<boolean>}
@@ -130,13 +151,20 @@ function mostrarConfirm(mensaje, tipo = 'warn') {
                 </div>
             </div>`;
 
+        let puedesCerrar = false;
+
         const cerrar = (resultado) => {
+            if (!puedesCerrar) return;          // bloquear cierres prematuros
             overlay.classList.add('cerrando');
             document.removeEventListener('keydown', onKey);
-            setTimeout(() => { document.body.removeChild(overlay); resolve(resultado); }, 170);
+            setTimeout(() => {
+                if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                resolve(resultado);
+            }, 170);
         };
 
         const onKey = (e) => {
+            if (!puedesCerrar) return;          // ignorar teclas heredadas
             if (e.key === 'Enter') { e.preventDefault(); cerrar(true); }
             if (e.key === 'Escape') { e.preventDefault(); cerrar(false); }
         };
@@ -145,7 +173,13 @@ function mostrarConfirm(mensaje, tipo = 'warn') {
         overlay.querySelector('#__btn-cancel').addEventListener('click', () => cerrar(false));
         document.addEventListener('keydown', onKey);
         document.body.appendChild(overlay);
-        setTimeout(() => overlay.querySelector('#__btn-ok').focus(), 60);
+
+        // Dar foco al botón Aceptar y habilitar cierre tras 350ms
+        setTimeout(() => {
+            const btn = overlay.querySelector('#__btn-ok');
+            if (btn) btn.focus();
+            puedesCerrar = true;
+        }, 350);
     });
 }
 
