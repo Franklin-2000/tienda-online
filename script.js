@@ -590,7 +590,8 @@ function showScreen(screenId, pushToHistory = true) {
     document.querySelectorAll(
         '#pantalla-login, #pantalla-inicio, #pantalla-menu-ventas, ' +
         '#pantalla-INVENTARIO, #pantalla-ventas-fisicas, #pantalla-historial-fisicas, ' +
-        '#pantalla-ventas-online, #pantalla-historial-online, #pantalla-estadisticas, #pantalla-combos'
+        '#pantalla-ventas-online, #pantalla-historial-online, #pantalla-estadisticas, ' +
+        '#pantalla-estadisticas-online, #pantalla-combos'
     ).forEach(function(el) {
         el.classList.remove('activa');
     });
@@ -608,13 +609,14 @@ function showScreen(screenId, pushToHistory = true) {
 
     // Marcar ítem activo en sidebar
     const mapaActivoSidebar = {
-        'pantalla-INVENTARIO':      'btn-Inventario',
-        'pantalla-ventas-fisicas':  'btn-Menu-Ventas-Fisicas',
-        'pantalla-historial-fisicas':'btn-Menu-Ventas-Fisicas',
-        'pantalla-ventas-online':   'btn-Menu-Ventas-Online',
-        'pantalla-historial-online':'btn-Menu-Ventas-Online',
-        'pantalla-estadisticas':    'btn-Estadisticas',
-        'pantalla-combos':          'btn-Combos',
+        'pantalla-INVENTARIO':           'btn-Inventario',
+        'pantalla-ventas-fisicas':       'btn-Menu-Ventas-Fisicas',
+        'pantalla-historial-fisicas':    'btn-Menu-Ventas-Fisicas',
+        'pantalla-ventas-online':        'btn-Menu-Ventas-Online',
+        'pantalla-historial-online':     'btn-Menu-Ventas-Online',
+        'pantalla-estadisticas':         'btn-Estadisticas',
+        'pantalla-estadisticas-online':  'btn-EstadisticasOnline',
+        'pantalla-combos':               'btn-Combos',
     };
     document.querySelectorAll('.sidebar-boton').forEach(function(b) { b.classList.remove('sidebar-activo'); });
     const btnActivoId = mapaActivoSidebar[screenId];
@@ -688,6 +690,12 @@ function showScreen(screenId, pushToHistory = true) {
             var pe = document.querySelector('#pantalla-estadisticas');
             show(pe);
             initEstadisticas();
+            break;
+        }
+        case 'pantalla-estadisticas-online': {
+            var peo = document.querySelector('#pantalla-estadisticas-online');
+            show(peo);
+            initEstadisticasOnline();
             break;
         }
         case 'pantalla-combos': {
@@ -788,7 +796,7 @@ if (btnMenuVentasOnline) {
     });
 }
 
-// Sidebar: Estadísticas
+// Sidebar: Estadísticas Ventas Físicas
 const btnEstadisticas = document.getElementById('btn-Estadisticas');
 if (btnEstadisticas) {
     btnEstadisticas.addEventListener("click", function(e) {
@@ -796,6 +804,67 @@ if (btnEstadisticas) {
         showScreen('pantalla-estadisticas');
     });
 }
+
+// Sidebar: Estadísticas Ventas Online
+const btnEstadisticasOnline = document.getElementById('btn-EstadisticasOnline');
+if (btnEstadisticasOnline) {
+    btnEstadisticasOnline.addEventListener("click", function(e) {
+        e.preventDefault();
+        showScreen('pantalla-estadisticas-online');
+    });
+}
+
+// ============================================================
+// MÓDULO: SELECTOR DE DISPOSITIVO
+// Aplica clase al <body> que activa breakpoints CSS manuales
+// ============================================================
+(function initSelectorDispositivo() {
+    const STORAGE_KEY = 'softvent_device_mode';
+    const btnPanel    = document.getElementById('btnSelectorDispositivo');
+    const panel       = document.getElementById('panelSelectorDispositivo');
+    const labelActivo = document.getElementById('dispositivoActivoLabel');
+
+    const nombresModo = { auto: 'Auto', mobile: 'Móvil', tablet: 'Tablet', desktop: 'Escritorio' };
+
+    function aplicarModo(modo) {
+        // Eliminar clases anteriores
+        document.body.classList.remove('device-mobile', 'device-tablet', 'device-desktop', 'device-auto');
+        if (modo && modo !== 'auto') {
+            document.body.classList.add('device-' + modo);
+        } else {
+            document.body.classList.add('device-auto');
+        }
+        // Actualizar label
+        if (labelActivo) labelActivo.textContent = nombresModo[modo] || 'Auto';
+        // Marcar botón activo
+        document.querySelectorAll('.btn-dispositivo').forEach(b => {
+            b.classList.toggle('activo', b.dataset.device === modo);
+        });
+        // Guardar preferencia
+        try { localStorage.setItem(STORAGE_KEY, modo); } catch(e) {}
+    }
+
+    // Toggle panel
+    if (btnPanel && panel) {
+        btnPanel.addEventListener('click', () => {
+            panel.classList.toggle('abierto');
+            const flecha = btnPanel.querySelector('span:last-child');
+            if (flecha) flecha.textContent = panel.classList.contains('abierto') ? '▲' : '▼';
+        });
+    }
+
+    // Botones de modo
+    document.querySelectorAll('.btn-dispositivo').forEach(btn => {
+        btn.addEventListener('click', () => {
+            aplicarModo(btn.dataset.device);
+        });
+    });
+
+    // Cargar preferencia guardada o detectar automáticamente
+    let modoGuardado = 'auto';
+    try { modoGuardado = localStorage.getItem(STORAGE_KEY) || 'auto'; } catch(e) {}
+    aplicarModo(modoGuardado);
+})();
 
 // Sidebar: Combos
 const btnCombos = document.getElementById('btn-Combos');
@@ -2955,8 +3024,289 @@ function renderEstadisticas(periodo) {
 }
 
 // ============================================================
-// MÓDULO: COMBOS
+// MÓDULO: ESTADÍSTICAS VENTAS ONLINE
+// Solo procesa ventas cuyo número de ticket empieza con "ONLINE-"
+// (generadas por el trigger fn_descontar_inventario_pedido en Supabase)
 // ============================================================
+let chartOnlineTendencia  = null;
+let chartOnlineProductos  = null;
+let chartOnlineCategorias = null;
+let chartOnlineIngresos   = null;
+let periodoOnlineActivo   = 'diaria';
+
+function initEstadisticasOnline() {
+    document.querySelectorAll('.btn-period-online').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.btn-period-online').forEach(b => b.classList.remove('activo'));
+            btn.classList.add('activo');
+            periodoOnlineActivo = btn.dataset.period;
+            renderEstadisticasOnline(periodoOnlineActivo);
+        };
+    });
+    renderEstadisticasOnline(periodoOnlineActivo);
+}
+
+function getVentasOnline() {
+    // Solo ventas con prefijo ONLINE- (pedidos confirmados de la tienda)
+    return sales.filter(v => v.id && String(v.id).startsWith('ONLINE-'));
+}
+
+function filtrarOnlinePorPeriodo(periodo, ventasOnline) {
+    const ahora  = new Date();
+    const hoyStr = ahora.toLocaleDateString();
+    return ventasOnline.filter(venta => {
+        if (periodo === 'diaria') {
+            const fl = venta.fechaLimpia || '';
+            if (fl === hoyStr) return true;
+            if (venta.globalId && venta.globalId > 1000000000000)
+                return new Date(venta.globalId).toDateString() === ahora.toDateString();
+            return false;
+        }
+        const fv = parsearFechaVenta(venta);
+        if (!fv) return false;
+        if (periodo === 'semanal') {
+            const ini = new Date(ahora);
+            ini.setDate(ahora.getDate() - ahora.getDay());
+            ini.setHours(0,0,0,0);
+            return fv >= ini;
+        }
+        if (periodo === 'mensual') {
+            return fv.getMonth() === ahora.getMonth() && fv.getFullYear() === ahora.getFullYear();
+        }
+        return false;
+    });
+}
+
+function filtrarOnlinePorPeriodoAnterior(periodo, ventasOnline) {
+    const ahora  = new Date();
+    const ayer   = new Date(ahora);
+    ayer.setDate(ahora.getDate() - 1);
+    const ayerStr = ayer.toLocaleDateString();
+    return ventasOnline.filter(venta => {
+        if (periodo === 'diaria') {
+            const fl = venta.fechaLimpia || '';
+            if (fl === ayerStr) return true;
+            if (venta.globalId && venta.globalId > 1000000000000)
+                return new Date(venta.globalId).toDateString() === ayer.toDateString();
+            return false;
+        }
+        const fv = parsearFechaVenta(venta);
+        if (!fv) return false;
+        if (periodo === 'semanal') {
+            const ini = new Date(ahora);
+            ini.setDate(ahora.getDate() - ahora.getDay() - 7);
+            ini.setHours(0,0,0,0);
+            const fin = new Date(ini);
+            fin.setDate(ini.getDate() + 7);
+            return fv >= ini && fv < fin;
+        }
+        if (periodo === 'mensual') {
+            const mes = ahora.getMonth() === 0 ? 11 : ahora.getMonth() - 1;
+            const anio = ahora.getMonth() === 0 ? ahora.getFullYear() - 1 : ahora.getFullYear();
+            return fv.getMonth() === mes && fv.getFullYear() === anio;
+        }
+        return false;
+    });
+}
+
+function renderEstadisticasOnline(periodo) {
+    const todasOnline    = getVentasOnline();
+    const ventasFiltradas = filtrarOnlinePorPeriodo(periodo, todasOnline);
+    const ventasAnteriores = filtrarOnlinePorPeriodoAnterior(periodo, todasOnline);
+
+    const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
+
+    // --- KPIs ---
+    const totalVentas      = ventasFiltradas.reduce((s,v) => s + (v.total || 0), 0);
+    const numTransacciones = ventasFiltradas.length;
+    const totalProductos   = ventasFiltradas.reduce((s,v) => s + v.items.reduce((a,i) => a + (i.qty||0), 0), 0);
+    const ticketPromedio   = numTransacciones > 0 ? totalVentas / numTransacciones : 0;
+    const totalAnt  = ventasAnteriores.reduce((s,v) => s + (v.total || 0), 0);
+    const transAnt  = ventasAnteriores.length;
+    const prodAnt   = ventasAnteriores.reduce((s,v) => s + v.items.reduce((a,i) => a + (i.qty||0), 0), 0);
+    const ticketAnt = transAnt > 0 ? totalAnt / transAnt : 0;
+
+    const el = id => document.getElementById(id);
+    if (el('kpio-total-ventas'))      el('kpio-total-ventas').textContent      = fmt(totalVentas);
+    if (el('kpio-num-transacciones')) el('kpio-num-transacciones').textContent = numTransacciones;
+    if (el('kpio-productos-vendidos'))el('kpio-productos-vendidos').textContent = totalProductos;
+    if (el('kpio-ticket-promedio'))   el('kpio-ticket-promedio').textContent   = fmt(ticketPromedio);
+
+    // Etiqueta período
+    const labelMap = { diaria: 'Resumen de hoy', semanal: 'Esta semana', mensual: 'Este mes' };
+    if (el('stats-online-fecha-label')) el('stats-online-fecha-label').textContent = labelMap[periodo] || '';
+
+    // Trends
+    function setTrendOnline(elId, compareId, actual, anterior) {
+        const e = el(elId), ec = el(compareId);
+        if (!e) return;
+        if (anterior === 0 && actual === 0) {
+            e.textContent = '—'; e.className = 'kpi-trend';
+            if (ec) ec.textContent = 'Sin datos del período anterior';
+            return;
+        }
+        if (anterior === 0) {
+            e.textContent = '🆕 Nuevo'; e.className = 'kpi-trend positivo';
+            if (ec) ec.textContent = 'Primera vez en este período';
+            return;
+        }
+        const pct = Math.round(((actual - anterior) / anterior) * 100);
+        e.textContent = (pct >= 0 ? '▲ ' : '▼ ') + Math.abs(pct) + '%';
+        e.className = 'kpi-trend ' + (pct >= 0 ? 'positivo' : 'negativo');
+        if (ec) ec.textContent = 'Período anterior: ' + (anterior > 100 ? fmt(anterior) : anterior);
+    }
+    setTrendOnline('kpio-trend-ventas', 'kpio-compare-ventas', totalVentas,     totalAnt);
+    setTrendOnline('kpio-trend-trans',  'kpio-compare-trans',  numTransacciones, transAnt);
+    setTrendOnline('kpio-trend-prod',   'kpio-compare-prod',   totalProductos,   prodAnt);
+    setTrendOnline('kpio-trend-ticket', 'kpio-compare-ticket', ticketPromedio,   ticketAnt);
+
+    // --- Agrupar productos ---
+    const prodMap = {}, prodIngresos = {};
+    ventasFiltradas.forEach(v => v.items.forEach(i => {
+        prodMap[i.name]      = (prodMap[i.name] || 0) + (i.qty || 0);
+        prodIngresos[i.name] = (prodIngresos[i.name] || 0) + (i.subtotal || 0);
+    }));
+    const topProductos = Object.entries(prodMap).sort((a,b) => b[1]-a[1]).slice(0, 8);
+
+    // --- Agrupar por categoría ---
+    const catMap = {};
+    ventasFiltradas.forEach(v => v.items.forEach(i => {
+        const prod = inventory.find(p => p.id === i.productId);
+        const cat  = prod?.categoria || 'Sin categoría';
+        catMap[cat] = (catMap[cat] || 0) + (i.subtotal || 0);
+    }));
+
+    // --- Tendencia ---
+    const tendenciaLabels = [], tendenciaData = [];
+    if (periodo === 'diaria') {
+        const porHora = Array(24).fill(0);
+        ventasFiltradas.forEach(v => {
+            let h = v.globalId > 1000000000000 ? new Date(v.globalId).getHours() : new Date(v.date).getHours();
+            if (!isNaN(h) && h >= 0) porHora[h] += (v.total || 0);
+        });
+        for (let h = 0; h < 24; h++) { tendenciaLabels.push(h+':00'); tendenciaData.push(porHora[h]); }
+    } else if (periodo === 'semanal') {
+        const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+        const porDia = Array(7).fill(0);
+        ventasFiltradas.forEach(v => { const fv = parsearFechaVenta(v); if (fv) porDia[fv.getDay()] += (v.total||0); });
+        dias.forEach((d,i) => { tendenciaLabels.push(d); tendenciaData.push(porDia[i]); });
+    } else {
+        const diasEnMes = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
+        const porDia = Array(diasEnMes).fill(0);
+        ventasFiltradas.forEach(v => { const fv = parsearFechaVenta(v); if (fv) { const d = fv.getDate()-1; if (d>=0&&d<diasEnMes) porDia[d]+=(v.total||0); } });
+        for (let d = 1; d <= diasEnMes; d++) { tendenciaLabels.push('D'+d); tendenciaData.push(porDia[d-1]); }
+    }
+
+    // Título gráfico dinámico
+    const titulosMap = { diaria: '📈 Ingresos online hora a hora (hoy)', semanal: '📈 Ingresos online por día de la semana', mensual: '📈 Ingresos online por día del mes' };
+    if (el('online-chart-title-tendencia')) el('online-chart-title-tendencia').textContent = titulosMap[periodo];
+
+    const maxVal = Math.max(...tendenciaData, 1);
+    const horasPico = tendenciaData.filter(v => v > 0).length;
+    if (el('online-chart-badge-tendencia')) {
+        el('online-chart-badge-tendencia').textContent = periodo === 'diaria'
+            ? (horasPico > 0 ? `${horasPico} hora${horasPico>1?'s':''} con pedidos` : 'Sin pedidos hoy')
+            : fmt(totalVentas) + ' total';
+    }
+    if (el('online-chart-badge-ingresos')) {
+        el('online-chart-badge-ingresos').textContent = numTransacciones === 0
+            ? 'Sin pedidos' : numTransacciones + ' pedido' + (numTransacciones > 1 ? 's' : '');
+    }
+
+    const CHART_DEFAULTS = {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: 'rgba(160,200,210,0.6)', font: { size: 11 } } } },
+        scales: {
+            x: { ticks: { color: 'rgba(160,200,210,0.45)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { ticks: { color: 'rgba(160,200,210,0.45)', font: { size: 10 }, callback: v => v>=1000?'$'+Math.round(v/1000)+'k':'$'+v }, grid: { color: 'rgba(255,255,255,0.04)' } }
+        }
+    };
+    const COLORS_GRAD = [
+        'rgba(100,180,255,0.75)', 'rgba(122,228,214,0.75)', 'rgba(180,140,255,0.75)',
+        'rgba(255,160,80,0.75)',  'rgba(255,100,150,0.75)', 'rgba(80,220,160,0.75)',
+        'rgba(255,210,70,0.75)',  'rgba(120,160,255,0.75)'
+    ];
+    function destroyC(ref) { try { if (ref) ref.destroy(); } catch(e){} }
+    function getCtxO(id) { return document.getElementById(id)?.getContext('2d'); }
+
+    // Gráfico 1: Tendencia
+    destroyC(chartOnlineTendencia);
+    const cx1 = getCtxO('chartOnlineTendencia');
+    if (cx1) chartOnlineTendencia = new Chart(cx1, {
+        type: 'line',
+        data: { labels: tendenciaLabels, datasets: [{ label: 'Ingresos online', data: tendenciaData,
+            borderColor: '#64b4ff',
+            backgroundColor: ctx => { const g = ctx.chart.ctx.createLinearGradient(0,0,0,210); g.addColorStop(0,'rgba(100,180,255,0.18)'); g.addColorStop(1,'rgba(100,180,255,0.01)'); return g; },
+            pointBackgroundColor: '#64b4ff', pointRadius: 3, pointHoverRadius: 6, fill: true, tension: 0.35, borderWidth: 2 }]
+        },
+        options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, legend: { display: false } } }
+    });
+
+    // Gráfico 2: Top productos (barras verticales)
+    destroyC(chartOnlineProductos);
+    const cx2 = getCtxO('chartOnlineProductos');
+    if (cx2) chartOnlineProductos = new Chart(cx2, {
+        type: 'bar',
+        data: { labels: topProductos.map(p => p[0].length>12?p[0].slice(0,12)+'…':p[0]),
+            datasets: [{ label: 'Unidades pedidas', data: topProductos.map(p=>p[1]), backgroundColor: COLORS_GRAD, borderRadius: 6 }]
+        },
+        options: { ...CHART_DEFAULTS,
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.raw} unidades` } } },
+            scales: { x: { ticks: { color: 'rgba(200,230,225,0.7)', font: { size: 10 } }, grid: { display: false } },
+                y: { ticks: { color: 'rgba(160,200,210,0.45)', font: { size: 10 }, stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } } }
+        }
+    });
+
+    // Gráfico 3: Dona categorías
+    destroyC(chartOnlineCategorias);
+    const cx3 = getCtxO('chartOnlineCategorias');
+    if (cx3) chartOnlineCategorias = new Chart(cx3, {
+        type: 'doughnut',
+        data: { labels: Object.keys(catMap), datasets: [{ data: Object.values(catMap), backgroundColor: COLORS_GRAD, borderColor: 'rgba(8,15,26,0.8)', borderWidth: 2, hoverOffset: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '62%',
+            plugins: { legend: { position: 'right', labels: { color: 'rgba(180,220,215,0.65)', font: { size: 10 }, boxWidth: 10, padding: 10 } } }
+        }
+    });
+
+    // Gráfico 4: Barras distribución
+    destroyC(chartOnlineIngresos);
+    const cx4 = getCtxO('chartOnlineIngresos');
+    if (cx4) chartOnlineIngresos = new Chart(cx4, {
+        type: 'bar',
+        data: { labels: tendenciaLabels, datasets: [{ label: 'Ingresos $', data: tendenciaData,
+            backgroundColor: tendenciaData.map(v => v===maxVal ? 'rgba(100,180,255,0.85)' : 'rgba(100,180,255,0.22)'),
+            borderColor:     tendenciaData.map(v => v===maxVal ? '#64b4ff' : 'rgba(100,180,255,0.15)'),
+            borderWidth: 1.5, borderRadius: 4 }]
+        },
+        options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, legend: { display: false } } }
+    });
+
+    // --- Tabla ---
+    const tbody = document.getElementById('stats-online-tabla-body');
+    if (tbody) {
+        const todos = Object.entries(prodMap).sort((a,b) => b[1]-a[1]).slice(0,15);
+        if (todos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="stats-tabla-empty">📭 Aún no hay pedidos online confirmados en este período.<br><small style="opacity:0.6">Cuando un pedido pase a "pago confirmado" aparecerá aquí.</small></td></tr>';
+        } else {
+            tbody.innerHTML = todos.map(([nombre, qty], idx) => {
+                const ingreso = prodIngresos[nombre] || 0;
+                const pct = totalVentas > 0 ? Math.round((ingreso / totalVentas) * 100) : 0;
+                return `<tr>
+                    <td>${idx+1}</td>
+                    <td style="text-align:left">${nombre}</td>
+                    <td>${qty}</td>
+                    <td>${fmt(ingreso)}</td>
+                    <td>
+                        <div class="stats-pct-bar">
+                            <span style="font-size:0.78em;color:rgba(160,200,210,0.5)">${pct}%</span>
+                            <div class="stats-pct-track"><div class="stats-pct-fill" style="width:${pct}%"></div></div>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+    }
+}
 let combos = [];
 let productosEnComboActual = []; // [{id, nombre, precio, imagen}]
 

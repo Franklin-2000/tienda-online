@@ -84,12 +84,53 @@
       </a>
       <a href="#" class="sidebar-boton sidebar-boton-secondary" id="btn-Estadisticas">
         <span class="sidebar-icon">📊</span>
-        <span class="sidebar-label">ESTADÍSTICAS</span>
+        <span class="sidebar-label">EST. VENTAS FÍSICAS</span>
+      </a>
+      <a href="#" class="sidebar-boton sidebar-boton-secondary" id="btn-EstadisticasOnline">
+        <span class="sidebar-icon">🌐</span>
+        <span class="sidebar-label">EST. VENTAS ONLINE</span>
       </a>
       <a href="#" class="sidebar-boton sidebar-boton-secondary" id="btn-Combos">
         <span class="sidebar-icon">🎁</span>
         <span class="sidebar-label">COMBOS</span>
       </a>
+    </div>
+
+    <!-- Selector de dispositivo -->
+    <div class="sidebar-dispositivo">
+      <button class="sidebar-modo-trabajo-btn" id="btnSelectorDispositivo">
+        <span class="sidebar-icon">📱</span>
+        <span class="sidebar-label">TIPO DE PANTALLA</span>
+        <span style="font-size:0.75em;opacity:0.65;">▼</span>
+      </button>
+      <div class="sidebar-dispositivo-panel" id="panelSelectorDispositivo">
+        <p class="dispositivo-panel-desc">Adapta la vista según tu dispositivo:</p>
+        <div class="dispositivo-opciones">
+          <button class="btn-dispositivo" data-device="auto" id="btn-device-auto">
+            <span class="dispositivo-icon">🔄</span>
+            <span class="dispositivo-nombre">Auto</span>
+            <span class="dispositivo-desc">Detectar automático</span>
+          </button>
+          <button class="btn-dispositivo" data-device="mobile" id="btn-device-mobile">
+            <span class="dispositivo-icon">📱</span>
+            <span class="dispositivo-nombre">Móvil</span>
+            <span class="dispositivo-desc">Pantalla pequeña</span>
+          </button>
+          <button class="btn-dispositivo" data-device="tablet" id="btn-device-tablet">
+            <span class="dispositivo-icon">📟</span>
+            <span class="dispositivo-nombre">Tablet</span>
+            <span class="dispositivo-desc">Pantalla mediana</span>
+          </button>
+          <button class="btn-dispositivo" data-device="desktop" id="btn-device-desktop">
+            <span class="dispositivo-icon">🖥️</span>
+            <span class="dispositivo-nombre">Escritorio</span>
+            <span class="dispositivo-desc">Pantalla grande</span>
+          </button>
+        </div>
+        <div class="dispositivo-activo-label">
+          Modo activo: <strong id="dispositivoActivoLabel">Auto</strong>
+        </div>
+      </div>
     </div>
 
     <!-- Modo de Trabajo (offline) -->
@@ -459,6 +500,115 @@
             </tr>
           </thead>
           <tbody id="stats-tabla-body">
+            <tr><td colspan="5" class="stats-tabla-empty">Sin datos para este período</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  </div>
+
+  <!-- ============================
+       PANTALLA: ESTADÍSTICAS VENTAS ONLINE
+       ============================ -->
+  <div id="pantalla-estadisticas-online">
+
+    <!-- Header -->
+    <div class="stats-header">
+      <div class="stats-header-left">
+        <h1 class="stats-title">Estadísticas Online</h1>
+        <p class="stats-subtitle" id="stats-online-fecha-label">Resumen de hoy</p>
+      </div>
+      <div class="stats-period-selector">
+        <button class="btn-period-online activo" data-period="diaria">Hoy</button>
+        <button class="btn-period-online" data-period="semanal">Esta semana</button>
+        <button class="btn-period-online" data-period="mensual">Este mes</button>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="stats-kpi-row">
+      <div class="stats-kpi-card stats-kpi-primary">
+        <div class="kpi-top">
+          <span class="kpi-label">💰 Ingresos online</span>
+          <span class="kpi-trend" id="kpio-trend-ventas">—</span>
+        </div>
+        <span class="kpi-value" id="kpio-total-ventas">$0</span>
+        <span class="kpi-compare" id="kpio-compare-ventas">vs período anterior</span>
+      </div>
+      <div class="stats-kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">🛒 Pedidos confirmados</span>
+          <span class="kpi-trend" id="kpio-trend-trans">—</span>
+        </div>
+        <span class="kpi-value" id="kpio-num-transacciones">0</span>
+        <span class="kpi-compare" id="kpio-compare-trans">vs período anterior</span>
+      </div>
+      <div class="stats-kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">📦 Productos despachados</span>
+          <span class="kpi-trend" id="kpio-trend-prod">—</span>
+        </div>
+        <span class="kpi-value" id="kpio-productos-vendidos">0</span>
+        <span class="kpi-compare" id="kpio-compare-prod">vs período anterior</span>
+      </div>
+      <div class="stats-kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">🧾 Valor por pedido</span>
+          <span class="kpi-trend" id="kpio-trend-ticket">—</span>
+        </div>
+        <span class="kpi-value" id="kpio-ticket-promedio">$0</span>
+        <span class="kpi-compare" id="kpio-compare-ticket">promedio por pedido</span>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="stats-charts-grid">
+      <div class="stats-chart-card stats-chart-wide">
+        <div class="chart-header">
+          <h3 class="chart-title" id="online-chart-title-tendencia">📈 Ingresos online hora a hora (hoy)</h3>
+          <span class="chart-badge" id="online-chart-badge-tendencia">—</span>
+        </div>
+        <div class="chart-wrap"><canvas id="chartOnlineTendencia"></canvas></div>
+      </div>
+      <div class="stats-chart-card">
+        <div class="chart-header">
+          <h3 class="chart-title">🏆 Productos más pedidos</h3>
+        </div>
+        <div class="chart-wrap"><canvas id="chartOnlineProductos"></canvas></div>
+      </div>
+      <div class="stats-chart-card">
+        <div class="chart-header">
+          <h3 class="chart-title">🗂️ Pedidos por categoría</h3>
+        </div>
+        <div class="chart-wrap"><canvas id="chartOnlineCategorias"></canvas></div>
+      </div>
+      <div class="stats-chart-card stats-chart-wide">
+        <div class="chart-header">
+          <h3 class="chart-title">📊 ¿Cuándo llegan más pedidos?</h3>
+          <span class="chart-badge" id="online-chart-badge-ingresos">—</span>
+        </div>
+        <div class="chart-wrap"><canvas id="chartOnlineIngresos"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="stats-tabla-section">
+      <h3 class="stats-tabla-titulo">📋 Detalle por producto (pedidos online)</h3>
+      <div class="stats-tabla-wrap">
+        <table class="stats-tabla">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Producto</th>
+              <th>Unidades</th>
+              <th>Ingresos</th>
+              <th>% del Total</th>
+            </tr>
+          </thead>
+          <tbody id="stats-online-tabla-body">
             <tr><td colspan="5" class="stats-tabla-empty">Sin datos para este período</td></tr>
           </tbody>
         </table>
