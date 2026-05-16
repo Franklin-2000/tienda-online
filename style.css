@@ -20,7 +20,7 @@ body {
 
 /* Contenedor raíz que ocupa todo el viewport */
 #app-root {
-  position: absolute;
+  position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
@@ -69,7 +69,11 @@ body {
   border-color: #c9aaff;
 }
 
-/* Cada pantalla: ocupa todo el viewport, scroll interno propio */
+/* ======================================================
+   PANTALLAS — posicionamiento base
+   Todas arrancan ocultas, ocupan todo el app-root,
+   con scroll interno y SIN desbordamiento lateral.
+   ====================================================== */
 #pantalla-login,
 #pantalla-inicio,
 #pantalla-menu-ventas,
@@ -81,20 +85,25 @@ body {
 #pantalla-estadisticas,
 #pantalla-estadisticas-online,
 #pantalla-combos {
-  position: absolute;
+  position: fixed;   /* fixed en lugar de absolute para que se ancle al viewport */
   top: 0;
+  left: 0;
   right: 0;
   bottom: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
   display: none; /* ocultas por defecto */
+  max-width: 100%;
 }
 
-/* Pantallas con sidebar: se desplazan para no quedar bajo el menú */
+/* ======================================================
+   PANTALLAS ACTIVAS CON SIDEBAR
+   left arranca después del menú (240px),
+   right se queda en 0 → el ancho real = viewport - 240px
+   ====================================================== */
 #pantalla-inicio.activa,
 #pantalla-menu-ventas.activa,
 #pantalla-INVENTARIO.activa,
@@ -106,10 +115,11 @@ body {
 #pantalla-estadisticas-online.activa,
 #pantalla-combos.activa {
   left: 240px;
-  width: calc(100% - 240px);
-  /* Garantizar que el contenido no quede oculto detrás del sidebar */
-  min-height: 100%;
+  right: 0;
+  width: auto;          /* dejamos que left+right definan el ancho exacto */
+  max-width: none;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* Cuando JS pone display, usar flex o block según convenga */
@@ -447,7 +457,9 @@ h1 {
   #pantalla-estadisticas-online.activa,
   #pantalla-combos.activa {
     left: 0 !important;
-    width: 100% !important;
+    right: 0 !important;
+    width: auto !important;
+    bottom: 90px !important; /* espacio para barra de nav inferior */
   }
 
   .stats-kpi-row {
@@ -486,7 +498,8 @@ h1 {
   #pantalla-estadisticas-online.activa,
   #pantalla-combos.activa {
     left: 200px !important;
-    width: calc(100% - 200px) !important;
+    right: 0 !important;
+    width: auto !important;
   }
   .stats-kpi-row { grid-template-columns: 1fr 1fr !important; }
   .stats-charts-grid { grid-template-columns: 1fr 1fr !important; }
@@ -739,7 +752,8 @@ h1 {
   #pantalla-estadisticas-online.activa,
   #pantalla-combos.activa {
     left: 190px;
-    width: calc(100% - 190px);
+    right: 0;
+    width: auto;
   }
   #pantalla-inicio .softvent-logo {
     font-size: 34px;
@@ -1655,9 +1669,11 @@ input[type="file"] {
     gap: 30px; 
     justify-content: center; 
     align-items: flex-start; 
-    width: 95%; 
-    max-width: 1400px; 
+    width: 100%;
+    max-width: 100%;
     margin: 20px auto; 
+    box-sizing: border-box;
+    padding: 0 16px;
 }
 
 .tarjeta-venta-independiente {
@@ -1680,12 +1696,12 @@ input[type="file"] {
 
 .formulario-venta-flex {
     flex: 1 1 400px; 
-    min-width: 320px; 
+    min-width: 0; /* sin mínimo fijo: el flex puede achicarse sin romper el layout */
 }
 
 .formulario-venta-flex-1-5 {
     flex: 1.5 1 600px; 
-    min-width: 320px; 
+    min-width: 0;
 }
 
 .panel-venta-seccion-transparent {
