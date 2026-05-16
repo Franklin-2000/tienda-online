@@ -2959,7 +2959,7 @@ function renderEstadisticas(periodo) {
     if (ctx2) chartProductos = new Chart(ctx2, {
         type: 'bar',
         data: {
-            labels: topProductos.map(p => p[0].length > 12 ? p[0].slice(0,12)+'…' : p[0]),
+            labels: topProductos.map(p => p[0].length > 16 ? p[0].slice(0,16)+'…' : p[0]),
             datasets: [{
                 label: 'Unidades vendidas',
                 data: topProductos.map(p => p[1]),
@@ -2973,7 +2973,7 @@ function renderEstadisticas(periodo) {
                 callbacks: { label: ctx => ` ${ctx.raw} unidades` }
             }},
             scales: {
-                x: { ticks: { color: '#ffffff', font: { size: 13 } }, grid: { display: false } },
+                x: { ticks: { color: '#ffffff', font: { size: 14 } }, grid: { display: false } },
                 y: { ticks: { color: '#ffffff', font: { size: 13 }, stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } }
             }
         }
@@ -3273,12 +3273,12 @@ function renderEstadisticasOnline(periodo) {
     const cx2 = getCtxO('chartOnlineProductos');
     if (cx2) chartOnlineProductos = new Chart(cx2, {
         type: 'bar',
-        data: { labels: topProductos.map(p => p[0].length>12?p[0].slice(0,12)+'…':p[0]),
+        data: { labels: topProductos.map(p => p[0].length>16?p[0].slice(0,16)+'…':p[0]),
             datasets: [{ label: 'Unidades pedidas', data: topProductos.map(p=>p[1]), backgroundColor: COLORS_GRAD, borderRadius: 6 }]
         },
         options: { ...CHART_DEFAULTS,
             plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.raw} unidades` } } },
-            scales: { x: { ticks: { color: '#ffffff', font: { size: 13 } }, grid: { display: false } },
+            scales: { x: { ticks: { color: '#ffffff', font: { size: 14 } }, grid: { display: false } },
                 y: { ticks: { color: '#ffffff', font: { size: 13 }, stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } } }
         }
     });
