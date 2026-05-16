@@ -722,6 +722,7 @@ btnInventario.addEventListener("click", function(e) {
   showScreen('pantalla-INVENTARIO');
 });
 
+// btnVolverInicio fue eliminado del HTML — navegación solo por sidebar
 if (btnVolverInicio) {
     btnVolverInicio.addEventListener("click", function() {
         showScreen('pantalla-inicio');
@@ -1113,6 +1114,24 @@ inputBuscarProductVenta.addEventListener("keydown", function(event) {
 window.eliminarTicket = async function(ticketGlobalId) {
     if(!await mostrarConfirm("¿Estás seguro de eliminar este ticket? Los productos volverán al inventario.", 'danger')) return;
 
+    // En modo offline solo eliminar localmente (no hay cómo revertir en Supabase)
+    if (modoOffline) {
+        const sale = sales.find(s => s.globalId === ticketGlobalId);
+        if (sale) {
+            // Reponer stock visualmente
+            for (const item of (sale.items || [])) {
+                const prod = inventory.find(p => p.id && p.id.toString() === item.productId?.toString());
+                if (prod) prod.cantidad += item.qty;
+            }
+            sales = sales.filter(s => s.globalId !== ticketGlobalId);
+            await guardarInventarioCache();
+            updateSalesDropdown();
+            renderSalesHistory();
+        }
+        await mostrarAlerta("Ticket eliminado localmente. El stock fue repuesto en la vista.", 'success');
+        return;
+    }
+
     try {
         const sale = sales.find(s => s.globalId === ticketGlobalId);
         if (!sale) return;
@@ -1178,7 +1197,15 @@ if (btnRegistrarVenta) {
             }
             updateSalesDropdown();
 
-            const numeroTicket = await generarNumeroTicket();
+            // En offline no llamamos a Supabase — generamos ID local con timestamp
+            let numeroTicket;
+            if (modoOffline) {
+                const ahora = new Date();
+                const hhmm = String(ahora.getHours()).padStart(2,'0') + String(ahora.getMinutes()).padStart(2,'0');
+                numeroTicket = 'OFF-' + hhmm + '-' + String(Date.now()).slice(-4);
+            } else {
+                numeroTicket = await generarNumeroTicket();
+            }
 
             const newSale = {
                 globalId:    Date.now(), 
@@ -1320,30 +1347,53 @@ function renderSalesHistory() {
     }
 }
 
+// ──────────────────────────────────────────────────────
+// TICKET VENTAS FÍSICAS — identificador visual claro
+// Clase CSS: venta-ticket-fisica | Badge: 🛒 Venta Física
+// ──────────────────────────────────────────────────────
 function crearDOMTicket(sale, esDeHoy) {
     const ticketDiv = document.createElement('div');
-    ticketDiv.className = 'venta-ticket';
-    
-    let itemsHtml = '<ul>';
-    sale.items.forEach(item => {
-        itemsHtml += `<li><span>${item.qty}x ${item.name}</span> <span>$${item.subtotal}</span></li>`;
-    });
+    ticketDiv.className = 'venta-ticket venta-ticket-fisica';
+    ticketDiv.dataset.tipo = 'fisica';
+
+    let itemsHtml = '<ul class="ticket-items-list">';
+    if (sale.items && sale.items.length > 0) {
+        sale.items.forEach(item => {
+            const sub = Number(item.subtotal).toLocaleString('es-CO');
+            itemsHtml += `<li class="ticket-item-row">
+                <span class="ticket-item-name">${item.qty}x ${item.name}</span>
+                <span class="ticket-item-sub">$${sub}</span>
+            </li>`;
+        });
+    } else {
+        itemsHtml += '<li>Sin detalle de productos.</li>';
+    }
     itemsHtml += '</ul>';
 
-    const botonEliminarHtml = esDeHoy ? `<button class="btn-eliminar-ticket" onclick="eliminarTicket(${sale.globalId}); event.stopPropagation();">✖ Eliminar</button>` : '';
+    const esOffline = String(sale.id).includes('OFF-');
+    const badgeOffline = esOffline
+        ? '<span class="ticket-badge ticket-badge-offline">⚡ Local</span>'
+        : '';
+    const botonEliminarHtml = esDeHoy
+        ? `<button class="btn-eliminar-ticket" onclick="eliminarTicket(${sale.globalId}); event.stopPropagation();">✖ Eliminar</button>`
+        : '';
+    const totalFmt = Number(sale.total).toLocaleString('es-CO');
+    const horaStr = sale.date ? (sale.date.split(',')[1] || sale.date).trim() : '';
 
     ticketDiv.innerHTML = `
         <div class="venta-ticket-header">
-            <div style="text-align: left;">
-                <strong>Ticket #${sale.id}</strong>
-                <span class="fecha-venta">${sale.date.split(',')[1] || sale.date}</span>
-            </div>
-            <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
-                <div style="display:flex; align-items:center;">
-                    <strong>$${sale.total}</strong>
-                    ${botonEliminarHtml}
+            <div class="ticket-header-left">
+                <div class="ticket-badges-row">
+                    <span class="ticket-badge ticket-badge-fisica">🛒 Venta Física</span>
+                    ${badgeOffline}
                 </div>
-                <span style="font-size: 0.8em; color: #007bff;">Ver detalles ▼</span>
+                <strong class="ticket-numero">${sale.id}</strong>
+                <span class="fecha-venta">${horaStr}</span>
+            </div>
+            <div class="ticket-header-right">
+                <strong class="ticket-total">$${totalFmt}</strong>
+                ${botonEliminarHtml}
+                <span class="ticket-toggle-arrow">Ver detalles ▼</span>
             </div>
         </div>
         <div class="venta-ticket-details">
@@ -1353,11 +1403,10 @@ function crearDOMTicket(sale, esDeHoy) {
 
     ticketDiv.querySelector('.venta-ticket-header').addEventListener('click', () => {
         const details = ticketDiv.querySelector('.venta-ticket-details');
-        if (details.style.display === 'block') {
-            details.style.display = 'none';
-        } else {
-            details.style.display = 'block';
-        }
+        const arrow = ticketDiv.querySelector('.ticket-toggle-arrow');
+        const open = details.style.display === 'block';
+        details.style.display = open ? 'none' : 'block';
+        if (arrow) arrow.textContent = open ? 'Ver detalles ▼' : 'Ocultar ▲';
     });
 
     return ticketDiv;
@@ -1977,6 +2026,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 let pedidosAdmin      = [];
 let filtroEstadoAdmin = 'todos';
+const btnBorrarTodasVentasCanceladas = document.querySelector('#btnBorrarTodasVentasCanceladas');
  
  
 // ---------------------------------------------------------------
@@ -2400,38 +2450,53 @@ function renderHistorialOnline() {
 // ---------------------------------------------------------------
 // Crear ticket de pedido para el historial
 // ---------------------------------------------------------------
+// ──────────────────────────────────────────────────────
+// TICKET VENTAS ONLINE — identificador visual claro
+// Clase CSS: venta-ticket-online | Badge: 🌐 Pedido Online
+// ──────────────────────────────────────────────────────
 function crearDOMTicketOnline(pedido, esDeHoy) {
     const ticketDiv = document.createElement('div');
-    ticketDiv.className = 'venta-ticket';
-    
-    let itemsHtml = '<ul style="list-style: none; padding: 0;">';
+    ticketDiv.className = 'venta-ticket venta-ticket-online';
+    ticketDiv.dataset.tipo = 'online';
+
+    let itemsHtml = '<ul class="ticket-items-list">';
     (pedido.items_pedido || []).forEach(item => {
-        itemsHtml += `<li style="border-bottom: 1px solid #eee; padding: 5px 0;"><span>${item.cantidad}x ${item.nombre}</span> <span style="float:right;">$${Number(item.subtotal).toLocaleString('es-CO')}</span></li>`;
+        const sub = Number(item.subtotal).toLocaleString('es-CO');
+        itemsHtml += `<li class="ticket-item-row">
+            <span class="ticket-item-name">${item.cantidad}x ${item.nombre}</span>
+            <span class="ticket-item-sub">$${sub}</span>
+        </li>`;
     });
     itemsHtml += '</ul>';
 
     const fecha = new Date(pedido.fecha).toLocaleString('es-CO');
+    const totalFmt = Number(pedido.total).toLocaleString('es-CO');
+    const metodoBadge = pedido.metodo_pago === 'contraentrega'
+        ? '<span class="ticket-badge ticket-badge-contraentrega">💵 Contra entrega</span>'
+        : '<span class="ticket-badge ticket-badge-online-pago">💳 Pago online</span>';
 
     ticketDiv.innerHTML = `
         <div class="venta-ticket-header">
-            <div style="text-align: left;">
-                <strong>Pedido #${pedido.id}</strong>
+            <div class="ticket-header-left">
+                <div class="ticket-badges-row">
+                    <span class="ticket-badge ticket-badge-online">🌐 Pedido Online</span>
+                    ${metodoBadge}
+                </div>
+                <strong class="ticket-numero">Pedido #${pedido.id}</strong>
                 <span class="fecha-venta">${fecha}</span>
             </div>
-            <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
-                <div style="display:flex; align-items:center;">
-                    <strong>$${Number(pedido.total).toLocaleString('es-CO')}</strong>
-                </div>
-                <span style="font-size: 0.8em; color: #007bff;">Ver detalles ▼</span>
+            <div class="ticket-header-right">
+                <strong class="ticket-total">$${totalFmt}</strong>
+                <span class="ticket-toggle-arrow">Ver detalles ▼</span>
             </div>
         </div>
         <div class="venta-ticket-details">
-            <div style="margin-bottom: 10px;">
-                <strong>Cliente:</strong> ${pedido.cliente_nombre} <br>
-                <strong>Email:</strong> ${pedido.cliente_email} <br>
-                <strong>Teléfono:</strong> ${pedido.cliente_tel} <br>
-                <strong>Dirección:</strong> ${pedido.direccion} <br>
-                ${pedido.notas ? `<strong>Notas:</strong> ${pedido.notas} <br>` : ''}
+            <div class="ticket-cliente-info">
+                <div><span class="ticket-info-label">👤 Cliente:</span> ${pedido.cliente_nombre}</div>
+                <div><span class="ticket-info-label">📧 Email:</span> ${pedido.cliente_email}</div>
+                <div><span class="ticket-info-label">📞 Teléfono:</span> ${pedido.cliente_tel}</div>
+                <div><span class="ticket-info-label">📍 Dirección:</span> ${pedido.direccion}</div>
+                ${pedido.notas ? `<div><span class="ticket-info-label">📝 Notas:</span> ${pedido.notas}</div>` : ''}
             </div>
             ${itemsHtml}
         </div>
@@ -2439,11 +2504,10 @@ function crearDOMTicketOnline(pedido, esDeHoy) {
 
     ticketDiv.querySelector('.venta-ticket-header').addEventListener('click', () => {
         const details = ticketDiv.querySelector('.venta-ticket-details');
-        if (details.style.display === 'block') {
-            details.style.display = 'none';
-        } else {
-            details.style.display = 'block';
-        }
+        const arrow = ticketDiv.querySelector('.ticket-toggle-arrow');
+        const open = details.style.display === 'block';
+        details.style.display = open ? 'none' : 'block';
+        if (arrow) arrow.textContent = open ? 'Ver detalles ▼' : 'Ocultar ▲';
     });
 
     return ticketDiv;
@@ -2944,6 +3008,35 @@ async function handleGuardarCombo() {
     const precioSuma = productosEnComboActual.reduce((s,p) => s + (p.precio||0), 0);
     const precio = precioInput > 0 ? precioInput : precioSuma;
 
+    // MODO OFFLINE: guardar combo localmente en IndexedDB
+    if (modoOffline) {
+        try {
+            await idbPut('productos_pending', {
+                tipo: 'nuevo_combo',
+                datos: { nombre, descripcion, precio, precioSuma, productos: productosEnComboActual },
+                timestamp: Date.now()
+            });
+            // Simularlo visualmente en memoria
+            const comboLocal = {
+                id: 'OFFLINE_COMBO_' + Date.now(),
+                nombre, descripcion, precio, precio_suma: precioSuma,
+                combo_productos: productosEnComboActual.map(p => ({
+                    nombre: p.nombre, precio: p.precio, imagen: p.imagen
+                }))
+            };
+            combos.unshift(comboLocal);
+            limpiarFormCombo();
+            renderTarjetasCombos();
+            await actualizarUIOffline();
+            mostrarAlerta('✅ Combo guardado localmente.\nSe subirá a Supabase al sincronizar.', 'success');
+        } catch(e) {
+            console.error(e);
+            mostrarAlerta('❌ Error guardando combo localmente.', 'error');
+        }
+        return;
+    }
+
+    // MODO ONLINE: guardar en Supabase
     try {
         await saveCombo({ nombre, descripcion, precio, precioSuma, productos: productosEnComboActual });
         mostrarAlerta('✅ Combo guardado correctamente.', 'success');
@@ -2988,7 +3081,7 @@ function renderTarjetasCombos() {
 
     contenedor.querySelectorAll('.btn-borrar-combo').forEach(btn => {
         btn.onclick = async () => {
-            const ok = await mostrarConfirmacion('¿Eliminar este combo?', 'warn');
+            const ok = await mostrarConfirm('¿Eliminar este combo?', 'danger');
             if (!ok) return;
             await deleteCombo(btn.dataset.comboid);
             combos = combos.filter(c => String(c.id) !== String(btn.dataset.comboid));
@@ -3317,6 +3410,20 @@ async function sincronizarConSupabase() {
                 await idbDelete('productos_pending', item.localId);
             } catch(e) {
                 console.error('Error sincronizando producto:', e);
+                errores++;
+            }
+        }
+
+        // 1b. Combos offline
+        const combosPendientes = productosPendientes.filter(item => item.tipo === 'nuevo_combo');
+        for (const item of combosPendientes) {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) throw new Error('Sin sesión activa');
+                await saveCombo({ ...item.datos });
+                await idbDelete('productos_pending', item.localId);
+            } catch(e) {
+                console.error('Error sincronizando combo:', e);
                 errores++;
             }
         }
