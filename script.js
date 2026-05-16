@@ -2675,19 +2675,26 @@ function initEstadisticas() {
 }
 
 function parsearFechaVenta(venta) {
-    // Intentar primero con globalId (timestamp Unix confiable)
-    if (venta.globalId && venta.globalId > 1000000000000) {
-        return new Date(venta.globalId);
+    // globalId puede ser epoch en MILISEGUNDOS (ventas físicas: Date.now())
+    // o en SEGUNDOS (ventas ONLINE: EXTRACT(EPOCH FROM NOW()) en Supabase)
+    if (venta.globalId) {
+        const gid = Number(venta.globalId);
+        if (gid > 1000000000000) {
+            // milisegundos (ventas físicas JS)
+            return new Date(gid);
+        } else if (gid > 1000000000) {
+            // segundos (ventas ONLINE desde Supabase) → convertir a ms
+            return new Date(gid * 1000);
+        }
     }
-    // fechaLimpia viene en formato toLocaleDateString() ej: "16/5/2025"
-    // Para comparación diaria es suficiente comparar strings directamente
-    // Para semanal/mensual necesitamos parsear la fecha
+    // fechaLimpia puede venir en varios formatos:
+    //   - "16/5/2026"   (toLocaleDateString del navegador, ventas físicas)
+    //   - "16/05/2026"  (TO_CHAR Supabase, ventas ONLINE)
     if (venta.fechaLimpia) {
-        // Parsear formato DD/M/YYYY o D/M/YYYY
         const partes = venta.fechaLimpia.split('/');
         if (partes.length === 3) {
-            const dia = parseInt(partes[0], 10);
-            const mes = parseInt(partes[1], 10) - 1; // 0-indexed
+            const dia  = parseInt(partes[0], 10);
+            const mes  = parseInt(partes[1], 10) - 1; // 0-indexed
             const anio = parseInt(partes[2], 10);
             const d = new Date(anio, mes, dia);
             if (!isNaN(d)) return d;
@@ -3079,17 +3086,13 @@ function getVentasOnline() {
 
 function filtrarOnlinePorPeriodo(periodo, ventasOnline) {
     const ahora  = new Date();
-    const hoyStr = ahora.toLocaleDateString();
+    const hoyStr = ahora.toDateString(); // formato invariante del navegador
     return ventasOnline.filter(venta => {
-        if (periodo === 'diaria') {
-            const fl = venta.fechaLimpia || '';
-            if (fl === hoyStr) return true;
-            if (venta.globalId && venta.globalId > 1000000000000)
-                return new Date(venta.globalId).toDateString() === ahora.toDateString();
-            return false;
-        }
         const fv = parsearFechaVenta(venta);
         if (!fv) return false;
+        if (periodo === 'diaria') {
+            return fv.toDateString() === hoyStr;
+        }
         if (periodo === 'semanal') {
             const ini = new Date(ahora);
             ini.setDate(ahora.getDate() - ahora.getDay());
@@ -3104,20 +3107,16 @@ function filtrarOnlinePorPeriodo(periodo, ventasOnline) {
 }
 
 function filtrarOnlinePorPeriodoAnterior(periodo, ventasOnline) {
-    const ahora  = new Date();
-    const ayer   = new Date(ahora);
+    const ahora   = new Date();
+    const ayer    = new Date(ahora);
     ayer.setDate(ahora.getDate() - 1);
-    const ayerStr = ayer.toLocaleDateString();
+    const ayerStr = ayer.toDateString();
     return ventasOnline.filter(venta => {
-        if (periodo === 'diaria') {
-            const fl = venta.fechaLimpia || '';
-            if (fl === ayerStr) return true;
-            if (venta.globalId && venta.globalId > 1000000000000)
-                return new Date(venta.globalId).toDateString() === ayer.toDateString();
-            return false;
-        }
         const fv = parsearFechaVenta(venta);
         if (!fv) return false;
+        if (periodo === 'diaria') {
+            return fv.toDateString() === ayerStr;
+        }
         if (periodo === 'semanal') {
             const ini = new Date(ahora);
             ini.setDate(ahora.getDate() - ahora.getDay() - 7);
@@ -3127,7 +3126,7 @@ function filtrarOnlinePorPeriodoAnterior(periodo, ventasOnline) {
             return fv >= ini && fv < fin;
         }
         if (periodo === 'mensual') {
-            const mes = ahora.getMonth() === 0 ? 11 : ahora.getMonth() - 1;
+            const mes  = ahora.getMonth() === 0 ? 11 : ahora.getMonth() - 1;
             const anio = ahora.getMonth() === 0 ? ahora.getFullYear() - 1 : ahora.getFullYear();
             return fv.getMonth() === mes && fv.getFullYear() === anio;
         }
@@ -3207,7 +3206,8 @@ function renderEstadisticasOnline(periodo) {
     if (periodo === 'diaria') {
         const porHora = Array(24).fill(0);
         ventasFiltradas.forEach(v => {
-            let h = v.globalId > 1000000000000 ? new Date(v.globalId).getHours() : new Date(v.date).getHours();
+            const fv = parsearFechaVenta(v);
+            const h = fv ? fv.getHours() : NaN;
             if (!isNaN(h) && h >= 0) porHora[h] += (v.total || 0);
         });
         for (let h = 0; h < 24; h++) { tendenciaLabels.push(h+':00'); tendenciaData.push(porHora[h]); }
