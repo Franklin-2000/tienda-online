@@ -202,8 +202,8 @@ const btnVolverInicioDesdeVentas = document.querySelector("#btnVolverInicioDesde
 // Referencias para Pantallas de Ventas
 const pantallaVentasFisicas = document.querySelector("#pantalla-ventas-fisicas");
 const pantallaVentasOnline = document.querySelector("#pantalla-ventas-online");
-const btnVolverVentasFisicas = document.querySelector("#btnVolverVentasFisicas");
-const btnVolverVentasOnline = document.querySelector("#btnVolverVentasOnline");
+const btnVolverVentasFisicas = null; // eliminado del HTML — navegación solo por sidebar
+const btnVolverVentasOnline = null;  // eliminado del HTML — navegación solo por sidebar
 
 // Formulario Carrito Ventas
 const inputBuscarProductVenta = document.querySelector("#inputBuscarProductVenta");
@@ -250,7 +250,7 @@ const btnLimpiarFormulario = document.querySelector("#btnLimpiarFormulario");
 const contenedorProductos = document.querySelector("#contenedorProductos");
 const templateTarjetaProducto = document.querySelector("#template-tarjeta-producto");
 
-const btnVolverInicio = document.querySelector("#btnVolverInicio");
+const btnVolverInicio = null; // eliminado del HTML — navegación solo por sidebar
 
 const inputBuscarProducto = document.querySelector("#inputBuscarProducto");
 const btnBuscarProducto = document.querySelector("#btnBuscarProducto");
@@ -1170,43 +1170,47 @@ if (btnRegistrarVenta) {
                 });
             }
             // Descuento local inmediato en `inventory` (respaldo visual)
-            // El trigger fn_descontar_inventario() de Supabase también lo hace en BD.
             for (let item of currentCart) {
                 const prod = inventory.find(p => p.id.toString() === item.id.toString());
                 if (prod) prod.cantidad -= item.qty;
             }
-            updateSalesDropdown(); // refleja stock actualizado de inmediato
+            updateSalesDropdown();
 
-            const numeroTicket = await generarNumeroTicket(); // <-- ahora es async
+            const numeroTicket = await generarNumeroTicket();
 
             const newSale = {
                 globalId:    Date.now(), 
-                id:          `V-${numeroTicket}`,   // prefijo V- para distinguir de ONLINE-
+                id:          `V-${numeroTicket}`,
                 total:       totalSale,
                 date:        saleDateStr,
                 fechaLimpia: soloFechaStr, 
                 items:       cartItemsForReceipt 
             };
 
-            // Guardar en Supabase (reemplaza saveSales con localStorage).
-            // El trigger fn_descontar_inventario() descuenta el stock automáticamente.
-            const ventaGuardada = await saveSale(newSale);
-            newSale.supabaseId = ventaGuardada.id;
-            sales.unshift(newSale); // Añadir al inicio del array local
-
-            // Recargamos inventario desde Supabase para reflejar las cantidades reales
-            // actualizadas por el trigger (fuente de verdad).
-            await loadInventory();
-            renderSalesHistory();
-
-            if (await mostrarConfirm("¿Desea imprimir la factura de esta venta?", 'info')) {
-                 imprimirFacturaTicket(newSale);
+            if (modoOffline) {
+                // MODO OFFLINE: guardar en IndexedDB
+                await guardarVentaOffline(newSale);
+                sales.unshift(newSale);
+                renderSalesHistory();
+                if (await mostrarConfirm("¿Desea imprimir la factura de esta venta?", 'info')) {
+                    imprimirFacturaTicket(newSale);
+                }
+                limpiarTodaLaVenta();
+                await mostrarAlerta(`✅ Venta guardada localmente.\nTicket #${newSale.id} por $${totalSale.toLocaleString('es-CO')}\nSe sincronizará con Supabase cuando actives el modo en línea.`, 'success');
+            } else {
+                // MODO ONLINE: guardar en Supabase
+                const ventaGuardada = await saveSale(newSale);
+                newSale.supabaseId = ventaGuardada.id;
+                sales.unshift(newSale);
+                await loadInventory();
+                renderSalesHistory();
+                if (await mostrarConfirm("¿Desea imprimir la factura de esta venta?", 'info')) {
+                    imprimirFacturaTicket(newSale);
+                }
+                limpiarTodaLaVenta();
+                if(inputBuscarProductVenta) inputBuscarProductVenta.focus();
+                await mostrarAlerta(`¡Venta registrada con éxito!\nTicket #${newSale.id} por $${totalSale.toLocaleString('es-CO')}`, 'success');
             }
-
-            limpiarTodaLaVenta();
-            if(inputBuscarProductVenta) inputBuscarProductVenta.focus();
-
-            await mostrarAlerta(`¡Venta registrada con éxito!\nTicket #${newSale.id} por $${totalSale.toLocaleString('es-CO')}`, 'success');
 
         } catch (err) {
             console.error("Error al registrar venta:", err);
@@ -3109,3 +3113,462 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+// ============================================================
+// MÓDULO: MODO DE TRABAJO
+// ============================================================
+// SWITCH ON  = trabajando CON Supabase (modo normal, en línea)
+// SWITCH OFF = sin internet, todo se guarda en IndexedDB local
+//
+// Detección automática de internet:
+//   - Caída    → switch se pone OFF automáticamente, sigue operando
+//   - Regreso  → alerta, pide sincronizar ANTES de volver a ON
+// ============================================================
+
+const DB_NAME    = 'softvent_offline';
+const DB_VERSION = 1;
+let offlineDB    = null;
+let modoOffline  = false;        // false = en línea (Supabase)
+let _reconexionPendiente = false; // evita diálogo doble al reconectar
+
+// ──────────────────────────────────────────────────────────
+// IndexedDB: abrir / helpers
+// ──────────────────────────────────────────────────────────
+function abrirOfflineDB() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('productos_pending'))
+                db.createObjectStore('productos_pending', { keyPath: 'localId', autoIncrement: true });
+            if (!db.objectStoreNames.contains('ventas_pending'))
+                db.createObjectStore('ventas_pending',   { keyPath: 'localId', autoIncrement: true });
+            if (!db.objectStoreNames.contains('inventario_cache'))
+                db.createObjectStore('inventario_cache', { keyPath: 'id' });
+        };
+        req.onsuccess = (e) => resolve(e.target.result);
+        req.onerror   = (e) => reject(e.target.error);
+    });
+}
+
+function idbPut(store, data) {
+    return new Promise((resolve, reject) => {
+        const tx  = offlineDB.transaction(store, 'readwrite');
+        const req = tx.objectStore(store).put(data);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror   = () => reject(req.error);
+    });
+}
+
+function idbGetAll(store) {
+    return new Promise((resolve, reject) => {
+        const tx  = offlineDB.transaction(store, 'readonly');
+        const req = tx.objectStore(store).getAll();
+        req.onsuccess = () => resolve(req.result);
+        req.onerror   = () => reject(req.error);
+    });
+}
+
+function idbDelete(store, key) {
+    return new Promise((resolve, reject) => {
+        const tx  = offlineDB.transaction(store, 'readwrite');
+        const req = tx.objectStore(store).delete(key);
+        req.onsuccess = () => resolve();
+        req.onerror   = () => reject(req.error);
+    });
+}
+
+function idbClear(store) {
+    return new Promise((resolve, reject) => {
+        const tx  = offlineDB.transaction(store, 'readwrite');
+        const req = tx.objectStore(store).clear();
+        req.onsuccess = () => resolve();
+        req.onerror   = () => reject(req.error);
+    });
+}
+
+// ──────────────────────────────────────────────────────────
+// Cache de inventario local
+// ──────────────────────────────────────────────────────────
+async function guardarInventarioCache() {
+    if (!offlineDB) return;
+    await idbClear('inventario_cache');
+    for (const p of inventory) await idbPut('inventario_cache', p);
+}
+
+async function cargarInventarioDesdeCache() {
+    if (!offlineDB) return;
+    const cached = await idbGetAll('inventario_cache');
+    if (cached.length > 0) {
+        inventory = cached;
+        renderProducts();
+        updateProductCount();
+        updateSalesDropdown();
+    }
+}
+
+async function contarPendientes() {
+    if (!offlineDB) return 0;
+    const prods  = await idbGetAll('productos_pending');
+    const ventas = await idbGetAll('ventas_pending');
+    return prods.length + ventas.length;
+}
+
+// ──────────────────────────────────────────────────────────
+// Actualizar UI del switch y panel
+// ──────────────────────────────────────────────────────────
+async function actualizarUIOffline() {
+    const toggle    = document.getElementById('offlineToggle');
+    const dot       = document.getElementById('offlineStatusDot');
+    const text      = document.getElementById('offlineStatusText');
+    const syncBtn   = document.getElementById('offlineSyncBtn');
+    const pending   = document.getElementById('offlinePendingCount');
+    const indicator = document.getElementById('offline-indicator');
+    const indText   = document.getElementById('offline-indicator-text');
+
+    const n = await contarPendientes();
+
+    if (modoOffline) {
+        // Switch visualmente en OFF (sin internet)
+        if (toggle) toggle.checked = false;
+        if (dot)    dot.classList.add('activo');
+        if (text)   text.textContent = '⚠️ Sin internet — guardando localmente';
+        if (syncBtn) syncBtn.classList.add('visible');
+        if (indicator) indicator.classList.add('visible');
+        if (indText) indText.textContent = 'Sin internet — modo local activo';
+        if (pending) pending.textContent = n > 0
+            ? `${n} operación(es) pendiente(s) de sincronizar`
+            : 'Sin operaciones pendientes';
+    } else {
+        // Switch en ON (Supabase)
+        if (toggle) toggle.checked = true;
+        if (dot)    dot.classList.remove('activo');
+        if (text)   text.textContent = '🟢 En línea — usando Supabase';
+        if (syncBtn) syncBtn.classList.remove('visible');
+        if (indicator) indicator.classList.remove('visible');
+        if (pending) pending.textContent = '';
+    }
+}
+
+// ──────────────────────────────────────────────────────────
+// Guardar producto / venta en local (modo offline)
+// ──────────────────────────────────────────────────────────
+async function guardarProductoOffline(datosProducto) {
+    await idbPut('productos_pending', {
+        tipo: 'nuevo_producto',
+        datos: datosProducto,
+        timestamp: Date.now()
+    });
+    const fakeId = 'OFFLINE_' + Date.now();
+    const productoLocal = { ...datosProducto, id: fakeId };
+    inventory.unshift(productoLocal);
+    await guardarInventarioCache();
+    renderProducts();
+    updateProductCount();
+    updateSalesDropdown();
+    await actualizarUIOffline();
+    return productoLocal;
+}
+
+async function guardarVentaOffline(saleData) {
+    await idbPut('ventas_pending', {
+        tipo: 'nueva_venta',
+        datos: saleData,
+        timestamp: Date.now()
+    });
+    // Descontar stock visualmente
+    for (const item of saleData.items) {
+        const prod = inventory.find(p => p.id && p.id.toString() === item.productId?.toString());
+        if (prod) prod.cantidad -= item.qty;
+    }
+    await guardarInventarioCache();
+    await actualizarUIOffline();
+}
+
+// ──────────────────────────────────────────────────────────
+// Sincronizar datos pendientes → Supabase
+// ──────────────────────────────────────────────────────────
+async function sincronizarConSupabase() {
+    const syncBtn = document.getElementById('offlineSyncBtn');
+    if (syncBtn) { syncBtn.disabled = true; syncBtn.textContent = '⏳ Sincronizando...'; }
+
+    let errores = 0;
+
+    try {
+        // 1. Productos nuevos
+        const productosPendientes = await idbGetAll('productos_pending');
+        for (const item of productosPendientes) {
+            if (item.tipo !== 'nuevo_producto') continue;
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) throw new Error('Sin sesión activa');
+                const d = item.datos;
+                const { error } = await supabaseClient.from('productos').insert([{
+                    codigoBarras: d.codigoBarras || null,
+                    nombre:       d.nombre,
+                    precio:       d.precio,
+                    cantidad:     d.cantidad,
+                    imagen:       d.imagen || '',
+                    user_id:      user.id,
+                    categoria:    d.categoria || 'Otras'
+                }]);
+                if (error) throw error;
+                await idbDelete('productos_pending', item.localId);
+            } catch(e) {
+                console.error('Error sincronizando producto:', e);
+                errores++;
+            }
+        }
+
+        // 2. Ventas
+        const ventasPendientes = await idbGetAll('ventas_pending');
+        for (const item of ventasPendientes) {
+            if (item.tipo !== 'nueva_venta') continue;
+            try {
+                await saveSale(item.datos);
+                await idbDelete('ventas_pending', item.localId);
+            } catch(e) {
+                console.error('Error sincronizando venta:', e);
+                errores++;
+            }
+        }
+
+        // 3. Recargar todo desde Supabase
+        await loadInventory();
+        await loadSales();
+        await guardarInventarioCache();
+        await actualizarUIOffline();
+
+        if (errores === 0) {
+            await mostrarAlerta('✅ Sincronización completada.\nTodos los datos están en Supabase.', 'success');
+        } else {
+            await mostrarAlerta(`⚠️ Sincronización parcial.\n${errores} elemento(s) no se pudieron subir.`, 'warn');
+        }
+    } catch(e) {
+        console.error('Error general en sincronización:', e);
+        await mostrarAlerta('❌ Error durante la sincronización:\n' + e.message, 'error');
+    } finally {
+        if (syncBtn) { syncBtn.disabled = false; syncBtn.textContent = '☁️ Sincronizar con Supabase'; }
+    }
+}
+
+// ──────────────────────────────────────────────────────────
+// Activación manual del switch
+// toggle: true  = usuario pone switch ON  → quiere volver a Supabase
+//         false = usuario pone switch OFF → quiere trabajar offline
+// ──────────────────────────────────────────────────────────
+async function manejarCambioSwitch(queremosSupabase) {
+    if (queremosSupabase) {
+        // El usuario quiere activar Supabase (switch → ON)
+        const n = await contarPendientes();
+        if (n > 0) {
+            // Hay datos sin subir: primero preguntar
+            const ok = await mostrarConfirm(
+                `Hay ${n} operación(es) guardada(s) localmente.\n¿Sincronizar con Supabase antes de volver al modo en línea?`,
+                'warn'
+            );
+            if (ok) {
+                await sincronizarConSupabase();
+            } else {
+                // El usuario rechazó sincronizar: dejar el switch en OFF (modoOffline sigue true)
+                const toggle = document.getElementById('offlineToggle');
+                if (toggle) toggle.checked = false;
+                await actualizarUIOffline();
+                return;
+            }
+        } else {
+            // Sin pendientes: simplemente recargar Supabase
+            await loadInventory();
+            await loadSales();
+            await guardarInventarioCache();
+        }
+        modoOffline = false;
+        await actualizarUIOffline();
+        await mostrarAlerta('🌐 Modo en línea activado.\nConectado a Supabase.', 'success');
+
+    } else {
+        // El usuario quiere trabajar sin internet (switch → OFF)
+        modoOffline = true;
+        await guardarInventarioCache();
+        await actualizarUIOffline();
+        await mostrarAlerta('⚡ Modo sin internet activado.\nLas ventas y productos se guardan localmente.', 'info');
+    }
+}
+
+// ──────────────────────────────────────────────────────────
+// Detección automática de caída / recuperación de internet
+// ──────────────────────────────────────────────────────────
+async function manejarCaidaInternet() {
+    if (modoOffline) return; // ya estamos en modo offline, nada que hacer
+    modoOffline = true;
+    await guardarInventarioCache();
+    await actualizarUIOffline();
+
+    // Abrir el panel de modo de trabajo para que el usuario lo vea
+    const panel = document.getElementById('panelModoTrabajo');
+    if (panel && !panel.classList.contains('abierto')) {
+        panel.classList.add('abierto');
+        const btn = document.getElementById('btnModoTrabajo');
+        if (btn) {
+            const flecha = btn.querySelector('span:last-child');
+            if (flecha) flecha.textContent = '▲';
+        }
+    }
+
+    await mostrarAlerta(
+        '📵 Se perdió la conexión a internet.\nSe activó el Modo Sin Internet automáticamente.\nPuedes seguir vendiendo y registrando productos.\nAl recuperar internet, sincroniza los datos.', 
+        'warn'
+    );
+}
+
+async function manejarRecuperacionInternet() {
+    if (!modoOffline) return; // ya estamos en línea
+    if (_reconexionPendiente) return; // ya hay un diálogo abierto
+    _reconexionPendiente = true;
+
+    const n = await contarPendientes();
+
+    // Abrir el panel
+    const panel = document.getElementById('panelModoTrabajo');
+    if (panel && !panel.classList.contains('abierto')) {
+        panel.classList.add('abierto');
+        const btn = document.getElementById('btnModoTrabajo');
+        if (btn) {
+            const flecha = btn.querySelector('span:last-child');
+            if (flecha) flecha.textContent = '▲';
+        }
+    }
+
+    if (n > 0) {
+        const ok = await mostrarConfirm(
+            `📶 ¡Volvió el internet!\nHay ${n} operación(es) guardada(s) sin sincronizar.\n¿Sincronizar ahora con Supabase y volver al modo en línea?`,
+            'warn'
+        );
+        if (ok) {
+            await sincronizarConSupabase();
+            modoOffline = false;
+        }
+        // Si dice NO: se queda en modo offline hasta que él decida
+    } else {
+        // Sin pendientes: volver automáticamente a Supabase
+        modoOffline = false;
+        await loadInventory();
+        await loadSales();
+        await guardarInventarioCache();
+        await mostrarAlerta('📶 ¡Volvió el internet!\nConectado a Supabase nuevamente.', 'success');
+    }
+
+    await actualizarUIOffline();
+    _reconexionPendiente = false;
+}
+
+// ──────────────────────────────────────────────────────────
+// Inicializar módulo
+// ──────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        offlineDB = await abrirOfflineDB();
+    } catch(e) {
+        console.warn('IndexedDB no disponible:', e);
+    }
+
+    // Switch ON por defecto (en línea / Supabase)
+    modoOffline = false;
+    await actualizarUIOffline();
+
+    // Botón expandir/contraer panel
+    const btnModo = document.getElementById('btnModoTrabajo');
+    const panel   = document.getElementById('panelModoTrabajo');
+    if (btnModo && panel) {
+        btnModo.addEventListener('click', () => {
+            panel.classList.toggle('abierto');
+            const flecha = btnModo.querySelector('span:last-child');
+            if (flecha) flecha.textContent = panel.classList.contains('abierto') ? '▲' : '▼';
+        });
+    }
+
+    // Cambio manual del switch
+    const toggle = document.getElementById('offlineToggle');
+    if (toggle) {
+        // Al cargar: switch en ON (checked = true = Supabase)
+        toggle.checked = true;
+        toggle.addEventListener('change', async () => {
+            await manejarCambioSwitch(toggle.checked);
+        });
+    }
+
+    // Botón sincronizar manual
+    const syncBtn = document.getElementById('offlineSyncBtn');
+    if (syncBtn) {
+        syncBtn.addEventListener('click', async () => {
+            await sincronizarConSupabase();
+            // Si la sync fue exitosa, volver a ON
+            const n = await contarPendientes();
+            if (n === 0 && modoOffline) {
+                modoOffline = false;
+                await actualizarUIOffline();
+            }
+        });
+    }
+
+    // Detectar caída de internet (evento 'offline')
+    window.addEventListener('offline', () => {
+        manejarCaidaInternet();
+    });
+
+    // Detectar recuperación de internet (evento 'online')
+    window.addEventListener('online', () => {
+        manejarRecuperacionInternet();
+    });
+
+    // Al arrancar: si ya no hay internet (ej: recarga en modo avión), activar offline
+    if (!navigator.onLine) {
+        modoOffline = true;
+        await cargarInventarioDesdeCache();
+        await actualizarUIOffline();
+    }
+});
+
+// ──────────────────────────────────────────────────────────
+// PARCHEO de handleSaveProduct para modo offline
+// ──────────────────────────────────────────────────────────
+const _handleSaveProductOriginal = handleSaveProduct;
+window.handleSaveProduct = async function() {
+    if (!modoOffline) {
+        return _handleSaveProductOriginal();
+    }
+    // MODO OFFLINE: guardar en IndexedDB
+    const codigo    = inputCodigoBarras.value.trim();
+    const nombre    = inputNombreProducto.value.trim();
+    const precio    = parseInt(inputPrecioProducto.value);
+    const cantidad  = parseInt(inputCantidadProducto.value);
+    const categoria = inputCategoriaProducto ? inputCategoriaProducto.value : 'Otras';
+
+    if (!nombre)                          { await mostrarAlerta('Por favor, ingresa el nombre del producto.', 'warn'); return; }
+    if (isNaN(precio) || precio <= 0)     { await mostrarAlerta('Por favor, ingresa un precio válido.', 'warn'); return; }
+    if (isNaN(cantidad) || cantidad <= 0) { await mostrarAlerta('Por favor, ingresa una cantidad válida.', 'warn'); return; }
+    if (!categoria)                       { await mostrarAlerta('Por favor, selecciona una categoría.', 'warn'); return; }
+
+    let urlImagen = '';
+    if (archivoImagenFisico) {
+        urlImagen = await new Promise((res) => {
+            const reader = new FileReader();
+            reader.onload = e => res(e.target.result);
+            reader.readAsDataURL(archivoImagenFisico);
+        });
+    } else if (editingProductId !== null) {
+        const p = inventory.find(p => p.id.toString() === editingProductId.toString());
+        urlImagen = p ? p.imagen : '';
+    } else {
+        await mostrarAlerta('Por favor, selecciona una imagen para el producto.', 'warn');
+        return;
+    }
+
+    await guardarProductoOffline({ codigoBarras: codigo, nombre, precio, cantidad, imagen: urlImagen, categoria });
+    resetFormAndMode();
+    await mostrarAlerta(`✅ Producto "${nombre}" guardado localmente.\nSe subirá a Supabase al sincronizar.`, 'success');
+};
+
+if (btnGuardarProducto) {
+    btnGuardarProducto.removeEventListener('click', handleSaveProduct);
+    btnGuardarProducto.addEventListener('click', window.handleSaveProduct);
+}

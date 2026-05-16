@@ -92,6 +92,30 @@
       </a>
     </div>
 
+    <!-- Modo de Trabajo (offline) -->
+    <div class="sidebar-modo-trabajo">
+      <button class="sidebar-modo-trabajo-btn" id="btnModoTrabajo">
+        <span class="sidebar-icon">⚡</span>
+        <span class="sidebar-label">MODO DE TRABAJO</span>
+        <span style="font-size:0.75em;opacity:0.65;">▼</span>
+      </button>
+      <div class="sidebar-modo-trabajo-panel" id="panelModoTrabajo">
+        <div class="offline-switch-row">
+          <span class="offline-switch-label">Modo Sin Internet</span>
+          <label class="offline-toggle">
+            <input type="checkbox" id="offlineToggle">
+            <span class="offline-toggle-slider"></span>
+          </label>
+        </div>
+        <div class="offline-status-badge">
+          <span class="offline-status-dot" id="offlineStatusDot"></span>
+          <span id="offlineStatusText">OFF — Usando Supabase</span>
+        </div>
+        <div class="offline-pending-count" id="offlinePendingCount"></div>
+        <button class="offline-sync-btn" id="offlineSyncBtn">☁️ Sincronizar con Supabase</button>
+      </div>
+    </div>
+
     <!-- Cerrar Sesión -->
     <button id="btnLogout" class="sidebar-logout">
       <span class="sidebar-icon">🚪</span>
@@ -174,7 +198,6 @@
       <button class="btn-categoria-filtro" data-categoria="Otras">📦 Otras</button>
     </div>
     <div class="contenedor-productos" id="contenedorProductos"></div>
-    <button id="btnVolverInicio" class="boton-volver">← Volver al Inicio</button>
   </div>
 
   <div id="pantalla-ventas-fisicas">
@@ -234,7 +257,6 @@
 
     </div> <!-- FIN DEL CONTENEDOR FLEXIBLE -->
 
-    <button id="btnVolverVentasFisicas" class="boton-volver">← Volver al Inicio</button>
   </div>
 
   <!-- NUEVA PÁGINA: Historial Ventas Físicas -->
@@ -298,7 +320,6 @@
     <h2 id="online-pedidos-title">Pedidos</h2>
     <div id="listaPedidosAdmin" class="online-pedidos-lista transparente"></div>
 
-    <button id="btnVolverVentasOnline" class="boton-volver">← Volver al Inicio</button>
   </div>
 
   <!-- NUEVA PÁGINA: Historial Online -->
@@ -500,7 +521,6 @@
       </div>
     </div>
 
-    <button id="btnVolverDesdeCombos" class="boton-volver">← Volver al Inicio</button>
   </div>
 
   <div id="modal-escaner" class="modal-overlay pantalla-display-none">
@@ -530,5 +550,11 @@
   <script defer src="script.js"></script>
 
 </div><!-- fin app-root -->
+
+<!-- Indicador global modo offline -->
+<div id="offline-indicator">
+  <span>⚡</span>
+  <span id="offline-indicator-text">Modo Sin Internet activo</span>
+</div>
 </body>
 </html>
