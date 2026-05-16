@@ -373,220 +373,133 @@ h1 {
 /* ==============================
    SELECTOR DE DISPOSITIVO
    ============================== */
-.sidebar-dispositivo {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  margin: 8px 14px 0 14px;
-}
-
-.sidebar-dispositivo-panel {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.28s ease, padding 0.2s;
-  background: rgba(255,255,255,0.04);
-  border-radius: 0 0 10px 10px;
-  padding: 0 10px;
-}
-.sidebar-dispositivo-panel.abierto {
-  max-height: 320px;
-  padding: 10px;
-}
-
-.dispositivo-panel-desc {
-  font-size: 0.72em;
-  color: rgba(180,220,215,0.5);
-  margin: 0 0 8px 0;
-  text-align: center;
-}
-
-.dispositivo-opciones {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-}
-
-.btn-dispositivo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 8px 6px;
-  border: 1.5px solid rgba(255,255,255,0.08);
-  border-radius: 10px;
-  background: rgba(255,255,255,0.05);
-  color: rgba(200,230,225,0.7);
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, transform 0.12s;
-  font-family: 'Nunito','Segoe UI',sans-serif;
-}
-.btn-dispositivo:hover {
-  background: rgba(122,228,214,0.10);
-  border-color: rgba(122,228,214,0.3);
-  transform: scale(1.03);
-}
-.btn-dispositivo.activo {
-  background: rgba(122,228,214,0.18);
-  border-color: rgba(122,228,214,0.6);
-  color: #7ae4d6;
-}
-.dispositivo-icon { font-size: 1.3em; }
-.dispositivo-nombre { font-size: 0.75em; font-weight: 700; }
-.dispositivo-desc { font-size: 0.62em; opacity: 0.55; text-align: center; }
-
-.dispositivo-activo-label {
-  margin-top: 8px;
-  font-size: 0.7em;
-  color: rgba(180,220,215,0.5);
-  text-align: center;
-}
-.dispositivo-activo-label strong {
-  color: #7ae4d6;
-}
-
 /* ==============================
-   RESPONSIVE POR CLASE DE DISPOSITIVO
-   Aplicadas al <body> por JS
+   RESPONSIVE NATIVO CON @MEDIA QUERIES
    ============================== */
 
-/* === MÓVIL FORZADO === */
-/* === MÓVIL FORZADO === */
-body.device-mobile #sidebar-menu {
-  width: 100% !important;
-  height: auto !important;
-  position: fixed !important;
-  top: auto !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  flex-direction: row !important;
-  flex-wrap: nowrap !important;
-  padding: 6px 4px !important;
-  border-right: none !important;
-  border-top: 1px solid rgba(122,228,214,0.18) !important;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.5) !important;
-  z-index: 300 !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  justify-content: flex-start !important;
-  align-items: center !important;
-  gap: 4px !important;
-}
-/* Ocultar elementos no esenciales en barra móvil */
-body.device-mobile .sidebar-user-profile,
-body.device-mobile .sidebar-section-title,
-body.device-mobile .sidebar-dispositivo,
-body.device-mobile .sidebar-modo-trabajo,
-body.device-mobile .sidebar-cerrar-sesion { display: none !important; }
+/* Móvil (hasta 768px) */
+@media (max-width: 768px) {
+  #sidebar-menu {
+    width: 100% !important;
+    height: auto !important;
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    padding: 6px 4px !important;
+    border-right: none !important;
+    border-top: 1px solid rgba(122,228,214,0.18) !important;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.5) !important;
+    z-index: 300 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+  .sidebar-user-profile,
+  .sidebar-section-title,
+  .sidebar-dispositivo,
+  .sidebar-modo-trabajo,
+  .sidebar-cerrar-sesion { display: none !important; }
 
-/* Nav-links horizontal */
-body.device-mobile .sidebar-nav-links {
-  display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: nowrap !important;
-  gap: 4px !important;
-  padding: 0 !important;
-  overflow-x: auto !important;
-  flex: 1 !important;
-}
-body.device-mobile .sidebar-boton,
-body.device-mobile .sidebar-refresh-btn {
-  flex-direction: column !important;
-  padding: 6px 10px !important;
-  gap: 3px !important;
-  min-width: 64px !important;
-  border-radius: 10px !important;
-  font-size: 10px !important;
-  text-align: center !important;
-  white-space: nowrap !important;
-}
-body.device-mobile .sidebar-icon { font-size: 1.3em !important; }
-body.device-mobile .sidebar-label { font-size: 0.62em !important; letter-spacing: 0 !important; }
-body.device-mobile .sidebar-refresh-btn {
-  margin: 0 !important;
-  width: auto !important;
-  min-width: 64px !important;
-}
+  .sidebar-nav-links {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 4px !important;
+    padding: 0 !important;
+    overflow-x: auto !important;
+    flex: 1 !important;
+  }
+  .sidebar-boton,
+  .sidebar-refresh-btn {
+    flex-direction: column !important;
+    padding: 6px 10px !important;
+    gap: 3px !important;
+    min-width: 64px !important;
+    border-radius: 10px !important;
+    font-size: 10px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+    width: auto !important;
+  }
+  .sidebar-icon { font-size: 1.3em !important; }
+  .sidebar-label { font-size: 0.62em !important; letter-spacing: 0 !important; }
 
-/* Contenido principal sube para dejar espacio a la barra inferior */
-body.device-mobile #app-root {
-  padding-left: 0 !important;
-  padding-bottom: 90px !important;
-}
-body.device-mobile #pantalla-inicio.activa,
-body.device-mobile #pantalla-INVENTARIO.activa,
-body.device-mobile #pantalla-ventas-fisicas.activa,
-body.device-mobile #pantalla-historial-fisicas.activa,
-body.device-mobile #pantalla-ventas-online.activa,
-body.device-mobile #pantalla-historial-online.activa,
-body.device-mobile #pantalla-estadisticas.activa,
-body.device-mobile #pantalla-estadisticas-online.activa,
-body.device-mobile #pantalla-combos.activa {
-  left: 0 !important;
-  width: 100% !important;
-}
+  #app-root {
+    padding-left: 0 !important;
+    padding-bottom: 90px !important;
+  }
+  #pantalla-inicio.activa,
+  #pantalla-INVENTARIO.activa,
+  #pantalla-ventas-fisicas.activa,
+  #pantalla-historial-fisicas.activa,
+  #pantalla-ventas-online.activa,
+  #pantalla-historial-online.activa,
+  #pantalla-estadisticas.activa,
+  #pantalla-estadisticas-online.activa,
+  #pantalla-combos.activa {
+    left: 0 !important;
+    width: 100% !important;
+  }
 
-/* Stats en móvil */
-body.device-mobile .stats-kpi-row {
-  grid-template-columns: 1fr 1fr !important;
-  padding: 12px !important;
-  gap: 10px !important;
-}
-body.device-mobile .stats-kpi-primary { grid-column: 1 / -1 !important; }
-body.device-mobile .stats-charts-grid {
-  grid-template-columns: 1fr !important;
-  padding: 0 12px 12px !important;
-}
-body.device-mobile .stats-chart-card.stats-chart-wide { grid-column: span 1 !important; }
-body.device-mobile .stats-header { padding: 16px 12px !important; flex-direction: column !important; align-items: center !important; }
-body.device-mobile .stats-period-selector { width: 100% !important; justify-content: center !important; }
-body.device-mobile .stats-tabla-section { margin: 0 12px 24px 12px !important; }
-body.device-mobile .kpi-value { font-size: 1.6em !important; }
-body.device-mobile .stats-kpi-primary .kpi-value { font-size: 2em !important; }
-
-/* Ventas y combos en móvil */
-body.device-mobile .contenedor-ventas-independientes { flex-direction: column !important; }
-body.device-mobile .combo-layout, body.device-mobile .combos-layout { flex-direction: column !important; }
-body.device-mobile .tarjeta-producto { width: 140px !important; min-width: 130px !important; }
-
-
-/* === TABLET FORZADO === */
-body.device-tablet #sidebar-menu {
-  width: 200px !important;
-}
-body.device-tablet #app-root {
-  padding-left: 200px !important;
-}
-body.device-tablet .stats-kpi-row {
-  grid-template-columns: 1fr 1fr !important;
-}
-body.device-tablet .stats-charts-grid {
-  grid-template-columns: 1fr 1fr !important;
-}
-body.device-tablet .contenedor-ventas-independientes {
-  flex-direction: column !important;
-}
-body.device-tablet .tarjeta-producto {
-  width: 160px !important;
-  min-width: 150px !important;
+  .stats-kpi-row {
+    grid-template-columns: 1fr 1fr !important;
+    padding: 12px !important;
+    gap: 10px !important;
+  }
+  .stats-kpi-primary { grid-column: 1 / -1 !important; }
+  .stats-charts-grid {
+    grid-template-columns: 1fr !important;
+    padding: 0 12px 12px !important;
+  }
+  .stats-chart-card.stats-chart-wide { grid-column: span 1 !important; }
+  .stats-header { padding: 16px 12px !important; flex-direction: column !important; align-items: center !important; }
+  .stats-period-selector { width: 100% !important; justify-content: center !important; }
+  .stats-tabla-section { margin: 0 12px 24px 12px !important; }
+  .kpi-value { font-size: 1.6em !important; }
+  .stats-kpi-primary .kpi-value { font-size: 2em !important; }
+  .contenedor-ventas-independientes { flex-direction: column !important; }
+  .combo-layout, .combos-layout { flex-direction: column !important; }
+  .tarjeta-producto { width: 140px !important; min-width: 130px !important; }
 }
 
-/* === ESCRITORIO FORZADO === */
-body.device-desktop #sidebar-menu {
-  width: 240px !important;
+/* Tablet (769px – 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  #sidebar-menu { width: 200px !important; }
+  #app-root { padding-left: 200px !important; }
+  #pantalla-inicio.activa,
+  #pantalla-INVENTARIO.activa,
+  #pantalla-ventas-fisicas.activa,
+  #pantalla-historial-fisicas.activa,
+  #pantalla-ventas-online.activa,
+  #pantalla-historial-online.activa,
+  #pantalla-estadisticas.activa,
+  #pantalla-estadisticas-online.activa,
+  #pantalla-combos.activa {
+    left: 200px !important;
+    width: calc(100% - 200px) !important;
+  }
+  .stats-kpi-row { grid-template-columns: 1fr 1fr !important; }
+  .stats-charts-grid { grid-template-columns: 1fr 1fr !important; }
+  .contenedor-ventas-independientes { flex-direction: column !important; }
+  .tarjeta-producto { width: 160px !important; min-width: 150px !important; }
 }
-body.device-desktop #app-root {
-  padding-left: 240px !important;
+
+/* Escritorio (1025px en adelante) */
+@media (min-width: 1025px) {
+  #sidebar-menu { width: 240px !important; }
+  #app-root { padding-left: 240px !important; }
+  .stats-kpi-row { grid-template-columns: 2fr 1fr 1fr 1fr !important; }
+  .stats-charts-grid { grid-template-columns: 1fr 1fr !important; }
+  .contenedor-ventas-independientes { flex-direction: row !important; }
 }
-body.device-desktop .stats-kpi-row {
-  grid-template-columns: repeat(4, 1fr) !important;
-}
-body.device-desktop .stats-charts-grid {
-  grid-template-columns: 1fr 1fr !important;
-}
-body.device-desktop .contenedor-ventas-independientes {
-  flex-direction: row !important;
-}
+
 
 /* ==============================
    BOTÓN MODO DE TRABAJO (offline)
