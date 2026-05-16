@@ -262,25 +262,51 @@ h1 {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 13px 16px;
+  padding: 14px 16px;
   background: rgba(122, 228, 214, 0.08);
   color: #a8f0e8;
   text-decoration: none;
   border-radius: 12px;
-  font-size: 13.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
   border: 1.5px solid rgba(122, 228, 214, 0.18);
-  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+  transition: background 0.25s, color 0.25s, border-color 0.25s,
+              transform 0.2s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow 0.25s, letter-spacing 0.25s;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto shimmer al pasar el mouse */
+.sidebar-boton::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(122,228,214,0.18), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.45s ease;
+}
+
+.sidebar-boton:hover::after {
+  left: 150%;
 }
 
 .sidebar-boton:hover {
   background: rgba(122, 228, 214, 0.22);
   color: #fff;
   border-color: #7ae4d6;
-  transform: translateX(4px);
-  box-shadow: 0 4px 18px rgba(122, 228, 214, 0.22);
+  transform: translateX(6px) scale(1.02);
+  box-shadow: 0 6px 22px rgba(122, 228, 214, 0.30);
+  letter-spacing: 0.09em;
+}
+
+.sidebar-boton:active {
+  transform: translateX(3px) scale(0.98);
 }
 
 /* Botones secundarios (Estadísticas, Combos) con tono diferente */
@@ -290,20 +316,30 @@ h1 {
   border-color: rgba(180, 140, 255, 0.20);
 }
 
+.sidebar-boton-secondary::after {
+  background: linear-gradient(90deg, transparent, rgba(180,140,255,0.18), transparent);
+}
+
 .sidebar-boton-secondary:hover {
   background: rgba(180, 140, 255, 0.22);
   color: #fff;
   border-color: #c9aaff;
-  box-shadow: 0 4px 18px rgba(180, 140, 255, 0.22);
+  box-shadow: 0 6px 22px rgba(180, 140, 255, 0.30);
+  letter-spacing: 0.09em;
 }
 
 .sidebar-icon {
-  font-size: 1.35em;
+  font-size: 1.5em;
   flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.sidebar-boton:hover .sidebar-icon {
+  transform: scale(1.25) rotate(-5deg);
 }
 
 .sidebar-label {
-  font-size: 0.92em;
+  font-size: 1.0em;
   line-height: 1.2;
 }
 
@@ -2681,18 +2717,66 @@ input[type="number"] {
 }
 
 .ventas-hoy-lista {
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease;
-    max-height: 400px;
+    max-height: 65vh;   /* ocupa hasta 65% de la pantalla y luego hace scroll */
     opacity: 1;
     margin-top: 15px;
+    scroll-behavior: smooth;
+    /* barra de scroll personalizada */
+    scrollbar-width: thin;
+    scrollbar-color: #0c566c rgba(255,255,255,0.1);
+}
+
+.ventas-hoy-lista::-webkit-scrollbar {
+    width: 7px;
+}
+.ventas-hoy-lista::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+}
+.ventas-hoy-lista::-webkit-scrollbar-thumb {
+    background: #0c566c;
+    border-radius: 10px;
+}
+.ventas-hoy-lista::-webkit-scrollbar-thumb:hover {
+    background: #1a7b98;
 }
 
 /* Listas de historial pueden ser más largas */
 .lista-historial-acordeon-max-height,
 .lista-historial-entregas-acordeon,
 .lista-entregas-hoy {
-    max-height: 2000px;
+    max-height: 65vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #0c566c rgba(255,255,255,0.1);
+}
+
+.lista-historial-acordeon-max-height::-webkit-scrollbar,
+.lista-historial-entregas-acordeon::-webkit-scrollbar,
+.lista-entregas-hoy::-webkit-scrollbar {
+    width: 7px;
+}
+.lista-historial-acordeon-max-height::-webkit-scrollbar-track,
+.lista-historial-entregas-acordeon::-webkit-scrollbar-track,
+.lista-entregas-hoy::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+}
+.lista-historial-acordeon-max-height::-webkit-scrollbar-thumb,
+.lista-historial-entregas-acordeon::-webkit-scrollbar-thumb,
+.lista-entregas-hoy::-webkit-scrollbar-thumb {
+    background: #0c566c;
+    border-radius: 10px;
+}
+.lista-historial-acordeon-max-height::-webkit-scrollbar-thumb:hover,
+.lista-historial-entregas-acordeon::-webkit-scrollbar-thumb:hover,
+.lista-entregas-hoy::-webkit-scrollbar-thumb:hover {
+    background: #1a7b98;
 }
 
 .ventas-hoy-lista.oculto {
@@ -3638,23 +3722,34 @@ input[type="number"] {
 .stats-pct-bar {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   justify-content: flex-end;
 }
 
+.stats-pct-num {
+  font-size: 1.05em;
+  font-weight: 800;
+  color: #7ae4d6;
+  min-width: 42px;
+  text-align: right;
+  letter-spacing: 0.02em;
+}
+
 .stats-pct-track {
-  width: 80px;
-  height: 5px;
-  background: rgba(255,255,255,0.07);
-  border-radius: 4px;
+  width: 130px;
+  height: 12px;
+  background: rgba(255,255,255,0.10);
+  border-radius: 8px;
   overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .stats-pct-fill {
   height: 100%;
-  background: linear-gradient(90deg, #7ae4d6, rgba(122,228,214,0.5));
-  border-radius: 4px;
-  transition: width 0.4s ease;
+  background: linear-gradient(90deg, #7ae4d6, rgba(122,228,214,0.55));
+  border-radius: 8px;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 0 8px rgba(122,228,214,0.4);
 }
 
 .stats-tabla-empty {

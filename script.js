@@ -2994,7 +2994,7 @@ function renderEstadisticas(periodo) {
                     <td>${fmt(ingreso)}</td>
                     <td>
                         <div class="stats-pct-bar">
-                            <span style="font-size:0.78em;color:rgba(160,200,210,0.5)">${pct}%</span>
+                            <span class="stats-pct-num">${pct}%</span>
                             <div class="stats-pct-track">
                                 <div class="stats-pct-fill" style="width:${pct}%"></div>
                             </div>
@@ -3274,7 +3274,7 @@ function renderEstadisticasOnline(periodo) {
                     <td>${fmt(ingreso)}</td>
                     <td>
                         <div class="stats-pct-bar">
-                            <span style="font-size:0.78em;color:rgba(160,200,210,0.5)">${pct}%</span>
+                            <span class="stats-pct-num">${pct}%</span>
                             <div class="stats-pct-track"><div class="stats-pct-fill" style="width:${pct}%"></div></div>
                         </div>
                     </td>
