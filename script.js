@@ -2909,10 +2909,10 @@ function renderEstadisticas(periodo) {
     const CHART_DEFAULTS = {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: 'rgba(160,200,210,0.6)', font: { size: 11 } } } },
+        plugins: { legend: { labels: { color: '#ffffff', font: { size: 14 } } } },
         scales: {
-            x: { ticks: { color: 'rgba(160,200,210,0.45)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
-            y: { ticks: { color: 'rgba(160,200,210,0.45)', font: { size: 10 }, callback: v => v >= 1000 ? '$'+Math.round(v/1000)+'k' : '$'+v }, grid: { color: 'rgba(255,255,255,0.04)' } }
+            x: { ticks: { color: '#ffffff', font: { size: 13 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { ticks: { color: '#ffffff', font: { size: 13 }, callback: v => v >= 1000 ? '$'+Math.round(v/1000)+'k' : '$'+v }, grid: { color: 'rgba(255,255,255,0.04)' } }
         }
     };
 
@@ -2973,8 +2973,8 @@ function renderEstadisticas(periodo) {
                 callbacks: { label: ctx => ` ${ctx.raw} unidades` }
             }},
             scales: {
-                x: { ticks: { color: 'rgba(200,230,225,0.7)', font: { size: 10 } }, grid: { display: false } },
-                y: { ticks: { color: 'rgba(160,200,210,0.45)', font: { size: 10 }, stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } }
+                x: { ticks: { color: '#ffffff', font: { size: 13 } }, grid: { display: false } },
+                y: { ticks: { color: '#ffffff', font: { size: 13 }, stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } }
             }
         }
     });
@@ -2999,7 +2999,7 @@ function renderEstadisticas(periodo) {
             maintainAspectRatio: false,
             cutout: '62%',
             plugins: {
-                legend: { position: 'right', labels: { color: 'rgba(180,220,215,0.65)', font: { size: 10 }, boxWidth: 10, padding: 10 } }
+                legend: { position: 'right', labels: { color: '#ffffff', font: { size: 14 }, boxWidth: 14, padding: 16 } }
             }
         }
     });
@@ -3241,10 +3241,10 @@ function renderEstadisticasOnline(periodo) {
 
     const CHART_DEFAULTS = {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: 'rgba(160,200,210,0.6)', font: { size: 11 } } } },
+        plugins: { legend: { labels: { color: '#ffffff', font: { size: 14 } } } },
         scales: {
-            x: { ticks: { color: 'rgba(160,200,210,0.45)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
-            y: { ticks: { color: 'rgba(160,200,210,0.45)', font: { size: 10 }, callback: v => v>=1000?'$'+Math.round(v/1000)+'k':'$'+v }, grid: { color: 'rgba(255,255,255,0.04)' } }
+            x: { ticks: { color: '#ffffff', font: { size: 13 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { ticks: { color: '#ffffff', font: { size: 13 }, callback: v => v>=1000?'$'+Math.round(v/1000)+'k':'$'+v }, grid: { color: 'rgba(255,255,255,0.04)' } }
         }
     };
     const COLORS_GRAD = [
@@ -3278,8 +3278,8 @@ function renderEstadisticasOnline(periodo) {
         },
         options: { ...CHART_DEFAULTS,
             plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.raw} unidades` } } },
-            scales: { x: { ticks: { color: 'rgba(200,230,225,0.7)', font: { size: 10 } }, grid: { display: false } },
-                y: { ticks: { color: 'rgba(160,200,210,0.45)', font: { size: 10 }, stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } } }
+            scales: { x: { ticks: { color: '#ffffff', font: { size: 13 } }, grid: { display: false } },
+                y: { ticks: { color: '#ffffff', font: { size: 13 }, stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } } }
         }
     });
 
@@ -3290,7 +3290,7 @@ function renderEstadisticasOnline(periodo) {
         type: 'doughnut',
         data: { labels: Object.keys(catMap), datasets: [{ data: Object.values(catMap), backgroundColor: COLORS_GRAD, borderColor: 'rgba(8,15,26,0.8)', borderWidth: 2, hoverOffset: 6 }] },
         options: { responsive: true, maintainAspectRatio: false, cutout: '62%',
-            plugins: { legend: { position: 'right', labels: { color: 'rgba(180,220,215,0.65)', font: { size: 10 }, boxWidth: 10, padding: 10 } } }
+            plugins: { legend: { position: 'right', labels: { color: '#ffffff', font: { size: 14 }, boxWidth: 14, padding: 16 } } }
         }
     });
 
