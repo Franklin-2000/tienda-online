@@ -1369,6 +1369,7 @@ function renderSalesHistory() {
         listaVentasHoyEl.innerHTML = '';
         const hoy = new Date().toLocaleDateString();
         const ventasDeHoy = sales.filter(s => {
+            if (s.id && String(s.id).startsWith('ONLINE-')) return false;
             const f = s.fechaLimpia || (s.date ? s.date.split(',')[0].trim() : '');
             return f === hoy;
         });
@@ -1399,6 +1400,8 @@ function renderSalesHistory() {
     const ventasPasadas = {};
 
     sales.forEach(sale => {
+        // Excluir ventas online del historial físico
+        if (sale.id && String(sale.id).startsWith('ONLINE-')) return;
         // Normalizar fecha: preferir fechaLimpia (toLocaleDateString guardado en BD)
         // Si no existe, extraer la parte de fecha del string completo
         const fechaVenta = sale.fechaLimpia
@@ -2016,6 +2019,26 @@ async function handleLogout() {
 
 if (btnGoogle) btnGoogle.addEventListener("click", handleLoginWithGoogle);
 btnLogout.addEventListener("click", handleLogout);
+
+// ==========================================
+// BOTÓN ACTUALIZAR (sidebar)
+// ==========================================
+(function() {
+    const btnActualizar = document.getElementById('btnActualizar');
+    if (!btnActualizar) return;
+    btnActualizar.addEventListener('click', function() {
+        btnActualizar.classList.add('girando');
+        setTimeout(function() { btnActualizar.classList.remove('girando'); }, 520);
+        const pantallaActiva = document.querySelector(
+            '#pantalla-inicio.activa, #pantalla-INVENTARIO.activa, ' +
+            '#pantalla-ventas-fisicas.activa, #pantalla-historial-fisicas.activa, ' +
+            '#pantalla-ventas-online.activa, #pantalla-historial-online.activa, ' +
+            '#pantalla-estadisticas.activa, #pantalla-estadisticas-online.activa, ' +
+            '#pantalla-combos.activa'
+        );
+        if (pantallaActiva) showScreen(pantallaActiva.id, false);
+    });
+})();
 
 // ==========================================
 // INICIALIZACIÓN DE LA APP
@@ -2680,6 +2703,8 @@ function filtrarVentasPorPeriodo(periodo) {
     const ahora = new Date();
     const hoyStr = ahora.toLocaleDateString(); // mismo formato que fechaLimpia
     return sales.filter(venta => {
+        // Excluir ventas online de las estadísticas físicas
+        if (venta.id && String(venta.id).startsWith('ONLINE-')) return false;
         // Para 'diaria': comparar strings directamente (más confiable)
         if (periodo === 'diaria') {
             const fl = venta.fechaLimpia || '';
@@ -2711,6 +2736,7 @@ function filtrarVentasPorPeriodoAnterior(periodo) {
     ayer.setDate(ahora.getDate() - 1);
     const ayerStr = ayer.toLocaleDateString();
     return sales.filter(venta => {
+        if (venta.id && String(venta.id).startsWith('ONLINE-')) return false;
         if (periodo === 'diaria') {
             const fl = venta.fechaLimpia || '';
             if (fl === ayerStr) return true;
