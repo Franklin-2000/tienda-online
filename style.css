@@ -96,6 +96,7 @@ body {
 
 /* Pantallas con sidebar: se desplazan para no quedar bajo el menú */
 #pantalla-inicio.activa,
+#pantalla-menu-ventas.activa,
 #pantalla-INVENTARIO.activa,
 #pantalla-ventas-fisicas.activa,
 #pantalla-historial-fisicas.activa,
@@ -145,7 +146,7 @@ h1 {
     flex-direction: row;
     justify-content: flex-start;
     align-items: flex-start;
-    position: relative;
+    /* position: relative eliminado — no debe sobreescribir el position: absolute global */
 }
 
 /* Logo SOFTVENT — esquina superior derecha (fuera del sidebar) */
