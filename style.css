@@ -3301,7 +3301,7 @@ input[type="number"] {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 14px;
-  padding: 28px 32px 20px 32px;
+  padding: 32px 36px 24px 36px;
   border-bottom: 1px solid rgba(255,255,255,0.07);
   background: linear-gradient(180deg, rgba(10,22,45,0.95) 0%, transparent 100%);
 }
@@ -3310,7 +3310,7 @@ input[type="number"] {
 
 .stats-title {
   font-family: 'Pacifico', cursive;
-  font-size: 38px !important;
+  font-size: 44px !important;
   color: #7ae4d6 !important;
   text-shadow: 0 0 30px rgba(122,228,214,0.3) !important;
   margin: 0 !important;
@@ -3319,8 +3319,8 @@ input[type="number"] {
 }
 
 .stats-subtitle {
-  font-size: 0.82em;
-  color: rgba(160,210,220,0.55);
+  font-size: 0.92em;
+  color: rgba(160,210,220,0.65);
   font-weight: 500;
   letter-spacing: 0.04em;
   margin: 0;
@@ -3365,18 +3365,18 @@ input[type="number"] {
 .stats-kpi-row {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 12px;
-  padding: 20px 32px;
+  gap: 16px;
+  padding: 24px 36px;
 }
 
 .stats-kpi-card {
   background: rgba(255,255,255,0.035);
   border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 14px;
-  padding: 18px 20px 14px 20px;
+  border-radius: 16px;
+  padding: 22px 26px 18px 26px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   position: relative;
   overflow: hidden;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -3413,20 +3413,20 @@ input[type="number"] {
 }
 
 .kpi-label {
-  font-size: 0.7em;
-  color: rgba(180,210,220,0.5);
+  font-size: 0.8em;
+  color: rgba(180,210,220,0.6);
   text-transform: uppercase;
   letter-spacing: 0.09em;
   font-weight: 600;
 }
 
 .kpi-trend {
-  font-size: 0.72em;
+  font-size: 0.8em;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 20px;
   background: rgba(255,255,255,0.06);
-  color: rgba(180,210,220,0.5);
+  color: rgba(180,210,220,0.6);
 }
 
 .kpi-trend.positivo {
@@ -3440,7 +3440,7 @@ input[type="number"] {
 }
 
 .kpi-value {
-  font-size: 1.7em;
+  font-size: 2.2em;
   font-weight: 800;
   color: #e2eaf5;
   letter-spacing: -0.02em;
@@ -3448,29 +3448,29 @@ input[type="number"] {
 }
 
 .stats-kpi-primary .kpi-value {
-  font-size: 2em;
+  font-size: 2.7em;
   color: #7ae4d6;
 }
 
 .kpi-compare {
-  font-size: 0.68em;
-  color: rgba(160,200,210,0.4);
-  margin-top: 2px;
+  font-size: 0.78em;
+  color: rgba(160,200,210,0.5);
+  margin-top: 4px;
 }
 
 /* — Grid de gráficos — */
 .stats-charts-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  padding: 0 32px 20px 32px;
+  gap: 16px;
+  padding: 0 36px 24px 36px;
 }
 
 .stats-chart-card {
   background: rgba(255,255,255,0.025);
   border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 14px;
-  padding: 18px 20px 16px 20px;
+  border-radius: 16px;
+  padding: 22px 24px 20px 24px;
   transition: border-color 0.2s;
 }
 
@@ -3486,32 +3486,32 @@ input[type="number"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 .chart-title {
-  font-size: 0.82em;
+  font-size: 0.92em;
   font-weight: 700;
-  color: rgba(180,225,220,0.8);
+  color: rgba(180,225,220,0.9);
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.07em;
 }
 
 .chart-badge {
-  font-size: 0.72em;
-  padding: 3px 10px;
+  font-size: 0.82em;
+  padding: 4px 14px;
   border-radius: 20px;
   background: rgba(122,228,214,0.08);
   border: 1px solid rgba(122,228,214,0.18);
-  color: rgba(122,228,214,0.7);
+  color: rgba(122,228,214,0.85);
   font-weight: 600;
 }
 
 .chart-wrap {
   position: relative;
   width: 100%;
-  height: 210px;
+  height: 260px;
 }
 
 .chart-wrap canvas {
@@ -3521,21 +3521,21 @@ input[type="number"] {
 
 /* — Tabla de productos — */
 .stats-tabla-section {
-  margin: 0 32px 32px 32px;
+  margin: 0 36px 36px 36px;
   border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
   background: rgba(255,255,255,0.025);
 }
 
 .stats-tabla-titulo {
-  font-size: 0.78em;
+  font-size: 0.9em;
   font-weight: 700;
-  color: rgba(180,225,220,0.7);
+  color: rgba(180,225,220,0.85);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin: 0;
-  padding: 14px 20px;
+  padding: 18px 24px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
   background: rgba(255,255,255,0.02);
 }
@@ -3547,22 +3547,22 @@ input[type="number"] {
 .stats-tabla {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85em;
+  font-size: 0.95em;
 }
 
 .stats-tabla thead th {
-  padding: 11px 16px;
+  padding: 13px 20px;
   text-align: left;
-  font-size: 0.72em;
+  font-size: 0.78em;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: rgba(160,200,210,0.45);
+  color: rgba(160,200,210,0.55);
   border-bottom: 1px solid rgba(255,255,255,0.06);
   white-space: nowrap;
 }
 
-.stats-tabla thead th:first-child { width: 36px; text-align: center; }
+.stats-tabla thead th:first-child { width: 40px; text-align: center; }
 .stats-tabla thead th:nth-child(3),
 .stats-tabla thead th:nth-child(4),
 .stats-tabla thead th:nth-child(5) { text-align: right; }
@@ -3579,15 +3579,15 @@ input[type="number"] {
 }
 
 .stats-tabla tbody td {
-  padding: 11px 16px;
-  color: rgba(220,235,240,0.8);
+  padding: 14px 20px;
+  color: rgba(220,235,240,0.88);
   vertical-align: middle;
 }
 
 .stats-tabla tbody td:first-child {
   text-align: center;
-  color: rgba(160,200,210,0.35);
-  font-size: 0.78em;
+  color: rgba(160,200,210,0.4);
+  font-size: 0.85em;
   font-weight: 700;
 }
 
@@ -3598,6 +3598,7 @@ input[type="number"] {
 .stats-tabla tbody td:nth-child(4) {
   font-weight: 700;
   color: #7ae4d6;
+  font-size: 1.05em;
 }
 
 /* Barra de porcentaje dentro de la celda */
@@ -3609,8 +3610,8 @@ input[type="number"] {
 }
 
 .stats-pct-track {
-  width: 60px;
-  height: 4px;
+  width: 80px;
+  height: 5px;
   background: rgba(255,255,255,0.07);
   border-radius: 4px;
   overflow: hidden;
@@ -3656,8 +3657,8 @@ input[type="number"] {
 @media (max-width: 600px) {
   .stats-kpi-row { grid-template-columns: 1fr 1fr; }
   .stats-kpi-primary { grid-column: 1 / -1; }
-  .kpi-value { font-size: 1.4em; }
-  .stats-kpi-primary .kpi-value { font-size: 1.7em; }
+  .kpi-value { font-size: 1.6em; }
+  .stats-kpi-primary .kpi-value { font-size: 2em; }
   .stats-header { flex-direction: column; align-items: flex-start; }
   .stats-period-selector { width: 100%; }
   .btn-period { flex: 1; text-align: center; }
