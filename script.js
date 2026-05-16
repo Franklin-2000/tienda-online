@@ -556,10 +556,38 @@ function showScreen(screenId, pushToHistory = true) {
     document.querySelectorAll(
         '#pantalla-login, #pantalla-inicio, #pantalla-menu-ventas, ' +
         '#pantalla-INVENTARIO, #pantalla-ventas-fisicas, #pantalla-historial-fisicas, ' +
-        '#pantalla-ventas-online, #pantalla-historial-online'
+        '#pantalla-ventas-online, #pantalla-historial-online, #pantalla-estadisticas, #pantalla-combos'
     ).forEach(function(el) {
         el.classList.remove('activa');
     });
+
+    // Gestionar visibilidad del sidebar global
+    const sidebar = document.getElementById('sidebar-menu');
+    const pantallasSinSidebar = ['pantalla-login', 'pantalla-menu-ventas'];
+    if (sidebar) {
+        if (pantallasSinSidebar.includes(screenId)) {
+            sidebar.classList.remove('activo');
+        } else {
+            sidebar.classList.add('activo');
+        }
+    }
+
+    // Marcar ítem activo en sidebar
+    const mapaActivoSidebar = {
+        'pantalla-INVENTARIO':      'btn-Inventario',
+        'pantalla-ventas-fisicas':  'btn-Menu-Ventas-Fisicas',
+        'pantalla-historial-fisicas':'btn-Menu-Ventas-Fisicas',
+        'pantalla-ventas-online':   'btn-Menu-Ventas-Online',
+        'pantalla-historial-online':'btn-Menu-Ventas-Online',
+        'pantalla-estadisticas':    'btn-Estadisticas',
+        'pantalla-combos':          'btn-Combos',
+    };
+    document.querySelectorAll('.sidebar-boton').forEach(function(b) { b.classList.remove('sidebar-activo'); });
+    const btnActivoId = mapaActivoSidebar[screenId];
+    if (btnActivoId) {
+        const btnActivo = document.getElementById(btnActivoId);
+        if (btnActivo) btnActivo.classList.add('sidebar-activo');
+    }
 
     // Muestra la pantalla pedida y vuelve al tope
     function show(el) {
@@ -670,6 +698,9 @@ async function checkAuthStatus(pushToHistory = true) {
     } else {
         currentLoggedInUserEmail = null;
         currentUserId = null;
+        // Ocultar sidebar al cerrar sesión
+        const sidebar = document.getElementById('sidebar-menu');
+        if (sidebar) sidebar.classList.remove('activo');
         if (pushToHistory) try { history.replaceState({ screen: 'pantalla-login' }, '', '#pantalla-login'); } catch(e) {}
         showScreen('pantalla-login', false);
     }
@@ -2467,8 +2498,36 @@ function filtrarVentasPorPeriodo(periodo) {
     });
 }
 
+function filtrarVentasPorPeriodoAnterior(periodo) {
+    const ahora = new Date();
+    return sales.filter(venta => {
+        const fechaVenta = new Date(venta.date || venta.fechaLimpia);
+        if (isNaN(fechaVenta)) return false;
+        if (periodo === 'diaria') {
+            const ayer = new Date(ahora);
+            ayer.setDate(ahora.getDate() - 1);
+            return fechaVenta.toDateString() === ayer.toDateString();
+        } else if (periodo === 'semanal') {
+            const inicioSemanaAnterior = new Date(ahora);
+            inicioSemanaAnterior.setDate(ahora.getDate() - ahora.getDay() - 7);
+            inicioSemanaAnterior.setHours(0,0,0,0);
+            const finSemanaAnterior = new Date(inicioSemanaAnterior);
+            finSemanaAnterior.setDate(inicioSemanaAnterior.getDate() + 7);
+            return fechaVenta >= inicioSemanaAnterior && fechaVenta < finSemanaAnterior;
+        } else if (periodo === 'mensual') {
+            const mesAnterior = ahora.getMonth() === 0 ? 11 : ahora.getMonth() - 1;
+            const añoAnterior = ahora.getMonth() === 0 ? ahora.getFullYear() - 1 : ahora.getFullYear();
+            return fechaVenta.getMonth() === mesAnterior && fechaVenta.getFullYear() === añoAnterior;
+        }
+        return false;
+    });
+}
+
 function renderEstadisticas(periodo) {
     const ventasFiltradas = filtrarVentasPorPeriodo(periodo);
+
+    // Calcular período anterior para comparar
+    const ventasAnteriores = filtrarVentasPorPeriodoAnterior(periodo);
 
     // --- KPIs ---
     const totalVentas      = ventasFiltradas.reduce((s,v) => s + (v.total || 0), 0);
@@ -2476,21 +2535,54 @@ function renderEstadisticas(periodo) {
     const totalProductos   = ventasFiltradas.reduce((s,v) => s + v.items.reduce((a,i) => a + (i.qty||0), 0), 0);
     const ticketPromedio   = numTransacciones > 0 ? totalVentas / numTransacciones : 0;
 
+    const totalAnt      = ventasAnteriores.reduce((s,v) => s + (v.total || 0), 0);
+    const transAnt      = ventasAnteriores.length;
+    const prodAnt       = ventasAnteriores.reduce((s,v) => s + v.items.reduce((a,i) => a + (i.qty||0), 0), 0);
+    const ticketAnt     = transAnt > 0 ? totalAnt / transAnt : 0;
+
     const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
-    document.getElementById('kpi-total-ventas').textContent     = fmt(totalVentas);
-    document.getElementById('kpi-num-transacciones').textContent = numTransacciones;
+    document.getElementById('kpi-total-ventas').textContent      = fmt(totalVentas);
+    document.getElementById('kpi-num-transacciones').textContent  = numTransacciones;
     document.getElementById('kpi-productos-vendidos').textContent = totalProductos;
-    document.getElementById('kpi-ticket-promedio').textContent   = fmt(ticketPromedio);
+    document.getElementById('kpi-ticket-promedio').textContent    = fmt(ticketPromedio);
+
+    // Etiqueta del período
+    const labelMap = { diaria: 'Hoy', semanal: 'Esta semana', mensual: 'Este mes' };
+    const subLabel = document.getElementById('stats-fecha-label');
+    if (subLabel) subLabel.textContent = labelMap[periodo] || '';
+
+    // Trends
+    function setTrend(elId, compareId, actual, anterior) {
+        const el = document.getElementById(elId);
+        const elc = document.getElementById(compareId);
+        if (!el) return;
+        if (anterior === 0) {
+            el.textContent = '—';
+            el.className = 'kpi-trend';
+            if (elc) elc.textContent = 'sin período anterior';
+            return;
+        }
+        const pct = Math.round(((actual - anterior) / anterior) * 100);
+        el.textContent = (pct >= 0 ? '▲ ' : '▼ ') + Math.abs(pct) + '%';
+        el.className = 'kpi-trend ' + (pct >= 0 ? 'positivo' : 'negativo');
+        if (elc) elc.textContent = 'vs período anterior: ' + (anterior > 100 ? fmt(anterior) : anterior);
+    }
+    setTrend('kpi-trend-ventas',  'kpi-compare-ventas',  totalVentas,      totalAnt);
+    setTrend('kpi-trend-trans',   'kpi-compare-trans',   numTransacciones,  transAnt);
+    setTrend('kpi-trend-prod',    'kpi-compare-prod',    totalProductos,    prodAnt);
+    setTrend('kpi-trend-ticket',  'kpi-compare-ticket',  ticketPromedio,    ticketAnt);
 
     // --- Agrupar productos más vendidos ---
     const prodMap = {};
+    const prodIngresos = {};
     ventasFiltradas.forEach(v => v.items.forEach(i => {
-        prodMap[i.name] = (prodMap[i.name] || 0) + (i.qty || 0);
+        prodMap[i.name]      = (prodMap[i.name] || 0) + (i.qty || 0);
+        prodIngresos[i.name] = (prodIngresos[i.name] || 0) + (i.subtotal || 0);
     }));
     const topProductos = Object.entries(prodMap)
         .sort((a,b) => b[1]-a[1]).slice(0, 8);
 
-    // --- Agrupar por categoría (usando inventario como referencia) ---
+    // --- Agrupar por categoría ---
     const catMap = {};
     ventasFiltradas.forEach(v => v.items.forEach(i => {
         const prod = inventory.find(p => p.id === i.productId);
@@ -2498,12 +2590,11 @@ function renderEstadisticas(periodo) {
         catMap[cat] = (catMap[cat] || 0) + (i.subtotal || 0);
     }));
 
-    // --- Agrupar tendencia por período ---
+    // --- Tendencia por período ---
     const tendenciaLabels = [];
     const tendenciaData   = [];
 
     if (periodo === 'diaria') {
-        // Por hora (0-23)
         const porHora = Array(24).fill(0);
         ventasFiltradas.forEach(v => {
             const h = new Date(v.date).getHours();
@@ -2522,7 +2613,6 @@ function renderEstadisticas(periodo) {
         });
         dias.forEach((d,i) => { tendenciaLabels.push(d); tendenciaData.push(porDia[i]); });
     } else {
-        // Por día del mes
         const diasEnMes = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
         const porDia = Array(diasEnMes).fill(0);
         ventasFiltradas.forEach(v => {
@@ -2535,26 +2625,33 @@ function renderEstadisticas(periodo) {
         }
     }
 
+    // Badge de tendencia
+    const maxVal = Math.max(...tendenciaData, 1);
+    const badgeTend = document.getElementById('chart-badge-tendencia');
+    if (badgeTend) badgeTend.textContent = fmt(totalVentas) + ' total';
+    const badgeIng  = document.getElementById('chart-badge-ingresos');
+    if (badgeIng) badgeIng.textContent = numTransacciones + ' transacciones';
+
     const CHART_DEFAULTS = {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: '#a8f0e8', font: { size: 11 } } } },
+        plugins: { legend: { labels: { color: 'rgba(160,200,210,0.6)', font: { size: 11 } } } },
         scales: {
-            x: { ticks: { color: '#7ae4d6', font: { size: 10 } }, grid: { color: 'rgba(122,228,214,0.08)' } },
-            y: { ticks: { color: '#7ae4d6', font: { size: 10 } }, grid: { color: 'rgba(122,228,214,0.08)' } }
+            x: { ticks: { color: 'rgba(160,200,210,0.45)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { ticks: { color: 'rgba(160,200,210,0.45)', font: { size: 10 }, callback: v => v >= 1000 ? '$'+Math.round(v/1000)+'k' : '$'+v }, grid: { color: 'rgba(255,255,255,0.04)' } }
         }
     };
 
-    const COLORS_TURQ  = 'rgba(122,228,214,0.75)';
-    const COLORS_PURP  = 'rgba(180,140,255,0.75)';
-    const COLORS_GRAD  = ['rgba(122,228,214,0.8)','rgba(100,200,255,0.8)','rgba(180,140,255,0.8)',
-                          'rgba(255,160,100,0.8)','rgba(255,100,160,0.8)','rgba(80,220,160,0.8)',
-                          'rgba(255,220,80,0.8)','rgba(100,160,255,0.8)'];
+    const COLORS_GRAD = [
+        'rgba(122,228,214,0.75)', 'rgba(100,180,255,0.75)', 'rgba(180,140,255,0.75)',
+        'rgba(255,160,80,0.75)',  'rgba(255,100,150,0.75)', 'rgba(80,220,160,0.75)',
+        'rgba(255,210,70,0.75)',  'rgba(120,160,255,0.75)'
+    ];
 
     function destroyChart(ref) { try { if (ref) ref.destroy(); } catch(e){} }
     function getCtx(id) { return document.getElementById(id)?.getContext('2d'); }
 
-    // Gráfico 1: Tendencia (línea)
+    // Gráfico 1: Tendencia (área)
     destroyChart(chartTendencia);
     const ctx1 = getCtx('chartTendencia');
     if (ctx1) chartTendencia = new Chart(ctx1, {
@@ -2562,17 +2659,24 @@ function renderEstadisticas(periodo) {
         data: {
             labels: tendenciaLabels,
             datasets: [{
-                label: 'Ventas $',
+                label: 'Ingresos',
                 data: tendenciaData,
                 borderColor: '#7ae4d6',
-                backgroundColor: 'rgba(122,228,214,0.12)',
+                backgroundColor: (ctx) => {
+                    const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 210);
+                    gradient.addColorStop(0, 'rgba(122,228,214,0.18)');
+                    gradient.addColorStop(1, 'rgba(122,228,214,0.01)');
+                    return gradient;
+                },
                 pointBackgroundColor: '#7ae4d6',
-                pointRadius: 4,
+                pointRadius: 3,
+                pointHoverRadius: 6,
                 fill: true,
-                tension: 0.4
+                tension: 0.35,
+                borderWidth: 2
             }]
         },
-        options: { ...CHART_DEFAULTS }
+        options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, legend: { display: false } } }
     });
 
     // Gráfico 2: Productos más vendidos (barras horizontales)
@@ -2586,17 +2690,21 @@ function renderEstadisticas(periodo) {
                 label: 'Unidades',
                 data: topProductos.map(p => p[1]),
                 backgroundColor: COLORS_GRAD,
-                borderRadius: 6
+                borderRadius: 4
             }]
         },
         options: {
             ...CHART_DEFAULTS,
             indexAxis: 'y',
-            plugins: { legend: { display: false } }
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: 'rgba(160,200,210,0.45)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: { ticks: { color: 'rgba(200,230,225,0.7)', font: { size: 10 } }, grid: { display: false } }
+            }
         }
     });
 
-    // Gráfico 3: Distribución por categoría (dona)
+    // Gráfico 3: Categorías (dona)
     destroyChart(chartCategorias);
     const ctx3 = getCtx('chartCategorias');
     if (ctx3) chartCategorias = new Chart(ctx3, {
@@ -2606,20 +2714,22 @@ function renderEstadisticas(periodo) {
             datasets: [{
                 data: Object.values(catMap),
                 backgroundColor: COLORS_GRAD,
-                borderColor: 'rgba(0,0,0,0.3)',
-                borderWidth: 2
+                borderColor: 'rgba(8,15,26,0.8)',
+                borderWidth: 2,
+                hoverOffset: 6
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '62%',
             plugins: {
-                legend: { position: 'right', labels: { color: '#a8f0e8', font: { size: 10 }, boxWidth: 14 } }
+                legend: { position: 'right', labels: { color: 'rgba(180,220,215,0.65)', font: { size: 10 }, boxWidth: 10, padding: 10 } }
             }
         }
     });
 
-    // Gráfico 4: Ingresos totales por período (barras)
+    // Gráfico 4: Distribución barras
     destroyChart(chartIngresos);
     const ctx4 = getCtx('chartIngresos');
     if (ctx4) chartIngresos = new Chart(ctx4, {
@@ -2629,14 +2739,46 @@ function renderEstadisticas(periodo) {
             datasets: [{
                 label: 'Ingresos $',
                 data: tendenciaData,
-                backgroundColor: 'rgba(180,140,255,0.6)',
-                borderColor: '#c9aaff',
+                backgroundColor: tendenciaData.map(v => v === maxVal
+                    ? 'rgba(122,228,214,0.85)' : 'rgba(122,228,214,0.22)'),
+                borderColor: tendenciaData.map(v => v === maxVal
+                    ? '#7ae4d6' : 'rgba(122,228,214,0.15)'),
                 borderWidth: 1.5,
-                borderRadius: 5
+                borderRadius: 4
             }]
         },
-        options: { ...CHART_DEFAULTS }
+        options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, legend: { display: false } } }
     });
+
+    // --- Tabla de productos ---
+    const tbody = document.getElementById('stats-tabla-body');
+    if (tbody) {
+        const todosProductos = Object.entries(prodMap)
+            .sort((a,b) => b[1]-a[1]).slice(0,15);
+        if (todosProductos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="stats-tabla-empty">Sin datos para este período</td></tr>';
+        } else {
+            const maxIngreso = Math.max(...todosProductos.map(p => prodIngresos[p[0]] || 0), 1);
+            tbody.innerHTML = todosProductos.map(([nombre, qty], idx) => {
+                const ingreso = prodIngresos[nombre] || 0;
+                const pct = totalVentas > 0 ? Math.round((ingreso / totalVentas) * 100) : 0;
+                return `<tr>
+                    <td>${idx+1}</td>
+                    <td style="text-align:left">${nombre}</td>
+                    <td>${qty}</td>
+                    <td>${fmt(ingreso)}</td>
+                    <td>
+                        <div class="stats-pct-bar">
+                            <span style="font-size:0.78em;color:rgba(160,200,210,0.5)">${pct}%</span>
+                            <div class="stats-pct-track">
+                                <div class="stats-pct-fill" style="width:${pct}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+    }
 }
 
 // ============================================================
