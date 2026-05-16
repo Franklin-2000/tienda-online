@@ -3378,10 +3378,12 @@ input[type="number"] {
 
 /* Variante centrada para ambos apartados de estadísticas */
 .stats-header-centrado {
+  position: relative !important;
   flex-direction: column !important;
   align-items: center !important;
   text-align: center !important;
   gap: 10px !important;
+  padding-top: 28px !important;
 }
 .stats-header-centrado .stats-header-left {
   align-items: center !important;
@@ -3395,8 +3397,12 @@ input[type="number"] {
   font-size: 1.25em !important;
   text-align: center !important;
 }
+/* Selector posicionado en esquina superior izquierda */
 .stats-header-centrado .stats-period-selector {
-  justify-content: center !important;
+  position: absolute !important;
+  top: 28px !important;
+  left: 36px !important;
+  justify-content: flex-start !important;
 }
 
 .stats-header-left { display: flex; flex-direction: column; gap: 3px; }
@@ -3506,11 +3512,11 @@ input[type="number"] {
 }
 
 .kpi-label {
-  font-size: 1em;
+  font-size: 1.15em;
   color: #ffffff;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .kpi-trend {
