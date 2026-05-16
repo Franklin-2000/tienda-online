@@ -668,13 +668,15 @@ btnVolverInicio.addEventListener("click", function() {
   showScreen('pantalla-inicio');
 });
 
+// btn-Ventas ya no existe (eliminado del HTML), solo por compatibilidad
 if (btnVentas) {
     btnVentas.addEventListener("click", function(e) {
         e.preventDefault();
-        showScreen('pantalla-menu-ventas');
+        showScreen('pantalla-ventas-fisicas');
     });
 }
 
+// Sidebar: Ventas Físicas — navega directo sin pantalla-menu-ventas
 if (btnMenuVentasFisicas) {
     btnMenuVentasFisicas.addEventListener("click", function(e) {
         e.preventDefault();
@@ -682,6 +684,7 @@ if (btnMenuVentasFisicas) {
     });
 }
 
+// Sidebar: Ventas Online — navega directo sin pantalla-menu-ventas
 if (btnMenuVentasOnline) {
     btnMenuVentasOnline.addEventListener("click", function(e) {
         e.preventDefault();
@@ -699,13 +702,13 @@ if (btnVolverInicioDesdeVentas) {
 
 if (btnVolverVentasFisicas) {
     btnVolverVentasFisicas.addEventListener("click", function() {
-        showScreen('pantalla-menu-ventas');
+        showScreen('pantalla-inicio');
     });
 }
 
 if (btnVolverVentasOnline) {
     btnVolverVentasOnline.addEventListener("click", function() {
-        showScreen('pantalla-menu-ventas');
+        showScreen('pantalla-inicio');
     });
 }
 
