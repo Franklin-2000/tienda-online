@@ -722,9 +722,11 @@ btnInventario.addEventListener("click", function(e) {
   showScreen('pantalla-INVENTARIO');
 });
 
-btnVolverInicio.addEventListener("click", function() {
-  showScreen('pantalla-inicio');
-});
+if (btnVolverInicio) {
+    btnVolverInicio.addEventListener("click", function() {
+        showScreen('pantalla-inicio');
+    });
+}
 
 // btn-Ventas ya no existe (eliminado del HTML), solo por compatibilidad
 if (btnVentas) {
