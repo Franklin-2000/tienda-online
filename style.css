@@ -3257,7 +3257,7 @@ input[type="number"] {
   background: #080f1a;
   padding: 0;
   font-family: 'Segoe UI', system-ui, sans-serif;
-  color: #e2eaf5;
+  color: #f7f7f7;
 }
 
 /* Estadísticas Online — mismo fondo y tipografía que físicas */
@@ -3274,7 +3274,7 @@ input[type="number"] {
   border-radius: 8px;
   border: 1.5px solid rgba(122,228,214,0.18);
   background: rgba(122,228,214,0.05);
-  color: rgba(180,230,225,0.7);
+  color: rgb(252, 252, 252);
   font-size: 0.95em;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -3499,7 +3499,7 @@ input[type="number"] {
 }
 
 .chart-badge {
-  font-size: 0.94em;
+  font-size:2em;
   padding: 4px 14px;
   border-radius: 20px;
   background: rgba(122,228,214,0.08);
