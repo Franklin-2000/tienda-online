@@ -327,6 +327,155 @@ h1 {
   box-shadow: 0 3px 10px rgba(192,57,43,0.4);
 }
 
+
+/* ==============================
+   SELECTOR DE DISPOSITIVO
+   ============================== */
+.sidebar-dispositivo {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 8px 14px 0 14px;
+}
+
+.sidebar-dispositivo-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.28s ease, padding 0.2s;
+  background: rgba(255,255,255,0.04);
+  border-radius: 0 0 10px 10px;
+  padding: 0 10px;
+}
+.sidebar-dispositivo-panel.abierto {
+  max-height: 320px;
+  padding: 10px;
+}
+
+.dispositivo-panel-desc {
+  font-size: 0.72em;
+  color: rgba(180,220,215,0.5);
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+.dispositivo-opciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.btn-dispositivo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 6px;
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  color: rgba(200,230,225,0.7);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.12s;
+  font-family: 'Nunito','Segoe UI',sans-serif;
+}
+.btn-dispositivo:hover {
+  background: rgba(122,228,214,0.10);
+  border-color: rgba(122,228,214,0.3);
+  transform: scale(1.03);
+}
+.btn-dispositivo.activo {
+  background: rgba(122,228,214,0.18);
+  border-color: rgba(122,228,214,0.6);
+  color: #7ae4d6;
+}
+.dispositivo-icon { font-size: 1.3em; }
+.dispositivo-nombre { font-size: 0.75em; font-weight: 700; }
+.dispositivo-desc { font-size: 0.62em; opacity: 0.55; text-align: center; }
+
+.dispositivo-activo-label {
+  margin-top: 8px;
+  font-size: 0.7em;
+  color: rgba(180,220,215,0.5);
+  text-align: center;
+}
+.dispositivo-activo-label strong {
+  color: #7ae4d6;
+}
+
+/* ==============================
+   RESPONSIVE POR CLASE DE DISPOSITIVO
+   Aplicadas al <body> por JS
+   ============================== */
+
+/* === MÓVIL FORZADO === */
+body.device-mobile #sidebar-menu {
+  width: 220px !important;
+}
+body.device-mobile .sidebar-label {
+  font-size: 0.72em !important;
+}
+body.device-mobile #app-root {
+  padding-left: 220px !important;
+}
+body.device-mobile .stats-kpi-row {
+  grid-template-columns: 1fr 1fr !important;
+}
+body.device-mobile .stats-charts-grid {
+  grid-template-columns: 1fr !important;
+}
+body.device-mobile .contenedor-ventas-independientes {
+  flex-direction: column !important;
+}
+body.device-mobile .combo-layout,
+body.device-mobile .combos-layout {
+  flex-direction: column !important;
+}
+body.device-mobile .tarjeta-producto {
+  width: 140px !important;
+  min-width: 130px !important;
+}
+body.device-mobile .stats-chart-card.stats-chart-wide {
+  grid-column: span 1 !important;
+}
+
+/* === TABLET FORZADO === */
+body.device-tablet #sidebar-menu {
+  width: 200px !important;
+}
+body.device-tablet #app-root {
+  padding-left: 200px !important;
+}
+body.device-tablet .stats-kpi-row {
+  grid-template-columns: 1fr 1fr !important;
+}
+body.device-tablet .stats-charts-grid {
+  grid-template-columns: 1fr 1fr !important;
+}
+body.device-tablet .contenedor-ventas-independientes {
+  flex-direction: column !important;
+}
+body.device-tablet .tarjeta-producto {
+  width: 160px !important;
+  min-width: 150px !important;
+}
+
+/* === ESCRITORIO FORZADO === */
+body.device-desktop #sidebar-menu {
+  width: 240px !important;
+}
+body.device-desktop #app-root {
+  padding-left: 240px !important;
+}
+body.device-desktop .stats-kpi-row {
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+body.device-desktop .stats-charts-grid {
+  grid-template-columns: 1fr 1fr !important;
+}
+body.device-desktop .contenedor-ventas-independientes {
+  flex-direction: row !important;
+}
+
 /* ==============================
    BOTÓN MODO DE TRABAJO (offline)
    ============================== */
