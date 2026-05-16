@@ -35,7 +35,9 @@ body {
 #pantalla-ventas-fisicas,
 #pantalla-historial-fisicas,
 #pantalla-ventas-online,
-#pantalla-historial-online {
+#pantalla-historial-online,
+#pantalla-estadisticas,
+#pantalla-combos {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -55,7 +57,9 @@ body {
 #pantalla-ventas-fisicas.activa,
 #pantalla-historial-fisicas.activa,
 #pantalla-ventas-online.activa,
-#pantalla-historial-online.activa { display: block; }
+#pantalla-historial-online.activa,
+#pantalla-estadisticas.activa,
+#pantalla-combos.activa { display: block; }
 
 h1 {
   font-size: 100px;
@@ -2793,4 +2797,537 @@ input[type="number"] {
 @media (max-width: 600px) {
     .categorias-filtro-bar { gap: 6px; padding: 10px 10px; }
     .btn-categoria-filtro { font-size: 0.75em; padding: 5px 11px; }
+}
+/* ============================================================
+   PANTALLA ESTADÍSTICAS
+   ============================================================ */
+#pantalla-estadisticas {
+  background: linear-gradient(135deg, #020b18 0%, #041830 50%, #061428 100%);
+  padding: 0;
+  font-family: Arial, sans-serif;
+  color: #e0f7f4;
+}
+
+.stats-header {
+  padding: 28px 36px 10px 36px;
+  border-bottom: 1px solid rgba(122,228,214,0.12);
+}
+
+.stats-title {
+  font-family: 'Pacifico', cursive;
+  font-size: 48px !important;
+  color: #7ae4d6 !important;
+  text-shadow: 0 0 24px rgba(122,228,214,0.45) !important;
+  margin: 0 0 4px 0 !important;
+  text-align: left !important;
+}
+
+.stats-subtitle {
+  color: rgba(180,230,225,0.6);
+  font-size: 0.95em;
+  margin: 0;
+}
+
+/* Selector de período */
+.stats-period-selector {
+  display: flex;
+  gap: 12px;
+  padding: 20px 36px 0 36px;
+  flex-wrap: wrap;
+}
+
+.btn-period {
+  padding: 10px 26px;
+  border-radius: 50px;
+  border: 2px solid rgba(122,228,214,0.25);
+  background: rgba(122,228,214,0.07);
+  color: #a8f0e8;
+  font-size: 0.9em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-period:hover {
+  background: rgba(122,228,214,0.18);
+  border-color: #7ae4d6;
+  color: #fff;
+}
+
+.btn-period.activo {
+  background: linear-gradient(135deg, #0c8ea4, #7ae4d6);
+  border-color: transparent;
+  color: #021018;
+  box-shadow: 0 4px 18px rgba(122,228,214,0.35);
+}
+
+/* KPI Cards */
+.stats-kpi-row {
+  display: flex;
+  gap: 16px;
+  padding: 20px 36px;
+  flex-wrap: wrap;
+}
+
+.stats-kpi-card {
+  flex: 1;
+  min-width: 140px;
+  background: rgba(122,228,214,0.06);
+  border: 1px solid rgba(122,228,214,0.18);
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(8px);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stats-kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(122,228,214,0.15);
+}
+
+.kpi-icon { font-size: 1.6em; }
+
+.kpi-label {
+  font-size: 0.72em;
+  color: rgba(180,230,225,0.65);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 600;
+}
+
+.kpi-value {
+  font-size: 1.55em;
+  font-weight: 900;
+  color: #7ae4d6;
+  text-shadow: 0 0 12px rgba(122,228,214,0.4);
+}
+
+/* Grid de gráficos */
+.stats-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 0 36px 20px 36px;
+}
+
+.stats-chart-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(122,228,214,0.12);
+  border-radius: 18px;
+  padding: 20px 22px;
+  backdrop-filter: blur(10px);
+}
+
+.stats-chart-wide {
+  grid-column: 1 / -1;
+}
+
+.chart-title {
+  font-size: 1em;
+  font-weight: 700;
+  color: #a8f0e8;
+  margin: 0 0 14px 0;
+  letter-spacing: 0.04em;
+}
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 220px;
+}
+
+.chart-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Volver desde estadísticas */
+#btnVolverDesdeEstadisticas {
+  margin: 10px 36px 30px 36px;
+}
+
+@media (max-width: 768px) {
+  .stats-charts-grid { grid-template-columns: 1fr; padding: 0 16px 16px 16px; }
+  .stats-chart-wide { grid-column: 1; }
+  .stats-kpi-row { padding: 16px; gap: 10px; }
+  .stats-kpi-card { min-width: 120px; padding: 14px 12px; }
+  .kpi-value { font-size: 1.25em; }
+  .stats-header { padding: 20px 16px 10px 16px; }
+  .stats-title { font-size: 34px !important; }
+  .stats-period-selector { padding: 14px 16px 0 16px; }
+}
+
+/* ============================================================
+   PANTALLA COMBOS
+   ============================================================ */
+#pantalla-combos {
+  background: linear-gradient(135deg, #020b18 0%, #041830 50%, #061428 100%);
+  padding: 0;
+  color: #e0f7f4;
+}
+
+.combos-header {
+  padding: 28px 36px 16px 36px;
+  border-bottom: 1px solid rgba(180,140,255,0.12);
+}
+
+.combos-title {
+  font-family: 'Pacifico', cursive;
+  font-size: 48px !important;
+  color: #c9aaff !important;
+  text-shadow: 0 0 24px rgba(180,140,255,0.4) !important;
+  margin: 0 !important;
+  text-align: left !important;
+}
+
+.combos-layout {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 24px;
+  padding: 24px 36px;
+  min-height: calc(100vh - 180px);
+}
+
+/* Panel formulario */
+.combo-form-panel { display: flex; flex-direction: column; }
+
+.combo-form-card {
+  background: rgba(180,140,255,0.05);
+  border: 1px solid rgba(180,140,255,0.18);
+  border-radius: 20px;
+  padding: 24px 22px;
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.combo-form-card h2 {
+  color: #c9aaff;
+  font-size: 1.1em;
+  margin: 0 0 12px 0;
+  text-shadow: 0 0 10px rgba(180,140,255,0.3);
+}
+
+.combo-label {
+  font-size: 0.8em;
+  font-weight: 700;
+  color: rgba(200,180,255,0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 6px;
+}
+
+.combo-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(180,140,255,0.25);
+  background: rgba(255,255,255,0.06);
+  color: #e0d4ff;
+  font-size: 0.93em;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.combo-input:focus {
+  border-color: #c9aaff;
+  background: rgba(180,140,255,0.10);
+}
+
+.combo-input::placeholder { color: rgba(180,140,255,0.35); }
+
+/* Autocomplete */
+.combo-search-wrap { position: relative; }
+
+.combo-autocomplete {
+  background: #0d1a2e;
+  border: 1px solid rgba(180,140,255,0.25);
+  border-radius: 10px;
+  max-height: 160px;
+  overflow-y: auto;
+  margin-top: 2px;
+  display: none;
+}
+
+.combo-autocomplete.visible { display: block; }
+
+.combo-auto-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid rgba(180,140,255,0.08);
+}
+
+.combo-auto-item:last-child { border-bottom: none; }
+
+.combo-auto-item:hover { background: rgba(180,140,255,0.14); }
+
+.combo-auto-thumb {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid rgba(180,140,255,0.2);
+  flex-shrink: 0;
+}
+
+.combo-auto-info { display: flex; flex-direction: column; }
+.combo-auto-nombre { font-size: 0.85em; font-weight: 700; color: #e0d4ff; }
+.combo-auto-precio { font-size: 0.75em; color: rgba(180,140,255,0.7); }
+
+/* Productos seleccionados en el combo */
+.combo-productos-seleccionados {
+  min-height: 70px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px dashed rgba(180,140,255,0.18);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.combo-empty-msg {
+  color: rgba(180,140,255,0.4);
+  font-size: 0.82em;
+  text-align: center;
+  width: 100%;
+  margin: auto;
+}
+
+/* Chip de producto seleccionado */
+.combo-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(180,140,255,0.13);
+  border: 1px solid rgba(180,140,255,0.28);
+  border-radius: 20px;
+  padding: 4px 10px 4px 5px;
+  font-size: 0.78em;
+  color: #e0d4ff;
+}
+
+.combo-chip img {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(180,140,255,0.25);
+}
+
+.combo-chip-remove {
+  background: none;
+  border: none;
+  color: rgba(255,100,100,0.7);
+  cursor: pointer;
+  font-size: 0.9em;
+  padding: 0 0 0 4px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.combo-chip-remove:hover { color: #ff5555; }
+
+.combo-valor-auto {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 4px;
+  font-size: 0.85em;
+  color: rgba(200,180,255,0.7);
+  border-top: 1px solid rgba(180,140,255,0.12);
+  margin-top: 4px;
+}
+
+.combo-valor-auto strong {
+  color: #c9aaff;
+  font-size: 1.1em;
+}
+
+.combo-btns-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.btn-combo-limpiar {
+  flex: 1;
+  padding: 11px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(180,140,255,0.25);
+  background: transparent;
+  color: rgba(200,180,255,0.7);
+  font-weight: 700;
+  font-size: 0.88em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-combo-limpiar:hover {
+  background: rgba(180,140,255,0.1);
+  color: #e0d4ff;
+}
+
+.btn-combo-guardar {
+  flex: 2;
+  padding: 11px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #7c3aed, #c9aaff);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.93em;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(124,58,237,0.35);
+}
+
+.btn-combo-guardar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 22px rgba(124,58,237,0.5);
+}
+
+/* Panel lista de combos */
+.combo-list-panel { overflow-y: auto; }
+
+.combo-list-title {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: #c9aaff;
+  margin: 0 0 16px 0;
+  text-shadow: 0 0 10px rgba(180,140,255,0.3);
+}
+
+.contenedor-combos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+/* Tarjeta de combo guardado */
+.tarjeta-combo {
+  background: rgba(180,140,255,0.06);
+  border: 1.5px solid rgba(180,140,255,0.20);
+  border-radius: 18px;
+  padding: 18px 16px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  backdrop-filter: blur(8px);
+}
+
+.tarjeta-combo:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(124,58,237,0.25);
+  border-color: rgba(180,140,255,0.4);
+}
+
+.combo-card-nombre {
+  font-size: 1em;
+  font-weight: 800;
+  color: #e0d4ff;
+  text-align: center;
+}
+
+.combo-card-desc {
+  font-size: 0.77em;
+  color: rgba(200,180,255,0.6);
+  text-align: center;
+  margin-top: -6px;
+}
+
+/* Mini-imágenes de productos dentro del combo */
+.combo-card-productos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.combo-mini-producto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  max-width: 60px;
+}
+
+.combo-mini-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1.5px solid rgba(180,140,255,0.3);
+}
+
+.combo-mini-nombre {
+  font-size: 0.62em;
+  color: rgba(200,180,255,0.7);
+  text-align: center;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.combo-card-precio {
+  text-align: center;
+  font-size: 1.3em;
+  font-weight: 900;
+  color: #c9aaff;
+  text-shadow: 0 0 10px rgba(180,140,255,0.35);
+}
+
+.combo-card-precio-orig {
+  text-align: center;
+  font-size: 0.75em;
+  color: rgba(180,140,255,0.5);
+  text-decoration: line-through;
+}
+
+.combo-card-acciones {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-borrar-combo {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,80,80,0.3);
+  background: rgba(255,50,50,0.08);
+  color: #ff8080;
+  font-size: 0.78em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-borrar-combo:hover {
+  background: rgba(255,50,50,0.22);
+  border-color: #ff5555;
+  color: #fff;
+}
+
+/* Responsive combos */
+@media (max-width: 900px) {
+  .combos-layout {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+  .combos-header { padding: 20px 16px 12px 16px; }
+  .combos-title { font-size: 36px !important; }
+  .contenedor-combos-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
 }

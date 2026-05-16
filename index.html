@@ -332,6 +332,130 @@
     <button id="btnVolverDesdeHistorialOnline" class="boton-volver">← Volver a Pedidos Online</button>
   </div>
 
+  <!-- ============================
+       PANTALLA: ESTADÍSTICAS
+       ============================ -->
+  <div id="pantalla-estadisticas">
+    <div class="stats-header">
+      <h1 class="stats-title">📊 Estadísticas</h1>
+      <p class="stats-subtitle">Análisis de tus ventas en tiempo real</p>
+    </div>
+
+    <!-- Selector de período -->
+    <div class="stats-period-selector">
+      <button class="btn-period activo" data-period="diaria">📅 Diarias</button>
+      <button class="btn-period" data-period="semanal">📆 Semanales</button>
+      <button class="btn-period" data-period="mensual">🗓️ Mensuales</button>
+    </div>
+
+    <!-- Tarjetas de resumen KPI -->
+    <div class="stats-kpi-row">
+      <div class="stats-kpi-card">
+        <span class="kpi-icon">💰</span>
+        <span class="kpi-label">Total Ventas</span>
+        <span class="kpi-value" id="kpi-total-ventas">$0</span>
+      </div>
+      <div class="stats-kpi-card">
+        <span class="kpi-icon">🧾</span>
+        <span class="kpi-label">Nº Transacciones</span>
+        <span class="kpi-value" id="kpi-num-transacciones">0</span>
+      </div>
+      <div class="stats-kpi-card">
+        <span class="kpi-icon">📦</span>
+        <span class="kpi-label">Productos Vendidos</span>
+        <span class="kpi-value" id="kpi-productos-vendidos">0</span>
+      </div>
+      <div class="stats-kpi-card">
+        <span class="kpi-icon">⭐</span>
+        <span class="kpi-label">Ticket Promedio</span>
+        <span class="kpi-value" id="kpi-ticket-promedio">$0</span>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="stats-charts-grid">
+      <!-- Gráfico 1: Tendencia de ventas (línea) -->
+      <div class="stats-chart-card stats-chart-wide">
+        <h3 class="chart-title">📈 Tendencia de Ventas</h3>
+        <div class="chart-wrap"><canvas id="chartTendencia"></canvas></div>
+      </div>
+      <!-- Gráfico 2: Productos más vendidos (barras) -->
+      <div class="stats-chart-card">
+        <h3 class="chart-title">🏆 Productos Más Vendidos</h3>
+        <div class="chart-wrap"><canvas id="chartProductos"></canvas></div>
+      </div>
+      <!-- Gráfico 3: Distribución por categoría (dona) -->
+      <div class="stats-chart-card">
+        <h3 class="chart-title">🍩 Ventas por Categoría</h3>
+        <div class="chart-wrap"><canvas id="chartCategorias"></canvas></div>
+      </div>
+      <!-- Gráfico 4: Ingresos por hora/día (barras) -->
+      <div class="stats-chart-card stats-chart-wide">
+        <h3 class="chart-title">⏰ Ingresos por Período</h3>
+        <div class="chart-wrap"><canvas id="chartIngresos"></canvas></div>
+      </div>
+    </div>
+
+    <button id="btnVolverDesdeEstadisticas" class="boton-volver">← Volver al Inicio</button>
+  </div>
+
+  <!-- ============================
+       PANTALLA: COMBOS
+       ============================ -->
+  <div id="pantalla-combos">
+    <div class="combos-header">
+      <h1 class="combos-title">🎁 Gestión de Combos</h1>
+    </div>
+
+    <div class="combos-layout">
+      <!-- Panel izquierdo: Crear combo -->
+      <div class="combo-form-panel">
+        <div class="combo-form-card">
+          <h2>➕ Crear Nuevo Combo</h2>
+
+          <label class="combo-label">Nombre del combo</label>
+          <input type="text" id="inputComboNombre" class="combo-input" placeholder="Ej: Combo Desayuno">
+
+          <label class="combo-label">Descripción (opcional)</label>
+          <input type="text" id="inputComboDescripcion" class="combo-input" placeholder="Ej: Café + Pan + Jugo">
+
+          <label class="combo-label">Precio especial del combo ($)</label>
+          <input type="number" id="inputComboPrecio" class="combo-input" placeholder="$ 0" min="0" step="1">
+
+          <label class="combo-label">Agregar productos al combo</label>
+          <div class="combo-search-wrap">
+            <input type="text" id="inputBuscarProductoCombo" class="combo-input" placeholder="Buscar por nombre o código...">
+          </div>
+          <div id="combo-autocomplete-list" class="combo-autocomplete"></div>
+
+          <div id="combo-productos-seleccionados" class="combo-productos-seleccionados">
+            <p class="combo-empty-msg">No hay productos agregados al combo.</p>
+          </div>
+
+          <div class="combo-valor-auto">
+            <span>Valor suma individual:</span>
+            <strong id="combo-valor-suma">$0</strong>
+          </div>
+
+          <div class="combo-btns-row">
+            <button id="btnLimpiarCombo" class="btn-combo-limpiar">Limpiar</button>
+            <button id="btnGuardarCombo" class="btn-combo-guardar">💾 Guardar Combo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel derecho: Lista de combos guardados -->
+      <div class="combo-list-panel">
+        <h2 class="combo-list-title">📋 Combos Guardados</h2>
+        <div id="contenedorCombos" class="contenedor-combos-grid">
+          <p class="combo-empty-msg">No hay combos creados todavía.</p>
+        </div>
+      </div>
+    </div>
+
+    <button id="btnVolverDesdeCombos" class="boton-volver">← Volver al Inicio</button>
+  </div>
+
   <div id="modal-escaner" class="modal-overlay pantalla-display-none">
       <div class="modal-contenido">
           <h3>Escanear Código</h3>
@@ -352,7 +476,8 @@
     </div>
   </template>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
   <script defer src="script.js"></script>

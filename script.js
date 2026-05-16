@@ -622,6 +622,18 @@ function showScreen(screenId, pushToHistory = true) {
             renderSalesHistory();
             break;
         }
+        case 'pantalla-estadisticas': {
+            var pe = document.querySelector('#pantalla-estadisticas');
+            show(pe);
+            initEstadisticas();
+            break;
+        }
+        case 'pantalla-combos': {
+            var pc = document.querySelector('#pantalla-combos');
+            show(pc);
+            renderCombos();
+            break;
+        }
     }
 
     if (pushToHistory) {
@@ -708,21 +720,21 @@ if (btnMenuVentasOnline) {
     });
 }
 
-// Sidebar: Estadísticas (próximamente)
+// Sidebar: Estadísticas
 const btnEstadisticas = document.getElementById('btn-Estadisticas');
 if (btnEstadisticas) {
     btnEstadisticas.addEventListener("click", function(e) {
         e.preventDefault();
-        mostrarAlerta('📊 El módulo de Estadísticas estará disponible próximamente.', 'info');
+        showScreen('pantalla-estadisticas');
     });
 }
 
-// Sidebar: Combos (próximamente)
+// Sidebar: Combos
 const btnCombos = document.getElementById('btn-Combos');
 if (btnCombos) {
     btnCombos.addEventListener("click", function(e) {
         e.preventDefault();
-        mostrarAlerta('🎁 El módulo de Combos estará disponible próximamente.', 'info');
+        showScreen('pantalla-combos');
     });
 }
 
@@ -2407,6 +2419,436 @@ function crearDOMTicketOnline(pedido, esDeHoy) {
 // ---------------------------------------------------------------
 // Eventos de filtros y botón refrescar
 // ---------------------------------------------------------------
+
+// ============================================================
+// MÓDULO: ESTADÍSTICAS
+// ============================================================
+let chartTendencia = null;
+let chartProductos = null;
+let chartCategorias = null;
+let chartIngresos   = null;
+let periodoActivo   = 'diaria';
+
+function initEstadisticas() {
+    // Registrar listeners de período (solo 1 vez)
+    document.querySelectorAll('.btn-period').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.btn-period').forEach(b => b.classList.remove('activo'));
+            btn.classList.add('activo');
+            periodoActivo = btn.dataset.period;
+            renderEstadisticas(periodoActivo);
+        };
+    });
+
+    // Botón volver
+    const btnVolver = document.getElementById('btnVolverDesdeEstadisticas');
+    if (btnVolver) btnVolver.onclick = () => showScreen('pantalla-inicio');
+
+    renderEstadisticas(periodoActivo);
+}
+
+function filtrarVentasPorPeriodo(periodo) {
+    const ahora = new Date();
+    return sales.filter(venta => {
+        const fechaVenta = new Date(venta.date || venta.fechaLimpia);
+        if (isNaN(fechaVenta)) return false;
+        if (periodo === 'diaria') {
+            return fechaVenta.toDateString() === ahora.toDateString();
+        } else if (periodo === 'semanal') {
+            const inicioSemana = new Date(ahora);
+            inicioSemana.setDate(ahora.getDate() - ahora.getDay());
+            inicioSemana.setHours(0,0,0,0);
+            return fechaVenta >= inicioSemana;
+        } else if (periodo === 'mensual') {
+            return fechaVenta.getMonth() === ahora.getMonth() &&
+                   fechaVenta.getFullYear() === ahora.getFullYear();
+        }
+        return false;
+    });
+}
+
+function renderEstadisticas(periodo) {
+    const ventasFiltradas = filtrarVentasPorPeriodo(periodo);
+
+    // --- KPIs ---
+    const totalVentas      = ventasFiltradas.reduce((s,v) => s + (v.total || 0), 0);
+    const numTransacciones = ventasFiltradas.length;
+    const totalProductos   = ventasFiltradas.reduce((s,v) => s + v.items.reduce((a,i) => a + (i.qty||0), 0), 0);
+    const ticketPromedio   = numTransacciones > 0 ? totalVentas / numTransacciones : 0;
+
+    const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
+    document.getElementById('kpi-total-ventas').textContent     = fmt(totalVentas);
+    document.getElementById('kpi-num-transacciones').textContent = numTransacciones;
+    document.getElementById('kpi-productos-vendidos').textContent = totalProductos;
+    document.getElementById('kpi-ticket-promedio').textContent   = fmt(ticketPromedio);
+
+    // --- Agrupar productos más vendidos ---
+    const prodMap = {};
+    ventasFiltradas.forEach(v => v.items.forEach(i => {
+        prodMap[i.name] = (prodMap[i.name] || 0) + (i.qty || 0);
+    }));
+    const topProductos = Object.entries(prodMap)
+        .sort((a,b) => b[1]-a[1]).slice(0, 8);
+
+    // --- Agrupar por categoría (usando inventario como referencia) ---
+    const catMap = {};
+    ventasFiltradas.forEach(v => v.items.forEach(i => {
+        const prod = inventory.find(p => p.id === i.productId);
+        const cat  = prod?.categoria || 'Sin categoría';
+        catMap[cat] = (catMap[cat] || 0) + (i.subtotal || 0);
+    }));
+
+    // --- Agrupar tendencia por período ---
+    const tendenciaLabels = [];
+    const tendenciaData   = [];
+
+    if (periodo === 'diaria') {
+        // Por hora (0-23)
+        const porHora = Array(24).fill(0);
+        ventasFiltradas.forEach(v => {
+            const h = new Date(v.date).getHours();
+            if (!isNaN(h)) porHora[h] += (v.total || 0);
+        });
+        for (let h = 0; h < 24; h++) {
+            tendenciaLabels.push(h + ':00');
+            tendenciaData.push(porHora[h]);
+        }
+    } else if (periodo === 'semanal') {
+        const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+        const porDia = Array(7).fill(0);
+        ventasFiltradas.forEach(v => {
+            const d = new Date(v.date).getDay();
+            if (!isNaN(d)) porDia[d] += (v.total || 0);
+        });
+        dias.forEach((d,i) => { tendenciaLabels.push(d); tendenciaData.push(porDia[i]); });
+    } else {
+        // Por día del mes
+        const diasEnMes = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
+        const porDia = Array(diasEnMes).fill(0);
+        ventasFiltradas.forEach(v => {
+            const d = new Date(v.date).getDate() - 1;
+            if (d >= 0 && d < diasEnMes) porDia[d] += (v.total || 0);
+        });
+        for (let d = 1; d <= diasEnMes; d++) {
+            tendenciaLabels.push('D' + d);
+            tendenciaData.push(porDia[d-1]);
+        }
+    }
+
+    const CHART_DEFAULTS = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#a8f0e8', font: { size: 11 } } } },
+        scales: {
+            x: { ticks: { color: '#7ae4d6', font: { size: 10 } }, grid: { color: 'rgba(122,228,214,0.08)' } },
+            y: { ticks: { color: '#7ae4d6', font: { size: 10 } }, grid: { color: 'rgba(122,228,214,0.08)' } }
+        }
+    };
+
+    const COLORS_TURQ  = 'rgba(122,228,214,0.75)';
+    const COLORS_PURP  = 'rgba(180,140,255,0.75)';
+    const COLORS_GRAD  = ['rgba(122,228,214,0.8)','rgba(100,200,255,0.8)','rgba(180,140,255,0.8)',
+                          'rgba(255,160,100,0.8)','rgba(255,100,160,0.8)','rgba(80,220,160,0.8)',
+                          'rgba(255,220,80,0.8)','rgba(100,160,255,0.8)'];
+
+    function destroyChart(ref) { try { if (ref) ref.destroy(); } catch(e){} }
+    function getCtx(id) { return document.getElementById(id)?.getContext('2d'); }
+
+    // Gráfico 1: Tendencia (línea)
+    destroyChart(chartTendencia);
+    const ctx1 = getCtx('chartTendencia');
+    if (ctx1) chartTendencia = new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: tendenciaLabels,
+            datasets: [{
+                label: 'Ventas $',
+                data: tendenciaData,
+                borderColor: '#7ae4d6',
+                backgroundColor: 'rgba(122,228,214,0.12)',
+                pointBackgroundColor: '#7ae4d6',
+                pointRadius: 4,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: { ...CHART_DEFAULTS }
+    });
+
+    // Gráfico 2: Productos más vendidos (barras horizontales)
+    destroyChart(chartProductos);
+    const ctx2 = getCtx('chartProductos');
+    if (ctx2) chartProductos = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: topProductos.map(p => p[0].length > 16 ? p[0].slice(0,16)+'…' : p[0]),
+            datasets: [{
+                label: 'Unidades',
+                data: topProductos.map(p => p[1]),
+                backgroundColor: COLORS_GRAD,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            indexAxis: 'y',
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Gráfico 3: Distribución por categoría (dona)
+    destroyChart(chartCategorias);
+    const ctx3 = getCtx('chartCategorias');
+    if (ctx3) chartCategorias = new Chart(ctx3, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(catMap),
+            datasets: [{
+                data: Object.values(catMap),
+                backgroundColor: COLORS_GRAD,
+                borderColor: 'rgba(0,0,0,0.3)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { color: '#a8f0e8', font: { size: 10 }, boxWidth: 14 } }
+            }
+        }
+    });
+
+    // Gráfico 4: Ingresos totales por período (barras)
+    destroyChart(chartIngresos);
+    const ctx4 = getCtx('chartIngresos');
+    if (ctx4) chartIngresos = new Chart(ctx4, {
+        type: 'bar',
+        data: {
+            labels: tendenciaLabels,
+            datasets: [{
+                label: 'Ingresos $',
+                data: tendenciaData,
+                backgroundColor: 'rgba(180,140,255,0.6)',
+                borderColor: '#c9aaff',
+                borderWidth: 1.5,
+                borderRadius: 5
+            }]
+        },
+        options: { ...CHART_DEFAULTS }
+    });
+}
+
+// ============================================================
+// MÓDULO: COMBOS
+// ============================================================
+let combos = [];
+let productosEnComboActual = []; // [{id, nombre, precio, imagen}]
+
+async function loadCombos() {
+    if (!currentUserId) return;
+    const { data, error } = await supabaseClient
+        .from('combos')
+        .select('*, combo_productos(*)')
+        .eq('user_id', currentUserId)
+        .order('created_at', { ascending: false });
+    if (!error && data) combos = data;
+}
+
+async function saveCombo(combo) {
+    const { data: comboInsertado, error: err1 } = await supabaseClient
+        .from('combos')
+        .insert([{ nombre: combo.nombre, descripcion: combo.descripcion, precio: combo.precio, precio_suma: combo.precioSuma, user_id: currentUserId }])
+        .select().single();
+    if (err1) throw err1;
+
+    const items = combo.productos.map(p => ({
+        combo_id: comboInsertado.id,
+        product_id: p.id,
+        nombre: p.nombre,
+        precio: p.precio,
+        imagen: p.imagen,
+        user_id: currentUserId
+    }));
+    const { error: err2 } = await supabaseClient.from('combo_productos').insert(items);
+    if (err2) throw err2;
+    return comboInsertado;
+}
+
+async function deleteCombo(comboId) {
+    await supabaseClient.from('combos').delete().eq('id', comboId);
+}
+
+function renderCombos() {
+    const contenedor = document.getElementById('contenedorCombos');
+    if (!contenedor) return;
+
+    // Botones de navegación
+    const btnVolver = document.getElementById('btnVolverDesdeCombos');
+    if (btnVolver && !btnVolver._ev) {
+        btnVolver._ev = true;
+        btnVolver.onclick = () => showScreen('pantalla-inicio');
+    }
+    const btnGuardar = document.getElementById('btnGuardarCombo');
+    if (btnGuardar && !btnGuardar._ev) {
+        btnGuardar._ev = true;
+        btnGuardar.onclick = handleGuardarCombo;
+    }
+    const btnLimpiar = document.getElementById('btnLimpiarCombo');
+    if (btnLimpiar && !btnLimpiar._ev) {
+        btnLimpiar._ev = true;
+        btnLimpiar.onclick = limpiarFormCombo;
+    }
+
+    // Autocomplete de búsqueda de productos
+    const inputBuscar = document.getElementById('inputBuscarProductoCombo');
+    const autoList    = document.getElementById('combo-autocomplete-list');
+    if (inputBuscar && !inputBuscar._ev) {
+        inputBuscar._ev = true;
+        inputBuscar.addEventListener('input', () => {
+            const q = inputBuscar.value.trim().toLowerCase();
+            autoList.innerHTML = '';
+            if (!q) { autoList.classList.remove('visible'); return; }
+            const resultados = inventory.filter(p =>
+                (p.nombre || '').toLowerCase().includes(q) ||
+                (p.codigoBarras || '').includes(q)
+            ).slice(0, 8);
+            if (!resultados.length) { autoList.classList.remove('visible'); return; }
+            resultados.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'combo-auto-item';
+                item.innerHTML = `
+                    <img class="combo-auto-thumb" src="${p.imagen || 'https://via.placeholder.com/34'}" alt="">
+                    <div class="combo-auto-info">
+                        <span class="combo-auto-nombre">${p.nombre}</span>
+                        <span class="combo-auto-precio">$${(p.precio||0).toLocaleString('es-CO')}</span>
+                    </div>`;
+                item.onclick = () => {
+                    agregarProductoAlCombo({ id: p.id, nombre: p.nombre, precio: p.precio || 0, imagen: p.imagen || '' });
+                    inputBuscar.value = '';
+                    autoList.classList.remove('visible');
+                };
+                autoList.appendChild(item);
+            });
+            autoList.classList.add('visible');
+        });
+        document.addEventListener('click', e => {
+            if (!autoList.contains(e.target) && e.target !== inputBuscar)
+                autoList.classList.remove('visible');
+        });
+    }
+
+    loadCombos().then(() => renderTarjetasCombos());
+}
+
+function agregarProductoAlCombo(prod) {
+    if (productosEnComboActual.find(p => p.id === prod.id)) return;
+    productosEnComboActual.push(prod);
+    actualizarChipsCombo();
+    actualizarValorSuma();
+}
+
+function actualizarChipsCombo() {
+    const contenedor = document.getElementById('combo-productos-seleccionados');
+    if (!contenedor) return;
+    if (!productosEnComboActual.length) {
+        contenedor.innerHTML = '<p class="combo-empty-msg">No hay productos agregados al combo.</p>';
+        return;
+    }
+    contenedor.innerHTML = productosEnComboActual.map(p => `
+        <div class="combo-chip">
+            <img src="${p.imagen || 'https://via.placeholder.com/26'}" alt="">
+            <span>${p.nombre}</span>
+            <button class="combo-chip-remove" data-id="${p.id}" title="Quitar">✕</button>
+        </div>`).join('');
+    contenedor.querySelectorAll('.combo-chip-remove').forEach(btn => {
+        btn.onclick = () => {
+            productosEnComboActual = productosEnComboActual.filter(p => p.id !== btn.dataset.id);
+            actualizarChipsCombo();
+            actualizarValorSuma();
+        };
+    });
+}
+
+function actualizarValorSuma() {
+    const suma = productosEnComboActual.reduce((s,p) => s + (p.precio||0), 0);
+    const el = document.getElementById('combo-valor-suma');
+    if (el) el.textContent = '$' + suma.toLocaleString('es-CO');
+}
+
+function limpiarFormCombo() {
+    productosEnComboActual = [];
+    ['inputComboNombre','inputComboDescripcion','inputComboPrecio'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+    });
+    actualizarChipsCombo();
+    actualizarValorSuma();
+}
+
+async function handleGuardarCombo() {
+    const nombre = (document.getElementById('inputComboNombre')?.value || '').trim();
+    const descripcion = (document.getElementById('inputComboDescripcion')?.value || '').trim();
+    const precioInput = parseFloat(document.getElementById('inputComboPrecio')?.value || 0);
+
+    if (!nombre) { mostrarAlerta('⚠️ El combo debe tener un nombre.', 'warn'); return; }
+    if (!productosEnComboActual.length) { mostrarAlerta('⚠️ Agrega al menos un producto al combo.', 'warn'); return; }
+
+    const precioSuma = productosEnComboActual.reduce((s,p) => s + (p.precio||0), 0);
+    const precio = precioInput > 0 ? precioInput : precioSuma;
+
+    try {
+        await saveCombo({ nombre, descripcion, precio, precioSuma, productos: productosEnComboActual });
+        mostrarAlerta('✅ Combo guardado correctamente.', 'success');
+        limpiarFormCombo();
+        await loadCombos();
+        renderTarjetasCombos();
+    } catch(e) {
+        console.error(e);
+        mostrarAlerta('❌ Error guardando combo. Verifica que las tablas existan en Supabase.', 'error');
+    }
+}
+
+function renderTarjetasCombos() {
+    const contenedor = document.getElementById('contenedorCombos');
+    if (!contenedor) return;
+    if (!combos.length) {
+        contenedor.innerHTML = '<p class="combo-empty-msg" style="color:rgba(200,180,255,0.4);padding:20px">No hay combos creados todavía.</p>';
+        return;
+    }
+    contenedor.innerHTML = combos.map(combo => {
+        const prods = combo.combo_productos || [];
+        const miniImgs = prods.slice(0,5).map(p => `
+            <div class="combo-mini-producto">
+                <img class="combo-mini-img" src="${p.imagen || 'https://via.placeholder.com/48'}" alt="${p.nombre}">
+                <span class="combo-mini-nombre">${(p.nombre||'').slice(0,14)}</span>
+            </div>`).join('');
+        const masProds = prods.length > 5 ? `<span style="color:rgba(200,180,255,0.5);font-size:0.75em;align-self:center">+${prods.length-5} más</span>` : '';
+        const precioOrig = combo.precio_suma && combo.precio_suma !== combo.precio
+            ? `<div class="combo-card-precio-orig">Valor individual: $${Math.round(combo.precio_suma).toLocaleString('es-CO')}</div>` : '';
+        return `
+        <div class="tarjeta-combo">
+            <div class="combo-card-nombre">${combo.nombre}</div>
+            ${combo.descripcion ? `<div class="combo-card-desc">${combo.descripcion}</div>` : ''}
+            <div class="combo-card-productos">${miniImgs}${masProds}</div>
+            <div class="combo-card-precio">$${Math.round(combo.precio).toLocaleString('es-CO')}</div>
+            ${precioOrig}
+            <div class="combo-card-acciones">
+                <button class="btn-borrar-combo" data-comboid="${combo.id}">🗑️ Eliminar</button>
+            </div>
+        </div>`;
+    }).join('');
+
+    contenedor.querySelectorAll('.btn-borrar-combo').forEach(btn => {
+        btn.onclick = async () => {
+            const ok = await mostrarConfirmacion('¿Eliminar este combo?', 'warn');
+            if (!ok) return;
+            await deleteCombo(btn.dataset.comboid);
+            combos = combos.filter(c => String(c.id) !== String(btn.dataset.comboid));
+            renderTarjetasCombos();
+        };
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
     // Filtros de categoría en ventas físicas
