@@ -2548,14 +2548,48 @@ function initEstadisticas() {
     renderEstadisticas(periodoActivo);
 }
 
+function parsearFechaVenta(venta) {
+    // Intentar primero con globalId (timestamp Unix confiable)
+    if (venta.globalId && venta.globalId > 1000000000000) {
+        return new Date(venta.globalId);
+    }
+    // fechaLimpia viene en formato toLocaleDateString() ej: "16/5/2025"
+    // Para comparación diaria es suficiente comparar strings directamente
+    // Para semanal/mensual necesitamos parsear la fecha
+    if (venta.fechaLimpia) {
+        // Parsear formato DD/M/YYYY o D/M/YYYY
+        const partes = venta.fechaLimpia.split('/');
+        if (partes.length === 3) {
+            const dia = parseInt(partes[0], 10);
+            const mes = parseInt(partes[1], 10) - 1; // 0-indexed
+            const anio = parseInt(partes[2], 10);
+            const d = new Date(anio, mes, dia);
+            if (!isNaN(d)) return d;
+        }
+    }
+    // Fallback: intentar parsear venta.date directamente
+    const d = new Date(venta.date);
+    if (!isNaN(d)) return d;
+    return null;
+}
+
 function filtrarVentasPorPeriodo(periodo) {
     const ahora = new Date();
+    const hoyStr = ahora.toLocaleDateString(); // mismo formato que fechaLimpia
     return sales.filter(venta => {
-        const fechaVenta = new Date(venta.date || venta.fechaLimpia);
-        if (isNaN(fechaVenta)) return false;
+        // Para 'diaria': comparar strings directamente (más confiable)
         if (periodo === 'diaria') {
-            return fechaVenta.toDateString() === ahora.toDateString();
-        } else if (periodo === 'semanal') {
+            const fl = venta.fechaLimpia || '';
+            if (fl === hoyStr) return true;
+            // Fallback con globalId (timestamp)
+            if (venta.globalId && venta.globalId > 1000000000000) {
+                return new Date(venta.globalId).toDateString() === ahora.toDateString();
+            }
+            return false;
+        }
+        const fechaVenta = parsearFechaVenta(venta);
+        if (!fechaVenta) return false;
+        if (periodo === 'semanal') {
             const inicioSemana = new Date(ahora);
             inicioSemana.setDate(ahora.getDate() - ahora.getDay());
             inicioSemana.setHours(0,0,0,0);
@@ -2570,14 +2604,21 @@ function filtrarVentasPorPeriodo(periodo) {
 
 function filtrarVentasPorPeriodoAnterior(periodo) {
     const ahora = new Date();
+    const ayer = new Date(ahora);
+    ayer.setDate(ahora.getDate() - 1);
+    const ayerStr = ayer.toLocaleDateString();
     return sales.filter(venta => {
-        const fechaVenta = new Date(venta.date || venta.fechaLimpia);
-        if (isNaN(fechaVenta)) return false;
         if (periodo === 'diaria') {
-            const ayer = new Date(ahora);
-            ayer.setDate(ahora.getDate() - 1);
-            return fechaVenta.toDateString() === ayer.toDateString();
-        } else if (periodo === 'semanal') {
+            const fl = venta.fechaLimpia || '';
+            if (fl === ayerStr) return true;
+            if (venta.globalId && venta.globalId > 1000000000000) {
+                return new Date(venta.globalId).toDateString() === ayer.toDateString();
+            }
+            return false;
+        }
+        const fechaVenta = parsearFechaVenta(venta);
+        if (!fechaVenta) return false;
+        if (periodo === 'semanal') {
             const inicioSemanaAnterior = new Date(ahora);
             inicioSemanaAnterior.setDate(ahora.getDate() - ahora.getDay() - 7);
             inicioSemanaAnterior.setHours(0,0,0,0);
@@ -2586,8 +2627,8 @@ function filtrarVentasPorPeriodoAnterior(periodo) {
             return fechaVenta >= inicioSemanaAnterior && fechaVenta < finSemanaAnterior;
         } else if (periodo === 'mensual') {
             const mesAnterior = ahora.getMonth() === 0 ? 11 : ahora.getMonth() - 1;
-            const añoAnterior = ahora.getMonth() === 0 ? ahora.getFullYear() - 1 : ahora.getFullYear();
-            return fechaVenta.getMonth() === mesAnterior && fechaVenta.getFullYear() === añoAnterior;
+            const anioAnterior = ahora.getMonth() === 0 ? ahora.getFullYear() - 1 : ahora.getFullYear();
+            return fechaVenta.getMonth() === mesAnterior && fechaVenta.getFullYear() === anioAnterior;
         }
         return false;
     });
@@ -2617,7 +2658,7 @@ function renderEstadisticas(periodo) {
     document.getElementById('kpi-ticket-promedio').textContent    = fmt(ticketPromedio);
 
     // Etiqueta del período
-    const labelMap = { diaria: 'Hoy', semanal: 'Esta semana', mensual: 'Este mes' };
+    const labelMap = { diaria: 'Resumen de hoy', semanal: 'Esta semana', mensual: 'Este mes' };
     const subLabel = document.getElementById('stats-fecha-label');
     if (subLabel) subLabel.textContent = labelMap[periodo] || '';
 
@@ -2626,16 +2667,23 @@ function renderEstadisticas(periodo) {
         const el = document.getElementById(elId);
         const elc = document.getElementById(compareId);
         if (!el) return;
-        if (anterior === 0) {
+        if (anterior === 0 && actual === 0) {
             el.textContent = '—';
             el.className = 'kpi-trend';
-            if (elc) elc.textContent = 'sin período anterior';
+            if (elc) elc.textContent = 'Sin datos del período anterior';
+            return;
+        }
+        if (anterior === 0) {
+            el.textContent = '🆕 Nuevo';
+            el.className = 'kpi-trend positivo';
+            if (elc) elc.textContent = 'Primera vez en este período';
             return;
         }
         const pct = Math.round(((actual - anterior) / anterior) * 100);
         el.textContent = (pct >= 0 ? '▲ ' : '▼ ') + Math.abs(pct) + '%';
         el.className = 'kpi-trend ' + (pct >= 0 ? 'positivo' : 'negativo');
-        if (elc) elc.textContent = 'vs período anterior: ' + (anterior > 100 ? fmt(anterior) : anterior);
+        const antLabel = anterior > 1000 ? fmt(anterior) : anterior + (compareId.includes('ventas') || compareId.includes('ticket') ? '' : ' uds');
+        if (elc) elc.textContent = 'Período anterior: ' + (anterior > 100 ? fmt(anterior) : anterior);
     }
     setTrend('kpi-trend-ventas',  'kpi-compare-ventas',  totalVentas,      totalAnt);
     setTrend('kpi-trend-trans',   'kpi-compare-trans',   numTransacciones,  transAnt);
@@ -2660,6 +2708,13 @@ function renderEstadisticas(periodo) {
         catMap[cat] = (catMap[cat] || 0) + (i.subtotal || 0);
     }));
 
+    // Actualizar título del gráfico tendencia según período
+    const tituloTendencia = document.querySelector('.stats-chart-card.stats-chart-wide:first-child .chart-title');
+    if (tituloTendencia) {
+        const titulosMap = { diaria: '📈 Ingresos hora a hora (hoy)', semanal: '📈 Ingresos por día de la semana', mensual: '📈 Ingresos por día del mes' };
+        tituloTendencia.textContent = titulosMap[periodo] || '📈 Tendencia de ingresos';
+    }
+
     // --- Tendencia por período ---
     const tendenciaLabels = [];
     const tendenciaData   = [];
@@ -2667,8 +2722,14 @@ function renderEstadisticas(periodo) {
     if (periodo === 'diaria') {
         const porHora = Array(24).fill(0);
         ventasFiltradas.forEach(v => {
-            const h = new Date(v.date).getHours();
-            if (!isNaN(h)) porHora[h] += (v.total || 0);
+            // Usar globalId (timestamp) para obtener la hora exacta
+            let hora = -1;
+            if (v.globalId && v.globalId > 1000000000000) {
+                hora = new Date(v.globalId).getHours();
+            } else {
+                hora = new Date(v.date).getHours();
+            }
+            if (!isNaN(hora) && hora >= 0) porHora[hora] += (v.total || 0);
         });
         for (let h = 0; h < 24; h++) {
             tendenciaLabels.push(h + ':00');
@@ -2678,16 +2739,16 @@ function renderEstadisticas(periodo) {
         const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
         const porDia = Array(7).fill(0);
         ventasFiltradas.forEach(v => {
-            const d = new Date(v.date).getDay();
-            if (!isNaN(d)) porDia[d] += (v.total || 0);
+            const fv = parsearFechaVenta(v);
+            if (fv) porDia[fv.getDay()] += (v.total || 0);
         });
         dias.forEach((d,i) => { tendenciaLabels.push(d); tendenciaData.push(porDia[i]); });
     } else {
         const diasEnMes = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
         const porDia = Array(diasEnMes).fill(0);
         ventasFiltradas.forEach(v => {
-            const d = new Date(v.date).getDate() - 1;
-            if (d >= 0 && d < diasEnMes) porDia[d] += (v.total || 0);
+            const fv = parsearFechaVenta(v);
+            if (fv) { const d = fv.getDate() - 1; if (d >= 0 && d < diasEnMes) porDia[d] += (v.total || 0); }
         });
         for (let d = 1; d <= diasEnMes; d++) {
             tendenciaLabels.push('D' + d);
@@ -2697,10 +2758,17 @@ function renderEstadisticas(periodo) {
 
     // Badge de tendencia
     const maxVal = Math.max(...tendenciaData, 1);
+    const horasPico = tendenciaData.filter(v => v > 0).length;
     const badgeTend = document.getElementById('chart-badge-tendencia');
-    if (badgeTend) badgeTend.textContent = fmt(totalVentas) + ' total';
+    if (badgeTend) {
+        if (periodo === 'diaria') badgeTend.textContent = horasPico > 0 ? `${horasPico} hora${horasPico > 1 ? 's' : ''} con ventas` : 'Sin ventas hoy';
+        else badgeTend.textContent = fmt(totalVentas) + ' total';
+    }
     const badgeIng  = document.getElementById('chart-badge-ingresos');
-    if (badgeIng) badgeIng.textContent = numTransacciones + ' transacciones';
+    if (badgeIng) {
+        badgeIng.textContent = numTransacciones === 0 ? 'Sin transacciones' :
+            numTransacciones + ' venta' + (numTransacciones > 1 ? 's' : '');
+    }
 
     const CHART_DEFAULTS = {
         responsive: true,
@@ -2749,27 +2817,28 @@ function renderEstadisticas(periodo) {
         options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, legend: { display: false } } }
     });
 
-    // Gráfico 2: Productos más vendidos (barras horizontales)
+    // Gráfico 2: Productos más vendidos (barras verticales)
     destroyChart(chartProductos);
     const ctx2 = getCtx('chartProductos');
     if (ctx2) chartProductos = new Chart(ctx2, {
         type: 'bar',
         data: {
-            labels: topProductos.map(p => p[0].length > 16 ? p[0].slice(0,16)+'…' : p[0]),
+            labels: topProductos.map(p => p[0].length > 12 ? p[0].slice(0,12)+'…' : p[0]),
             datasets: [{
-                label: 'Unidades',
+                label: 'Unidades vendidas',
                 data: topProductos.map(p => p[1]),
                 backgroundColor: COLORS_GRAD,
-                borderRadius: 4
+                borderRadius: 6
             }]
         },
         options: {
             ...CHART_DEFAULTS,
-            indexAxis: 'y',
-            plugins: { legend: { display: false } },
+            plugins: { legend: { display: false }, tooltip: {
+                callbacks: { label: ctx => ` ${ctx.raw} unidades` }
+            }},
             scales: {
-                x: { ticks: { color: 'rgba(160,200,210,0.45)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
-                y: { ticks: { color: 'rgba(200,230,225,0.7)', font: { size: 10 } }, grid: { display: false } }
+                x: { ticks: { color: 'rgba(200,230,225,0.7)', font: { size: 10 } }, grid: { display: false } },
+                y: { ticks: { color: 'rgba(160,200,210,0.45)', font: { size: 10 }, stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } }
             }
         }
     });
@@ -2826,7 +2895,7 @@ function renderEstadisticas(periodo) {
         const todosProductos = Object.entries(prodMap)
             .sort((a,b) => b[1]-a[1]).slice(0,15);
         if (todosProductos.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="stats-tabla-empty">Sin datos para este período</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="stats-tabla-empty">📭 Aún no hay ventas registradas en este período.<br><small style="opacity:0.6">Registra una venta y los datos aparecerán aquí.</small></td></tr>';
         } else {
             const maxIngreso = Math.max(...todosProductos.map(p => prodIngresos[p[0]] || 0), 1);
             tbody.innerHTML = todosProductos.map(([nombre, qty], idx) => {
@@ -3667,10 +3736,8 @@ window.handleSaveProduct = async function() {
     } else if (editingProductId !== null) {
         const p = inventory.find(p => p.id.toString() === editingProductId.toString());
         urlImagen = p ? p.imagen : '';
-    } else {
-        await mostrarAlerta('Por favor, selecciona una imagen para el producto.', 'warn');
-        return;
     }
+    // En modo offline la imagen es opcional — se puede agregar al sincronizar
 
     await guardarProductoOffline({ codigoBarras: codigo, nombre, precio, cantidad, imagen: urlImagen, categoria });
     resetFormAndMode();
