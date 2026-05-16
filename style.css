@@ -3260,6 +3260,40 @@ input[type="number"] {
   color: #e2eaf5;
 }
 
+/* Estadísticas Online — mismo fondo y tipografía que físicas */
+#pantalla-estadisticas-online {
+  background: #080f1a;
+  padding: 0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #e2eaf5;
+}
+
+/* Botones de período para la pantalla online (mismos estilos que .btn-period) */
+.btn-period-online {
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(122,228,214,0.18);
+  background: rgba(122,228,214,0.05);
+  color: rgba(180,230,225,0.7);
+  font-size: 0.82em;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+}
+.btn-period-online:hover {
+  background: rgba(122,228,214,0.12);
+  border-color: rgba(122,228,214,0.45);
+  color: #e0f7f4;
+}
+.btn-period-online.activo {
+  background: rgba(122,228,214,0.15);
+  border-color: #7ae4d6;
+  color: #7ae4d6;
+  box-shadow: 0 0 12px rgba(122,228,214,0.18);
+}
+
 /* — Header — */
 .stats-header {
   display: flex;
@@ -3627,6 +3661,7 @@ input[type="number"] {
   .stats-header { flex-direction: column; align-items: flex-start; }
   .stats-period-selector { width: 100%; }
   .btn-period { flex: 1; text-align: center; }
+  .btn-period-online { flex: 1; text-align: center; }
 }
 
 /* ============================================================
