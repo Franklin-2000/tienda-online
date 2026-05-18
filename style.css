@@ -3481,7 +3481,7 @@ input[type="number"] {
 
 .stats-title {
   font-family: 'Pacifico', cursive;
-  font-size: 30px !important;
+  font-size: 100px !important;
   color: #7ae4d6 !important;
   text-shadow: 0 0 30px rgba(122,228,214,0.3) !important;
   margin: 0 !important;
