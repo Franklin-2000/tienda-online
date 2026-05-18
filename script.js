@@ -3221,7 +3221,7 @@ function renderEstadisticasOnline(periodo) {
         plugins: { legend: { labels: { color: '#ffffff', font: { size: 14 } } } },
         scales: {
             x: { ticks: { color: '#ffffff', font: { size: 13 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
-            y: { ticks: { color: '#ffffff', font: { size: 13 }, callback: v => v>=1000?'$'+Math.round(v/1000)+'k':'$'+v }, grid: { color: 'rgba(255,255,255,0.04)' } }
+            y: { min: 0, ticks: { color: '#ffffff', font: { size: 13 }, callback: v => v>=1000?'$'+Math.round(v/1000)+'k':'$'+v }, grid: { color: 'rgba(255,255,255,0.04)' } }
         }
     };
     const COLORS_GRAD = [
@@ -3256,7 +3256,7 @@ function renderEstadisticasOnline(periodo) {
         options: { ...CHART_DEFAULTS,
             plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.raw} unidades` } } },
             scales: { x: { ticks: { color: '#ffffff', font: { size: 14 } }, grid: { display: false } },
-                y: { ticks: { color: '#ffffff', font: { size: 13 }, stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } } }
+                y: { min: 0, ticks: { color: '#ffffff', font: { size: 13 }, stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } } }
         }
     });
 
