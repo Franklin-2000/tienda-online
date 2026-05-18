@@ -593,7 +593,7 @@ function showScreen(screenId, pushToHistory = true) {
         '#pantalla-login, #pantalla-inicio, #pantalla-menu-ventas, ' +
         '#pantalla-INVENTARIO, #pantalla-ventas-fisicas, #pantalla-historial-fisicas, ' +
         '#pantalla-ventas-online, #pantalla-historial-online, #pantalla-estadisticas, ' +
-        '#pantalla-estadisticas-online, #pantalla-combos'
+        '#pantalla-estadisticas-online, #pantalla-combos, #pantalla-historial-combos'
     ).forEach(function(el) {
         el.classList.remove('activa');
     });
@@ -616,6 +616,7 @@ function showScreen(screenId, pushToHistory = true) {
         'pantalla-historial-fisicas':    'btn-Menu-Ventas-Fisicas',
         'pantalla-ventas-online':        'btn-Menu-Ventas-Online',
         'pantalla-historial-online':     'btn-Menu-Ventas-Online',
+        'pantalla-historial-combos':     'btn-Combos',
         'pantalla-estadisticas':         'btn-Estadisticas',
         'pantalla-estadisticas-online':  'btn-EstadisticasOnline',
         'pantalla-combos':               'btn-Combos',

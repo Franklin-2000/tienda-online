@@ -84,7 +84,8 @@ body {
 #pantalla-historial-online,
 #pantalla-estadisticas,
 #pantalla-estadisticas-online,
-#pantalla-combos {
+#pantalla-combos,
+#pantalla-historial-combos {
   position: fixed;   /* fixed en lugar de absolute para que se ancle al viewport */
   top: 0;
   left: 0;
@@ -113,7 +114,8 @@ body {
 #pantalla-historial-online.activa,
 #pantalla-estadisticas.activa,
 #pantalla-estadisticas-online.activa,
-#pantalla-combos.activa {
+#pantalla-combos.activa,
+#pantalla-historial-combos.activa {
   left: 240px;
   right: 0;
   width: auto;          /* dejamos que left+right definan el ancho exacto */
@@ -134,7 +136,8 @@ body {
 #pantalla-historial-online.activa,
 #pantalla-estadisticas.activa,
 #pantalla-estadisticas-online.activa,
-#pantalla-combos.activa { display: block; }
+#pantalla-combos.activa,
+#pantalla-historial-combos.activa { display: block; }
 
 h1 {
   font-size: 120px;
@@ -491,7 +494,8 @@ h1 {
   #pantalla-historial-online.activa,
   #pantalla-estadisticas.activa,
   #pantalla-estadisticas-online.activa,
-  #pantalla-combos.activa {
+  #pantalla-combos.activa,
+  #pantalla-historial-combos.activa {
     left: 0 !important;
     right: 0 !important;
     width: auto !important;
@@ -3806,6 +3810,25 @@ input[type="number"] {
   box-sizing: border-box;
   text-align: center;
   color: #e0f7f4;
+}
+
+#pantalla-historial-combos {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url(https://image.slidesdocs.com/responsive-images/background/website-mobile-app-explore-the-world-of-virtual-shopping-with-digital-marketing-powerpoint-background_bb972eee09__960_540.jpg);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  padding: 28px 36px;
+  box-sizing: border-box;
+  text-align: center;
+  color: #e0f7f4;
+}
+
+#pantalla-historial-combos h1 {
+  font-size: 2.4em;
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.7);
+  margin-bottom: 24px;
 }
 
 #pantalla-combos h1 {
