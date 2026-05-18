@@ -172,7 +172,7 @@ body {
 #pantalla-historial-combos.activa { display: block; }
 
 h1 {
-  font-size: 40px;
+  font-size: 80px;
   font-family:'Pacifico', cursive;
   font-weight: bold;
   font-style: italic;
@@ -866,7 +866,7 @@ h1 {
 }
 
 #pantalla-INVENTARIO h1 {
-    font-size: 38px;
+    font-size: 80px;
     color: #fafcfd;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     margin-top: 20px;
@@ -1733,7 +1733,7 @@ input[type="file"] {
 }
 
 #pantalla-ventas-fisicas h1 {
-    font-size: 38px;
+    font-size: 80px;
     color: #ffffff;
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(12, 86, 108, 0.4);
     margin-top: 20px;
@@ -1859,7 +1859,7 @@ input[type="file"] {
 
 #pantalla-ventas-online h1,
 #pantalla-historial-online h1 {
-    font-size: 38px;
+    font-size: 80px;
     color: #fefefe;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     margin-top: 20px;
@@ -2857,7 +2857,7 @@ input[type="number"] {
 }
 
 #pantalla-historial-fisicas h1 {
-    font-size: 38px;
+    font-size: 80px;
     color: #ffffff;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     margin-top: 20px;
@@ -2927,7 +2927,7 @@ input[type="number"] {
 @media (max-width: 1200px) {
 
     /* Títulos principales */
-    h1 { font-size: 34px; }
+    h1 { font-size: 60px; }
 
     #pantalla-inicio .title,
     #pantalla-menu-ventas .title { font-size: 60px; }
@@ -2936,7 +2936,7 @@ input[type="number"] {
     #pantalla-ventas-fisicas h1,
     #pantalla-ventas-online h1,
     #pantalla-historial-online h1,
-    #pantalla-historial-fisicas h1 { font-size: 32px; }
+    #pantalla-historial-fisicas h1 { font-size: 55px; }
 
     #pantalla-INVENTARIO #inventory-products-title,
     #pantalla-historial-fisicas h2,
@@ -2962,7 +2962,7 @@ input[type="number"] {
 @media (max-width: 900px) {
 
     /* Títulos */
-    h1 { font-size: 30px; }
+    h1 { font-size: 44px; }
 
     #pantalla-inicio .title,
     #pantalla-menu-ventas .title { font-size: 44px; margin-top: 1.5em; }
@@ -2971,7 +2971,7 @@ input[type="number"] {
     #pantalla-ventas-fisicas h1,
     #pantalla-ventas-online h1,
     #pantalla-historial-online h1,
-    #pantalla-historial-fisicas h1 { font-size: 28px; }
+    #pantalla-historial-fisicas h1 { font-size: 40px; }
 
     #pantalla-INVENTARIO #inventory-products-title,
     #pantalla-historial-fisicas h2,
@@ -3044,7 +3044,7 @@ input[type="number"] {
 @media (max-width: 600px) {
 
     /* Títulos */
-    h1 { font-size: 24px; }
+    h1 { font-size: 32px; }
 
     #pantalla-inicio .title,
     #pantalla-menu-ventas .title { font-size: 32px; margin-top: 1em; }
@@ -3053,7 +3053,7 @@ input[type="number"] {
     #pantalla-ventas-fisicas h1,
     #pantalla-ventas-online h1,
     #pantalla-historial-online h1,
-    #pantalla-historial-fisicas h1 { font-size: 22px; margin-top: 12px; margin-bottom: 12px; }
+    #pantalla-historial-fisicas h1 { font-size: 28px; margin-top: 15px; margin-bottom: 15px; }
 
     #pantalla-INVENTARIO #inventory-products-title,
     #pantalla-historial-fisicas h2,
@@ -3875,14 +3875,14 @@ input[type="number"] {
 }
 
 #pantalla-historial-combos h1 {
-  font-size: 2.4em;
+  font-size: 80px;
   color: #ffffff;
   text-shadow: 0 2px 12px rgba(0,0,0,0.7);
   margin-bottom: 24px;
 }
 
 #pantalla-combos h1 {
-    font-size: 38px;
+    font-size: 80px;
     color: #fafcfd;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     margin-top: 20px;
