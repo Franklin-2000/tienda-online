@@ -772,12 +772,10 @@ CREATE POLICY "combos: update propio"
 CREATE POLICY "combos: delete propio"
     ON combos FOR DELETE USING (auth.uid() = user_id);
 
+-- Cualquier autenticado puede leer combos; el JS ya filtra por adminUserId
 CREATE POLICY "combos: select tienda"
     ON combos FOR SELECT
-    USING (
-        auth.role() = 'authenticated'
-        AND user_id = get_admin_user_id()
-    );
+    USING (auth.role() = 'authenticated');
 
 
 -- ================================================================
@@ -794,12 +792,10 @@ CREATE POLICY "combo_productos: insert propio"
 CREATE POLICY "combo_productos: delete propio"
     ON combo_productos FOR DELETE USING (auth.uid() = user_id);
 
+-- Cualquier autenticado puede leer combo_productos; el JS ya filtra por adminUserId
 CREATE POLICY "combo_productos: select tienda"
     ON combo_productos FOR SELECT
-    USING (
-        auth.role() = 'authenticated'
-        AND user_id = get_admin_user_id()
-    );
+    USING (auth.role() = 'authenticated');
 
 
 -- ================================================================
