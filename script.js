@@ -3454,11 +3454,14 @@ function renderCombos() {
             resultados.forEach(p => {
                 const item = document.createElement('div');
                 item.className = 'combo-auto-item';
+                const disponibles = p.cantidad ?? 0;
+                const dispColor = disponibles > 0 ? '#2e7d32' : '#c62828';
                 item.innerHTML = `
                     <img class="combo-auto-thumb" src="${p.imagen || 'https://via.placeholder.com/34'}" alt="">
                     <div class="combo-auto-info">
                         <span class="combo-auto-nombre">${p.nombre}</span>
                         <span class="combo-auto-precio">$${(p.precio||0).toLocaleString('es-CO')}</span>
+                        <span class="combo-auto-stock" style="font-size:0.78em;font-weight:700;color:${dispColor}">${disponibles > 0 ? disponibles + ' disponibles' : 'Sin stock'}</span>
                     </div>`;
                 item.onclick = () => {
                     agregarProductoAlCombo({ id: p.id, nombre: p.nombre, precio: p.precio || 0, imagen: p.imagen || '' });
@@ -3548,11 +3551,20 @@ function actualizarChipsCombo() {
             const i   = parseInt(input.dataset.idx);
             const val = parseInt(input.value);
             if (!isNaN(val) && val >= 1) {
+                // Validar contra inventario
+                const prod = productosEnComboActual[i];
+                const invProd = inventory.find(p => String(p.id) === String(prod.id));
+                const maxDisp = invProd ? (invProd.cantidad || 0) : Infinity;
+                if (val > maxDisp) {
+                    input.value = maxDisp > 0 ? maxDisp : 1;
+                    mostrarAlerta(`⚠️ Supera la cantidad existente en el inventario.\n"${prod.nombre}" solo tiene ${maxDisp} unidad${maxDisp !== 1 ? 'es' : ''} disponible${maxDisp !== 1 ? 's' : ''}.`, 'warn');
+                    return;
+                }
                 productosEnComboActual[i].cantidad = val;
                 const chip = input.closest('.combo-chip');
                 if (chip) {
                     const precioSpan = chip.querySelector('.combo-chip-precio');
-                    if (precioSpan) precioSpan.textContent = '$' + ((productosEnComboActual[i].precio || 0) * val).toLocaleString('es-CO');
+                    if (precioSpan) precioSpan.textContent = '$' + ((prod.precio || 0) * val).toLocaleString('es-CO');
                 }
                 actualizarValorSuma();
             }
@@ -3560,7 +3572,10 @@ function actualizarChipsCombo() {
         input.addEventListener('blur', () => {
             const i     = parseInt(input.dataset.idx);
             const val   = parseInt(input.value);
-            const final = (isNaN(val) || val < 1) ? 1 : val;
+            const prod  = productosEnComboActual[i];
+            const invProd = inventory.find(p => String(p.id) === String(prod.id));
+            const maxDisp = invProd ? (invProd.cantidad || 0) : Infinity;
+            const final = (isNaN(val) || val < 1) ? 1 : Math.min(val, maxDisp > 0 ? maxDisp : val);
             input.value = final;
             productosEnComboActual[i].cantidad = final;
             const chip  = input.closest('.combo-chip');
@@ -3573,9 +3588,17 @@ function actualizarChipsCombo() {
         input.addEventListener('keydown', async e => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                // Normalizar cantidad antes de salir
-                const i     = parseInt(input.dataset.idx);
-                const val   = parseInt(input.value);
+                const i       = parseInt(input.dataset.idx);
+                const val     = parseInt(input.value);
+                const prod    = productosEnComboActual[i];
+                const invProd = inventory.find(p => String(p.id) === String(prod.id));
+                const maxDisp = invProd ? (invProd.cantidad || 0) : Infinity;
+                if (!isNaN(val) && val > maxDisp) {
+                    await mostrarAlerta(`⚠️ Supera la cantidad existente en el inventario.\n"${prod.nombre}" solo tiene ${maxDisp} unidad${maxDisp !== 1 ? 'es' : ''} disponible${maxDisp !== 1 ? 's' : ''}.`, 'warn');
+                    input.value = maxDisp > 0 ? maxDisp : 1;
+                    input.focus();
+                    return;
+                }
                 const final = (isNaN(val) || val < 1) ? 1 : val;
                 input.value = final;
                 productosEnComboActual[i].cantidad = final;
@@ -3775,6 +3798,26 @@ async function venderCombo(combo) {
     );
     if (!ok) return;
 
+    // Validar stock de TODOS los productos antes de llamar a Supabase
+    const sinStock = prods.filter(cp => {
+        const prodId = cp.product_id || cp.id;
+        const prod = inventory.find(p => String(p.id) === String(prodId));
+        return !prod || (prod.cantidad || 0) < (cp.cantidad || 1);
+    });
+    if (sinStock.length) {
+        const lista = sinStock.map(cp => {
+            const prodId = cp.product_id || cp.id;
+            const prod = inventory.find(p => String(p.id) === String(prodId));
+            const disponible = prod ? (prod.cantidad || 0) : 0;
+            return `• "${cp.nombre}" (necesita ${cp.cantidad || 1}, hay ${disponible})`;
+        }).join('\n');
+        await mostrarAlerta(
+            `❌ Stock insuficiente para los siguientes productos:\n${lista}\n\nVerifica el inventario antes de vender este combo.`,
+            'error'
+        );
+        return;
+    }
+
     try {
         const ahora  = new Date();
         const fechaStr  = ahora.toLocaleString();
@@ -3837,7 +3880,17 @@ async function venderCombo(combo) {
         }
     } catch(e) {
         console.error('Error al vender combo:', e);
-        mostrarAlerta('❌ Error al registrar la venta.\n' + (e.message || 'Intenta de nuevo.'), 'error');
+        let mensaje = e.message || 'Intenta de nuevo.';
+        // Traducir "Stock insuficiente para el producto id=X." al nombre real del producto
+        const matchId = mensaje.match(/producto\s+id=(\d+)/i);
+        if (matchId) {
+            const prodId = matchId[1];
+            const prod = inventory.find(p => String(p.id) === String(prodId));
+            if (prod) {
+                mensaje = `Stock insuficiente de "${prod.nombre}".\nVerifica las unidades disponibles en inventario.`;
+            }
+        }
+        mostrarAlerta('❌ Error al registrar la venta.\n' + mensaje, 'error');
     }
 }
 
