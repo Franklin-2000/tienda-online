@@ -3690,8 +3690,7 @@ function renderTarjetasCombos() {
         const miniImgs = prods.map(p => `
             <div class="combo-mini-producto">
                 <img class="combo-mini-img" src="${p.imagen || 'https://via.placeholder.com/48'}" alt="${p.nombre || ''}">
-                <span class="combo-mini-nombre">${p.nombre || ''}</span>
-                ${(p.cantidad && p.cantidad > 1) ? `<span class="combo-mini-qty">x${p.cantidad}</span>` : ''}
+                <span class="combo-mini-nombre">${p.cantidad || 1}u. ${p.nombre || ''}</span>
             </div>`).join('');
         const precioOrig = combo.precio_suma && combo.precio_suma !== combo.precio
             ? `<div class="combo-card-precio-orig">Valor individual: $${Math.round(combo.precio_suma).toLocaleString('es-CO')}</div>` : '';
