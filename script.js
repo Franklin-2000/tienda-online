@@ -3389,6 +3389,30 @@ function renderCombos() {
             if (!autoList.contains(e.target) && e.target !== inputBuscar)
                 autoList.classList.remove('visible');
         });
+        inputBuscar.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const primerItem = autoList.querySelector('.combo-auto-item');
+                if (primerItem) primerItem.click();
+            }
+        });
+    }
+
+    // Enter: navegar entre campos del formulario
+    const inputNombre = document.getElementById('inputComboNombre');
+    const inputDesc   = document.getElementById('inputComboDescripcion');
+    const inputPrecio = document.getElementById('inputComboPrecio');
+    if (inputNombre && !inputNombre._enterEv) {
+        inputNombre._enterEv = true;
+        inputNombre.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inputDesc?.focus(); } });
+    }
+    if (inputDesc && !inputDesc._enterEv) {
+        inputDesc._enterEv = true;
+        inputDesc.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inputPrecio?.focus(); } });
+    }
+    if (inputPrecio && !inputPrecio._enterEv) {
+        inputPrecio._enterEv = true;
+        inputPrecio.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inputBuscar?.focus(); } });
     }
 
     loadCombos().then(() => renderTarjetasCombos());
@@ -3427,18 +3451,39 @@ function actualizarChipsCombo() {
 
     // Actualizar cantidad al cambiar el input
     contenedor.querySelectorAll('.combo-chip-qty-input').forEach(input => {
+        input.addEventListener('focus', () => input.select());
+        input.addEventListener('click', () => setTimeout(() => input.select(), 0));
         input.addEventListener('input', () => {
-            const i = parseInt(input.dataset.idx);
-            const val = Math.max(1, parseInt(input.value) || 1);
-            input.value = val;
-            productosEnComboActual[i].cantidad = val;
-            // Actualizar precio mostrado en el chip
-            const chip = input.closest('.combo-chip');
+            const i   = parseInt(input.dataset.idx);
+            const val = parseInt(input.value);
+            if (!isNaN(val) && val >= 1) {
+                productosEnComboActual[i].cantidad = val;
+                const chip = input.closest('.combo-chip');
+                if (chip) {
+                    const precioSpan = chip.querySelector('.combo-chip-precio');
+                    if (precioSpan) precioSpan.textContent = '$' + ((productosEnComboActual[i].precio || 0) * val).toLocaleString('es-CO');
+                }
+                actualizarValorSuma();
+            }
+        });
+        input.addEventListener('blur', () => {
+            const i     = parseInt(input.dataset.idx);
+            const val   = parseInt(input.value);
+            const final = (isNaN(val) || val < 1) ? 1 : val;
+            input.value = final;
+            productosEnComboActual[i].cantidad = final;
+            const chip  = input.closest('.combo-chip');
             if (chip) {
                 const precioSpan = chip.querySelector('.combo-chip-precio');
-                if (precioSpan) precioSpan.textContent = '$' + ((productosEnComboActual[i].precio || 0) * val).toLocaleString('es-CO');
+                if (precioSpan) precioSpan.textContent = '$' + ((productosEnComboActual[i].precio || 0) * final).toLocaleString('es-CO');
             }
             actualizarValorSuma();
+        });
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('inputBuscarProductoCombo')?.focus();
+            }
         });
     });
 
@@ -3531,20 +3576,19 @@ function renderTarjetasCombos() {
     }
     contenedor.innerHTML = combos.map(combo => {
         const prods = combo.combo_productos || [];
-        const miniImgs = prods.slice(0,5).map(p => `
+        const miniImgs = prods.map(p => `
             <div class="combo-mini-producto">
-                <img class="combo-mini-img" src="${p.imagen || 'https://via.placeholder.com/48'}" alt="${p.nombre}">
-                <span class="combo-mini-nombre">${(p.nombre||'').slice(0,14)}</span>
+                <img class="combo-mini-img" src="${p.imagen || 'https://via.placeholder.com/48'}" alt="${p.nombre || ''}">
+                <span class="combo-mini-nombre">${p.nombre || ''}</span>
                 ${(p.cantidad && p.cantidad > 1) ? `<span class="combo-mini-qty">x${p.cantidad}</span>` : ''}
             </div>`).join('');
-        const masProds = prods.length > 5 ? `<span style="color:rgba(200,180,255,0.5);font-size:0.75em;align-self:center">+${prods.length-5} más</span>` : '';
         const precioOrig = combo.precio_suma && combo.precio_suma !== combo.precio
             ? `<div class="combo-card-precio-orig">Valor individual: $${Math.round(combo.precio_suma).toLocaleString('es-CO')}</div>` : '';
         return `
         <div class="tarjeta-combo tarjeta-producto">
             <div class="combo-card-nombre">${combo.nombre}</div>
             ${combo.descripcion ? `<div class="combo-card-desc">${combo.descripcion}</div>` : ''}
-            <div class="combo-card-productos">${miniImgs}${masProds}</div>
+            <div class="combo-card-productos">${miniImgs}</div>
             <div class="combo-card-precio">$${Math.round(combo.precio).toLocaleString('es-CO')}</div>
             ${precioOrig}
             <div class="combo-card-acciones">

@@ -3934,6 +3934,16 @@ input[type="number"] {
 }
 #pantalla-combos .combo-chip-precio { color: #1a3e72; }
 
+#pantalla-combos .combo-mini-nombre {
+    color: #111;
+    font-size: 0.8em;
+    font-weight: 700;
+}
+#pantalla-combos .combo-mini-qty {
+    color: #444;
+    background: rgba(0,0,0,0.08);
+}
+
 #pantalla-combos .combo-valor-auto {
     color: #ddd;
     border-top-color: rgba(255,255,255,0.2);
@@ -4289,33 +4299,33 @@ input[type="number"] {
 
 /* Mini-imágenes de productos dentro del combo */
 .combo-card-productos {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 4px 0;
 }
 
 .combo-mini-producto {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  max-width: 60px;
+  gap: 4px;
+  width: 100%;
 }
 
 .combo-mini-img {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 10px;
   object-fit: cover;
   border: 1.5px solid rgba(180,140,255,0.3);
 }
 
 .combo-mini-nombre {
-  font-size: 0.62em;
+  font-size: 0.72em;
   color: rgba(200,180,255,0.7);
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.3;
   word-break: break-word;
 }
 
