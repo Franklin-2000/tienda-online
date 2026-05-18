@@ -74,6 +74,10 @@
         <span class="sidebar-icon">📦</span>
         <span class="sidebar-label">INVENTARIO</span>
       </a>
+      <a href="#" class="sidebar-boton sidebar-boton-secondary" id="btn-Combos">
+        <span class="sidebar-icon">🎁</span>
+        <span class="sidebar-label">COMBOS</span>
+      </a>
       <a href="#" class="sidebar-boton" id="btn-Menu-Ventas-Fisicas">
         <span class="sidebar-icon">🛒</span>
         <span class="sidebar-label">VENTAS FÍSICAS</span>
@@ -89,10 +93,6 @@
       <a href="#" class="sidebar-boton sidebar-boton-secondary" id="btn-EstadisticasOnline">
         <span class="sidebar-icon">🌐</span>
         <span class="sidebar-label">EST. VENTAS ONLINE</span>
-      </a>
-      <a href="#" class="sidebar-boton sidebar-boton-secondary" id="btn-Combos">
-        <span class="sidebar-icon">🎁</span>
-        <span class="sidebar-label">COMBOS</span>
       </a>
 
       <!-- Botón Actualizar — justo debajo de Combos -->
@@ -591,54 +591,61 @@
        PANTALLA: COMBOS
        ============================ -->
   <div id="pantalla-combos">
-    <div class="combos-header">
-      <h1 class="combos-title">🎁 Gestión de Combos</h1>
+    <h1>Gestión de Combos</h1>
+
+    <div class="inventory-header">
+      <div class="inventory-actions-group">
+
+        <!-- Tarjeta de creación de combo — mismos estilos que tarjeta-input-producto -->
+        <div class="formulario-producto-nuevo">
+          <div class="tarjeta-input-producto">
+            <h2>➕ Crear Nuevo Combo</h2>
+
+            <label class="combo-label" for="inputComboNombre">Nombre del combo</label>
+            <input type="text" id="inputComboNombre" placeholder="Ej: Combo Desayuno">
+
+            <label class="combo-label" for="inputComboDescripcion">Descripción (opcional)</label>
+            <input type="text" id="inputComboDescripcion" placeholder="Ej: Café + Pan + Jugo">
+
+            <label class="combo-label" for="inputComboPrecio">Precio especial del combo ($)</label>
+            <input type="number" id="inputComboPrecio" placeholder="$ 0" min="0" step="1">
+
+            <label class="combo-label">Agregar productos al combo</label>
+            <div class="combo-search-wrap">
+              <input type="text" id="inputBuscarProductoCombo" placeholder="Buscar por nombre o código...">
+            </div>
+            <div id="combo-autocomplete-list" class="combo-autocomplete"></div>
+
+            <!-- Productos agregados con cantidad -->
+            <div id="combo-productos-seleccionados" class="combo-productos-seleccionados">
+              <p class="combo-empty-msg">No hay productos agregados al combo.</p>
+            </div>
+
+            <div class="combo-valor-auto">
+              <span>Valor suma individual:</span>
+              <strong id="combo-valor-suma">$0</strong>
+            </div>
+
+            <button class="btn-añadir btn-limpiar-formulario" id="btnLimpiarCombo">Limpiar</button>
+            <button class="btn-añadir" id="btnGuardarCombo">💾 Guardar Combo</button>
+          </div>
+        </div>
+
+        <!-- Panel búsqueda y resumen — igual que inventario -->
+        <div class="search-summary-group">
+          <div class="inventory-summary-card">
+            <h2>Combos Creados</h2>
+            <p id="totalCombosCount" class="summary-count">0</p>
+          </div>
+        </div>
+
+      </div>
     </div>
 
-    <div class="combos-layout">
-      <!-- Panel izquierdo: Crear combo -->
-      <div class="combo-form-panel">
-        <div class="combo-form-card">
-          <h2>➕ Crear Nuevo Combo</h2>
-
-          <label class="combo-label">Nombre del combo</label>
-          <input type="text" id="inputComboNombre" class="combo-input" placeholder="Ej: Combo Desayuno">
-
-          <label class="combo-label">Descripción (opcional)</label>
-          <input type="text" id="inputComboDescripcion" class="combo-input" placeholder="Ej: Café + Pan + Jugo">
-
-          <label class="combo-label">Precio especial del combo ($)</label>
-          <input type="number" id="inputComboPrecio" class="combo-input" placeholder="$ 0" min="0" step="1">
-
-          <label class="combo-label">Agregar productos al combo</label>
-          <div class="combo-search-wrap">
-            <input type="text" id="inputBuscarProductoCombo" class="combo-input" placeholder="Buscar por nombre o código...">
-          </div>
-          <div id="combo-autocomplete-list" class="combo-autocomplete"></div>
-
-          <div id="combo-productos-seleccionados" class="combo-productos-seleccionados">
-            <p class="combo-empty-msg">No hay productos agregados al combo.</p>
-          </div>
-
-          <div class="combo-valor-auto">
-            <span>Valor suma individual:</span>
-            <strong id="combo-valor-suma">$0</strong>
-          </div>
-
-          <div class="combo-btns-row">
-            <button id="btnLimpiarCombo" class="btn-combo-limpiar">Limpiar</button>
-            <button id="btnGuardarCombo" class="btn-combo-guardar">💾 Guardar Combo</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panel derecho: Lista de combos guardados -->
-      <div class="combo-list-panel">
-        <h2 class="combo-list-title">📋 Combos Guardados</h2>
-        <div id="contenedorCombos" class="contenedor-combos-grid">
-          <p class="combo-empty-msg">No hay combos creados todavía.</p>
-        </div>
-      </div>
+    <!-- Grid de combos guardados -->
+    <h2 id="combos-list-title">Combos en el Sistema</h2>
+    <div id="contenedorCombos" class="contenedor-productos">
+      <p class="combo-empty-msg">No hay combos creados todavía.</p>
     </div>
 
   </div>
