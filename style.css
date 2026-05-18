@@ -96,9 +96,10 @@ body {
 }
 
 .sidebar-boton-secondary.sidebar-activo {
-  background: rgba(180, 140, 255, 0.20);
+  background: rgba(122, 228, 214, 0.20);
   color: #fff;
-  border-color: #c9aaff;
+  border-color: #7ae4d6;
+  box-shadow: 0 4px 18px rgba(122, 228, 214, 0.20);
 }
 
 /* ======================================================
@@ -346,20 +347,20 @@ h1 {
 
 /* Botones secundarios (Estadísticas, Combos) con tono diferente */
 .sidebar-boton-secondary {
-  background: rgba(180, 140, 255, 0.08);
-  color: #c9aaff;
-  border-color: rgba(180, 140, 255, 0.20);
+  background: rgba(122, 228, 214, 0.08);
+  color: #a8f0e8;
+  border-color: rgba(122, 228, 214, 0.18);
 }
 
 .sidebar-boton-secondary::after {
-  background: linear-gradient(90deg, transparent, rgba(180,140,255,0.18), transparent);
+  background: linear-gradient(90deg, transparent, rgba(122,228,214,0.18), transparent);
 }
 
 .sidebar-boton-secondary:hover {
-  background: rgba(180, 140, 255, 0.22);
+  background: rgba(122, 228, 214, 0.22);
   color: #fff;
-  border-color: #c9aaff;
-  box-shadow: 0 6px 22px rgba(180, 140, 255, 0.30);
+  border-color: #7ae4d6;
+  box-shadow: 0 6px 22px rgba(122, 228, 214, 0.30);
   letter-spacing: 0.09em;
 }
 
@@ -1156,7 +1157,21 @@ input[type="file"] {
     font-size: 18px;
     transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
+
+/* SVG alignment en botones e íconos de sección */
+.btn-seleccionar-imagen,
+.btn-historial-esquina,
+.offline-sync-btn,
+.btn-refrescar-online,
+.btn-borrar-todas-canceladas,
+.btn-exportar { display: inline-flex; align-items: center; gap: 7px; }
+.btn-categoria-filtro,
+.btn-filtro-estado { display: inline-flex; align-items: center; gap: 5px; }
+.titulo-ventas-hoy-independiente { display: flex; align-items: center; gap: 8px; }
 
 .boton-volver:hover {
     background-color: #5a6268;
