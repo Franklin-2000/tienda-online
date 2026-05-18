@@ -592,6 +592,7 @@
        ============================ -->
   <div id="pantalla-combos">
     <h1>Gestión de Combos</h1>
+    <button id="btnVerHistorialCombos" class="btn-historial-esquina btn-historial-esquina-position">📅 Historial</button>
 
     <div class="inventory-header">
       <div class="inventory-actions-group">
@@ -651,6 +652,36 @@
       <p class="combo-empty-msg">No hay combos creados todavía.</p>
     </div>
 
+  </div>
+
+  <!-- PANTALLA: Historial de Ventas de Combos -->
+  <div id="pantalla-historial-combos">
+    <h1>Historial de Combos Vendidos</h1>
+
+    <div class="tarjeta-ventas-hoy-independiente">
+      <div class="ventas-hoy-header" id="btnToggleCombosHoy">
+        <h2 class="titulo-ventas-hoy-independiente">🎁 Combos Vendidos Hoy</h2>
+        <button class="btn-toggle-ventas-hoy" aria-label="Mostrar/Ocultar combos de hoy">
+          <span class="toggle-icono">▼</span>
+        </button>
+      </div>
+      <div id="listaCombosHoy" class="lista-ventas-scroll ventas-hoy-lista">
+        <p>Aún no hay combos vendidos hoy.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta-ventas-hoy-independiente">
+      <div class="ventas-hoy-header" id="btnToggleHistorialCombos">
+        <h2 class="titulo-ventas-hoy-independiente">📅 Combos de Días Anteriores</h2>
+        <button class="btn-toggle-ventas-hoy" aria-label="Mostrar/Ocultar historial combos">
+          <span class="toggle-icono">▼</span>
+        </button>
+      </div>
+      <div id="listaHistorialCombosAcordeon" class="lista-ventas-scroll ventas-hoy-lista lista-historial-acordeon-max-height">
+      </div>
+    </div>
+
+    <button id="btnVolverDesdeHistorialCombos" class="boton-volver">← Volver a Combos</button>
   </div>
 
   <div id="modal-escaner" class="modal-overlay pantalla-display-none">

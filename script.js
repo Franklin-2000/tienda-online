@@ -1322,6 +1322,7 @@ function renderSalesHistory() {
         const hoy = new Date().toLocaleDateString();
         const ventasDeHoy = sales.filter(s => {
             if (s.id && String(s.id).startsWith('ONLINE-')) return false;
+            if (s.id && String(s.id).startsWith('COMBO-')) return false;
             const f = s.fechaLimpia || (s.date ? s.date.split(',')[0].trim() : '');
             return f === hoy;
         });
@@ -1352,8 +1353,9 @@ function renderSalesHistory() {
     const ventasPasadas = {};
 
     sales.forEach(sale => {
-        // Excluir ventas online del historial físico
+        // Excluir ventas online y combos del historial físico
         if (sale.id && String(sale.id).startsWith('ONLINE-')) return;
+        if (sale.id && String(sale.id).startsWith('COMBO-')) return;
         // Normalizar fecha: preferir fechaLimpia (toLocaleDateString guardado en BD)
         // Si no existe, extraer la parte de fecha del string completo
         const fechaVenta = sale.fechaLimpia
@@ -2852,6 +2854,11 @@ function renderEstadisticas(periodo) {
         }
     }
 
+    // Clampear a 0 — los ingresos nunca pueden ser negativos
+    for (let i = 0; i < tendenciaData.length; i++) {
+        if (tendenciaData[i] < 0) tendenciaData[i] = 0;
+    }
+
     // Badge de tendencia
     const maxVal = Math.max(...tendenciaData, 1);
     const horasPico = tendenciaData.filter(v => v > 0).length;
@@ -2872,7 +2879,7 @@ function renderEstadisticas(periodo) {
         plugins: { legend: { labels: { color: '#ffffff', font: { size: 14 } } } },
         scales: {
             x: { ticks: { color: '#ffffff', font: { size: 13 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
-            y: { ticks: { color: '#ffffff', font: { size: 13 }, callback: v => v >= 1000 ? '$'+Math.round(v/1000)+'k' : '$'+v }, grid: { color: 'rgba(255,255,255,0.04)' } }
+            y: { min: 0, ticks: { color: '#ffffff', font: { size: 13 }, callback: v => v >= 1000 ? '$'+Math.round(v/1000)+'k' : '$'+v }, grid: { color: 'rgba(255,255,255,0.04)' } }
         }
     };
 
@@ -2934,7 +2941,7 @@ function renderEstadisticas(periodo) {
             }},
             scales: {
                 x: { ticks: { color: '#ffffff', font: { size: 14 } }, grid: { display: false } },
-                y: { ticks: { color: '#ffffff', font: { size: 13 }, stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } }
+                y: { min: 0, ticks: { color: '#ffffff', font: { size: 13 }, stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } }
             }
         }
     });
@@ -3409,6 +3416,19 @@ function renderCombos() {
         btnLimpiar._ev = true;
         btnLimpiar.onclick = limpiarFormCombo;
     }
+    const btnHistCombos = document.getElementById('btnVerHistorialCombos');
+    if (btnHistCombos && !btnHistCombos._ev) {
+        btnHistCombos._ev = true;
+        btnHistCombos.onclick = () => {
+            renderHistorialCombos();
+            showScreen('pantalla-historial-combos');
+        };
+    }
+    const btnVolverHistCombos = document.getElementById('btnVolverDesdeHistorialCombos');
+    if (btnVolverHistCombos && !btnVolverHistCombos._ev) {
+        btnVolverHistCombos._ev = true;
+        btnVolverHistCombos.onclick = () => showScreen('pantalla-combos');
+    }
 
     // Autocomplete de búsqueda de productos
     const inputBuscar = document.getElementById('inputBuscarProductoCombo');
@@ -3681,6 +3701,7 @@ function renderTarjetasCombos() {
             ${stockBadge}
             <div class="combo-card-acciones">
                 <button class="btn-editar-combo" data-comboidx="${combos.indexOf(combo)}">✏️ Editar</button>
+                <button class="btn-vender-combo" data-comboidx="${combos.indexOf(combo)}">💚 Vender</button>
                 <button class="btn-borrar-producto btn-borrar-combo" data-comboid="${combo.id}">🗑️ Eliminar</button>
             </div>
         </div>`;
@@ -3690,6 +3711,13 @@ function renderTarjetasCombos() {
         btn.onclick = () => {
             const idx = parseInt(btn.dataset.comboidx);
             if (!isNaN(idx) && combos[idx]) editarCombo(combos[idx]);
+        };
+    });
+
+    contenedor.querySelectorAll('.btn-vender-combo').forEach(btn => {
+        btn.onclick = () => {
+            const idx = parseInt(btn.dataset.comboidx);
+            if (!isNaN(idx) && combos[idx]) venderCombo(combos[idx]);
         };
     });
 
@@ -3706,6 +3734,216 @@ function renderTarjetasCombos() {
                 await mostrarAlerta('❌ No se pudo eliminar el combo.\n' + (e.message || 'Intenta de nuevo.'), 'error');
             }
         };
+    });
+}
+
+// ──────────────────────────────────────────────────────
+// VENTA DE COMBO
+// ──────────────────────────────────────────────────────
+async function venderCombo(combo) {
+    const prods = combo.combo_productos || [];
+    if (!prods.length) {
+        mostrarAlerta('⚠️ Este combo no tiene productos.', 'warn');
+        return;
+    }
+    const precioFmt = Math.round(combo.precio).toLocaleString('es-CO');
+    const ok = await mostrarConfirm(
+        `¿Vender 1 combo "${combo.nombre}" por $${precioFmt}?`, 'info'
+    );
+    if (!ok) return;
+
+    try {
+        const ahora  = new Date();
+        const fechaStr  = ahora.toLocaleString();
+        const soloFecha = ahora.toLocaleDateString();
+
+        const items = prods.map(p => ({
+            productId: p.product_id || p.id || '',
+            name:      p.nombre,
+            qty:       p.cantidad || 1,
+            price:     Number(p.precio) || 0,
+            subtotal:  (Number(p.precio) || 0) * (p.cantidad || 1)
+        }));
+
+        // Descuento local inmediato en el array inventory
+        for (const cp of prods) {
+            const prodId = cp.product_id || cp.id;
+            const prod = inventory.find(p => String(p.id) === String(prodId));
+            if (prod) prod.cantidad = Math.max(0, (prod.cantidad || 0) - (cp.cantidad || 1));
+        }
+        // Descuento local del stock del combo
+        if (combo.stock > 0) combo.stock = Math.max(0, combo.stock - 1);
+
+        const newSale = {
+            globalId:    Date.now(),
+            total:       combo.precio,
+            date:        fechaStr,
+            fechaLimpia: soloFecha,
+            items
+        };
+
+        if (modoOffline) {
+            const hhmm = String(ahora.getHours()).padStart(2,'0') + String(ahora.getMinutes()).padStart(2,'0');
+            newSale.id = 'COMBO-OFF-' + hhmm + '-' + String(Date.now()).slice(-4);
+            await guardarVentaOffline(newSale);
+            sales.unshift(newSale);
+            renderSalesHistory();
+            renderHistorialCombos();
+            renderTarjetasCombos();
+            mostrarAlerta(`✅ Venta guardada localmente.\n${combo.nombre} — $${precioFmt}`, 'success');
+        } else {
+            const numero  = await generarNumeroTicket();
+            newSale.id    = 'COMBO-' + numero;
+            const guardada = await saveSale(newSale);
+            newSale.supabaseId = guardada.id;
+            // Actualizar stock del combo en Supabase
+            if (!String(combo.id).startsWith('OFFLINE_COMBO_')) {
+                await supabaseClient.from('combos')
+                    .update({ stock: combo.stock })
+                    .eq('id', combo.id);
+            }
+            sales.unshift(newSale);
+            await loadInventory();
+            renderSalesHistory();
+            renderHistorialCombos();
+            renderTarjetasCombos();
+            if (await mostrarConfirm('¿Desea imprimir el ticket de esta venta?', 'info')) {
+                imprimirFacturaTicket(newSale);
+            }
+            mostrarAlerta(`✅ ¡Combo vendido!\nTicket #${newSale.id} — $${precioFmt}`, 'success');
+        }
+    } catch(e) {
+        console.error('Error al vender combo:', e);
+        mostrarAlerta('❌ Error al registrar la venta.\n' + (e.message || 'Intenta de nuevo.'), 'error');
+    }
+}
+
+// ──────────────────────────────────────────────────────
+// TICKET COMBOS
+// ──────────────────────────────────────────────────────
+function crearDOMTicketCombo(sale, esDeHoy) {
+    const ticketDiv = document.createElement('div');
+    ticketDiv.className = 'venta-ticket venta-ticket-combo';
+    ticketDiv.dataset.tipo = 'combo';
+
+    let itemsHtml = '<ul class="ticket-items-list">';
+    if (sale.items && sale.items.length > 0) {
+        sale.items.forEach(item => {
+            const sub = Number(item.subtotal).toLocaleString('es-CO');
+            itemsHtml += `<li class="ticket-item-row">
+                <span class="ticket-item-name">${item.qty}x ${item.name}</span>
+                <span class="ticket-item-sub">$${sub}</span>
+            </li>`;
+        });
+    } else {
+        itemsHtml += '<li>Sin detalle de productos.</li>';
+    }
+    itemsHtml += '</ul>';
+
+    const esOffline   = String(sale.id).includes('OFF-');
+    const badgeOffline = esOffline
+        ? '<span class="ticket-badge ticket-badge-offline">⚡ Local</span>' : '';
+    const botonEliminarHtml = esDeHoy
+        ? `<button class="btn-eliminar-ticket" onclick="eliminarTicket(${sale.globalId}); event.stopPropagation();">✖ Eliminar</button>`
+        : '';
+    const totalFmt = Number(sale.total).toLocaleString('es-CO');
+    const horaStr  = sale.date ? (sale.date.split(',')[1] || sale.date).trim() : '';
+
+    ticketDiv.innerHTML = `
+        <div class="venta-ticket-header">
+            <div class="ticket-header-left">
+                <div class="ticket-badges-row">
+                    <span class="ticket-badge ticket-badge-combo">🎁 Venta Combo</span>
+                    ${badgeOffline}
+                </div>
+                <strong class="ticket-numero">${sale.id}</strong>
+                <span class="fecha-venta">${horaStr}</span>
+            </div>
+            <div class="ticket-header-right">
+                <strong class="ticket-total">$${totalFmt}</strong>
+                ${botonEliminarHtml}
+                <span class="ticket-toggle-arrow">Ver detalles ▼</span>
+            </div>
+        </div>
+        <div class="venta-ticket-details">
+            ${itemsHtml}
+        </div>`;
+
+    ticketDiv.querySelector('.venta-ticket-header').addEventListener('click', () => {
+        const details = ticketDiv.querySelector('.venta-ticket-details');
+        const arrow   = ticketDiv.querySelector('.ticket-toggle-arrow');
+        const open    = details.style.display === 'block';
+        details.style.display = open ? 'none' : 'block';
+        if (arrow) arrow.textContent = open ? 'Ver detalles ▼' : 'Ocultar ▲';
+    });
+
+    return ticketDiv;
+}
+
+// ──────────────────────────────────────────────────────
+// HISTORIAL DE COMBOS VENDIDOS
+// ──────────────────────────────────────────────────────
+function renderHistorialCombos() {
+    const hoy = new Date().toLocaleDateString();
+    const ventasCombo = sales.filter(s => s.id && String(s.id).startsWith('COMBO-'));
+
+    // Sección "hoy"
+    const listHoy = document.getElementById('listaCombosHoy');
+    if (listHoy) {
+        const estabaOculto = listHoy.classList.contains('oculto');
+        listHoy.innerHTML = '';
+        const deHoy = ventasCombo.filter(s => {
+            const f = s.fechaLimpia || (s.date ? s.date.split(',')[0].trim() : '');
+            return f === hoy;
+        });
+        if (!deHoy.length) {
+            listHoy.innerHTML = '<p>Aún no hay combos vendidos hoy.</p>';
+        } else {
+            [...deHoy].reverse().forEach(s => listHoy.appendChild(crearDOMTicketCombo(s, true)));
+        }
+        if (estabaOculto) listHoy.classList.add('oculto');
+    }
+
+    // Sección acordeón días anteriores
+    const acordeon = document.getElementById('listaHistorialCombosAcordeon');
+    if (!acordeon) return;
+    acordeon.innerHTML = '';
+
+    const pasados = {};
+    ventasCombo.forEach(s => {
+        const f = s.fechaLimpia || (s.date ? s.date.split(',')[0].trim() : '');
+        if (f && f !== hoy) {
+            if (!pasados[f]) pasados[f] = [];
+            pasados[f].push(s);
+        }
+    });
+
+    const fechas = Object.keys(pasados).sort((a, b) => {
+        return new Date(b.split('/').reverse().join('-')) - new Date(a.split('/').reverse().join('-'));
+    });
+
+    if (!fechas.length) {
+        acordeon.innerHTML = '<p style="color:#666">No hay combos vendidos en días anteriores.</p>';
+        return;
+    }
+
+    fechas.forEach(fecha => {
+        const del = pasados[fecha];
+        const total = del.reduce((s, v) => s + v.total, 0);
+        const btn = document.createElement('div');
+        btn.className = 'acordeon-fecha';
+        btn.innerHTML = `<span>📅 ${fecha} (${del.length} combos)</span> <strong>$${total.toLocaleString('es-CO')} ▼</strong>`;
+        const cont = document.createElement('div');
+        cont.className = 'acordeon-contenido';
+        cont.style.display = 'none';
+        [...del].reverse().forEach(s => cont.appendChild(crearDOMTicketCombo(s, false)));
+        btn.addEventListener('click', () => {
+            const open = cont.style.display === 'block';
+            cont.style.display = open ? 'none' : 'block';
+            btn.querySelector('strong').innerHTML = `$${total.toLocaleString('es-CO')} ${open ? '▼' : '▲'}`;
+        });
+        acordeon.appendChild(btn);
+        acordeon.appendChild(cont);
     });
 }
 
