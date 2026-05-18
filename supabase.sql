@@ -123,6 +123,11 @@ DO $$ BEGIN
     ALTER TABLE combo_productos ADD COLUMN IF NOT EXISTS cantidad INT NOT NULL DEFAULT 1 CHECK (cantidad >= 1);
 EXCEPTION WHEN undefined_table THEN NULL; END $$;
 
+-- Migrar combos existentes: agregar stock si no existe
+DO $$ BEGIN
+    ALTER TABLE combos ADD COLUMN IF NOT EXISTS stock INT NOT NULL DEFAULT 0 CHECK (stock >= 0);
+EXCEPTION WHEN undefined_table THEN NULL; END $$;
+
 
 -- ================================================================
 -- PASO 1B: AJUSTAR CONSTRAINTS (sin tocar filas de datos)
@@ -309,6 +314,7 @@ CREATE TABLE IF NOT EXISTS combos (
     descripcion TEXT,
     precio      NUMERIC(12,2)   NOT NULL CHECK (precio >= 0),
     precio_suma NUMERIC(12,2),
+    stock       INT             NOT NULL DEFAULT 0 CHECK (stock >= 0),
     user_id     UUID            REFERENCES auth.users(id) ON DELETE CASCADE,
     created_at  TIMESTAMPTZ     NOT NULL DEFAULT NOW()
 );
