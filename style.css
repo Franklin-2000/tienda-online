@@ -4696,6 +4696,12 @@ input[type="number"] {
     border: 1px solid rgba(46,125,50,0.4);
 }
 
+.ticket-badge-online-combo {
+    background: rgba(12, 86, 108, 0.12);
+    color: #0c566c;
+    border: 1px solid rgba(12,86,108,0.35);
+}
+
 /* ── Ticket COMBO — borde izquierdo verde ── */
 .venta-ticket-combo {
     border-left: 4px solid #388e3c !important;
