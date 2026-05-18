@@ -3651,6 +3651,12 @@ async function handleGuardarCombo() {
 
     if (!nombre) { mostrarAlerta('⚠️ El combo debe tener un nombre.', 'warn'); return; }
     if (!productosEnComboActual.length) { mostrarAlerta('⚠️ Agrega al menos un producto al combo.', 'warn'); return; }
+    const conCantidadCero = productosEnComboActual.filter(p => !(p.cantidad >= 1));
+    if (conCantidadCero.length) {
+        const lista = conCantidadCero.map(p => `• "${p.nombre}"`).join('\n');
+        mostrarAlerta(`⚠️ La cantidad debe ser mayor a cero en:\n${lista}`, 'warn');
+        return;
+    }
 
     const precioSuma = productosEnComboActual.reduce((s,p) => s + (p.precio||0) * (p.cantidad||1), 0);
     const precio = precioInput > 0 ? precioInput : precioSuma;
