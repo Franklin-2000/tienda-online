@@ -3509,14 +3509,16 @@ function renderCombos() {
 
 function agregarProductoAlCombo(prod) {
     if (productosEnComboActual.find(p => p.id === prod.id)) {
-        // Si ya existe, simplemente mostrar un aviso sutil
         mostrarAlerta(`"${prod.nombre}" ya está en el combo. Puedes ajustar la cantidad en la lista.`, 'info');
         return;
     }
-    // Agregar con cantidad 1 por defecto
     productosEnComboActual.push({ ...prod, cantidad: 1 });
     actualizarChipsCombo();
     actualizarValorSuma();
+    // Enfocar el input de cantidad del último chip y limpiarlo para que el usuario ingrese directamente
+    const inputs = document.querySelectorAll('.combo-chip-qty-input');
+    const ultimo = inputs[inputs.length - 1];
+    if (ultimo) { ultimo.value = ''; ultimo.focus(); }
 }
 
 function actualizarChipsCombo() {
@@ -3568,12 +3570,19 @@ function actualizarChipsCombo() {
             }
             actualizarValorSuma();
         });
-        input.addEventListener('keydown', e => {
+        input.addEventListener('keydown', async e => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                // Confirmar cantidad (dispara blur para normalizar)
-                input.blur();
-                // Limpiar búsqueda y enfocar para agregar otro producto
+                // Normalizar cantidad antes de salir
+                const i     = parseInt(input.dataset.idx);
+                const val   = parseInt(input.value);
+                const final = (isNaN(val) || val < 1) ? 1 : val;
+                input.value = final;
+                productosEnComboActual[i].cantidad = final;
+                actualizarValorSuma();
+                // Alerta pequeña de confirmación
+                await mostrarAlerta('✅ Producto agregado al combo', 'success');
+                // Al cerrar la alerta → limpiar buscador y enfocar para nuevo producto
                 const buscar = document.getElementById('inputBuscarProductoCombo');
                 const lista  = document.getElementById('combo-autocomplete-list');
                 if (buscar) { buscar.value = ''; buscar.focus(); }
