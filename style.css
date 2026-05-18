@@ -3899,6 +3899,9 @@ input[type="number"] {
 #pantalla-combos .combo-card-nombre {
     color: #111;
     text-shadow: none;
+    font-size: 1.18em;
+    font-weight: 900;
+    letter-spacing: 0.01em;
 }
 
 #pantalla-combos .combo-card-desc {
@@ -3906,23 +3909,23 @@ input[type="number"] {
 }
 
 #pantalla-combos .combo-card-precio {
-    color: #1a3e72;
+    color: #000;
     text-shadow: none;
     font-weight: 900;
     animation: comboPrecioPulse 2.4s ease-in-out infinite;
 }
 
 @keyframes comboPrecioPulse {
-    0%, 100% { transform: scale(1); color: #1a3e72; }
-    50% { transform: scale(1.07); color: #0057b3; }
+    0%, 100% { transform: scale(1); color: #000; }
+    50% { transform: scale(1.07); color: #222; }
 }
 
 #pantalla-combos .combo-card-precio-orig {
-    color: #fff;
-    background: rgba(0,0,0,0.18);
+    color: #333;
+    background: rgba(0,0,0,0.08);
     border-radius: 20px;
     padding: 2px 10px;
-    text-decoration: none;
+    text-decoration: underline;
     font-weight: 700;
     font-size: 0.78em;
 }
@@ -3950,7 +3953,7 @@ input[type="number"] {
 
 #pantalla-combos .combo-mini-nombre {
     color: #111;
-    font-size: 0.8em;
+    font-size: 0.88em;
     font-weight: 700;
 }
 #pantalla-combos .combo-mini-qty {
@@ -3981,18 +3984,20 @@ input[type="number"] {
 .btn-editar-combo {
     padding: 6px 14px;
     border-radius: 8px;
-    border: 1px solid rgba(0,150,180,0.5);
-    background: rgba(0,180,210,0.12);
-    color: #00b4d8;
-    font-size: 0.78em;
-    font-weight: 700;
+    border: 2px solid #1565c0;
+    background: #1976d2;
+    color: #fff;
+    font-size: 0.82em;
+    font-weight: 800;
     cursor: pointer;
     transition: all 0.15s;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 .btn-editar-combo:hover {
-    background: rgba(0,180,210,0.28);
-    border-color: #00b4d8;
+    background: #1251a3;
+    border-color: #0d47a1;
     color: #fff;
+    box-shadow: 0 3px 10px rgba(21,101,192,0.45);
 }
 
 #pantalla-combos .combo-valor-auto {
@@ -4392,6 +4397,20 @@ input[type="number"] {
   text-align: center;
   font-size: 0.75em;
   color: rgba(180,140,255,0.5);
+}
+
+.combo-card-stock {
+  text-align: center;
+  font-size: 0.78em;
+  font-weight: 700;
+  color: #1b5e20;
+  background: #c8e6c9;
+  border-radius: 20px;
+  padding: 3px 12px;
+}
+.combo-card-stock--agotado {
+  color: #b71c1c;
+  background: #ffcdd2;
 }
 
 .combo-card-acciones {

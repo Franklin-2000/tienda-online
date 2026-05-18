@@ -3313,7 +3313,7 @@ async function loadCombos() {
 async function saveCombo(combo) {
     const { data: comboInsertado, error: err1 } = await supabaseClient
         .from('combos')
-        .insert([{ nombre: combo.nombre, descripcion: combo.descripcion, precio: combo.precio, precio_suma: combo.precioSuma, user_id: currentUserId }])
+        .insert([{ nombre: combo.nombre, descripcion: combo.descripcion, precio: combo.precio, precio_suma: combo.precioSuma, stock: combo.stock ?? 0, user_id: currentUserId }])
         .select().single();
     if (err1) throw err1;
 
@@ -3339,7 +3339,7 @@ async function deleteCombo(comboId) {
 async function updateCombo(comboId, combo) {
     const { error: err1 } = await supabaseClient
         .from('combos')
-        .update({ nombre: combo.nombre, descripcion: combo.descripcion, precio: combo.precio, precio_suma: combo.precioSuma })
+        .update({ nombre: combo.nombre, descripcion: combo.descripcion, precio: combo.precio, precio_suma: combo.precioSuma, stock: combo.stock ?? 0 })
         .eq('id', comboId);
     if (err1) throw err1;
 
@@ -3368,6 +3368,8 @@ function editarCombo(combo) {
     if (inputNombre) inputNombre.value = combo.nombre || '';
     if (inputDesc)   inputDesc.value   = combo.descripcion || '';
     if (inputPrecio) inputPrecio.value = combo.precio || '';
+    const inputStock = document.getElementById('inputComboStock');
+    if (inputStock)  inputStock.value  = combo.stock != null ? combo.stock : '';
 
     productosEnComboActual = (combo.combo_productos || []).map(p => ({
         id:       p.product_id || p.id,
@@ -3457,6 +3459,7 @@ function renderCombos() {
     const inputNombre = document.getElementById('inputComboNombre');
     const inputDesc   = document.getElementById('inputComboDescripcion');
     const inputPrecio = document.getElementById('inputComboPrecio');
+    const inputStock  = document.getElementById('inputComboStock');
     if (inputNombre && !inputNombre._enterEv) {
         inputNombre._enterEv = true;
         inputNombre.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inputDesc?.focus(); } });
@@ -3467,7 +3470,11 @@ function renderCombos() {
     }
     if (inputPrecio && !inputPrecio._enterEv) {
         inputPrecio._enterEv = true;
-        inputPrecio.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inputBuscar?.focus(); } });
+        inputPrecio.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inputStock?.focus(); } });
+    }
+    if (inputStock && !inputStock._enterEv) {
+        inputStock._enterEv = true;
+        inputStock.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inputBuscar?.focus(); } });
     }
 
     loadCombos().then(() => renderTarjetasCombos());
@@ -3562,7 +3569,7 @@ function actualizarValorSuma() {
 function limpiarFormCombo() {
     editandoComboId = null;
     productosEnComboActual = [];
-    ['inputComboNombre','inputComboDescripcion','inputComboPrecio'].forEach(id => {
+    ['inputComboNombre','inputComboDescripcion','inputComboPrecio','inputComboStock'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
     });
     actualizarChipsCombo();
@@ -3575,6 +3582,7 @@ async function handleGuardarCombo() {
     const nombre = (document.getElementById('inputComboNombre')?.value || '').trim();
     const descripcion = (document.getElementById('inputComboDescripcion')?.value || '').trim();
     const precioInput = parseFloat(document.getElementById('inputComboPrecio')?.value || 0);
+    const stock = parseInt(document.getElementById('inputComboStock')?.value || 0) || 0;
 
     if (!nombre) { mostrarAlerta('⚠️ El combo debe tener un nombre.', 'warn'); return; }
     if (!productosEnComboActual.length) { mostrarAlerta('⚠️ Agrega al menos un producto al combo.', 'warn'); return; }
@@ -3587,13 +3595,13 @@ async function handleGuardarCombo() {
         try {
             await idbPut('productos_pending', {
                 tipo: 'nuevo_combo',
-                datos: { nombre, descripcion, precio, precioSuma, productos: productosEnComboActual },
+                datos: { nombre, descripcion, precio, precioSuma, stock, productos: productosEnComboActual },
                 timestamp: Date.now()
             });
             // Simularlo visualmente en memoria
             const comboLocal = {
                 id: 'OFFLINE_COMBO_' + Date.now(),
-                nombre, descripcion, precio, precio_suma: precioSuma,
+                nombre, descripcion, precio, precio_suma: precioSuma, stock,
                 combo_productos: productosEnComboActual.map(p => ({
                     nombre: p.nombre, precio: p.precio, imagen: p.imagen, cantidad: p.cantidad || 1
                 }))
@@ -3617,7 +3625,7 @@ async function handleGuardarCombo() {
             return;
         }
         try {
-            await updateCombo(editandoComboId, { nombre, descripcion, precio, precioSuma, productos: productosEnComboActual });
+            await updateCombo(editandoComboId, { nombre, descripcion, precio, precioSuma, stock, productos: productosEnComboActual });
             mostrarAlerta('✅ Combo actualizado correctamente.', 'success');
             limpiarFormCombo();
             await loadCombos();
@@ -3630,7 +3638,7 @@ async function handleGuardarCombo() {
     }
 
     try {
-        await saveCombo({ nombre, descripcion, precio, precioSuma, productos: productosEnComboActual });
+        await saveCombo({ nombre, descripcion, precio, precioSuma, stock, productos: productosEnComboActual });
         mostrarAlerta('✅ Combo guardado correctamente.', 'success');
         limpiarFormCombo();
         await loadCombos();
@@ -3660,6 +3668,9 @@ function renderTarjetasCombos() {
             </div>`).join('');
         const precioOrig = combo.precio_suma && combo.precio_suma !== combo.precio
             ? `<div class="combo-card-precio-orig">Valor individual: $${Math.round(combo.precio_suma).toLocaleString('es-CO')}</div>` : '';
+        const stockBadge = combo.stock != null && combo.stock > 0
+            ? `<div class="combo-card-stock">📦 ${combo.stock} disponible${combo.stock !== 1 ? 's' : ''}</div>`
+            : combo.stock === 0 ? `<div class="combo-card-stock combo-card-stock--agotado">❌ Agotado</div>` : '';
         return `
         <div class="tarjeta-combo tarjeta-producto">
             <div class="combo-card-nombre">${combo.nombre}</div>
@@ -3667,6 +3678,7 @@ function renderTarjetasCombos() {
             <div class="combo-card-productos">${miniImgs}</div>
             <div class="combo-card-precio">$${Math.round(combo.precio).toLocaleString('es-CO')}</div>
             ${precioOrig}
+            ${stockBadge}
             <div class="combo-card-acciones">
                 <button class="btn-editar-combo" data-comboidx="${combos.indexOf(combo)}">✏️ Editar</button>
                 <button class="btn-borrar-producto btn-borrar-combo" data-comboid="${combo.id}">🗑️ Eliminar</button>
