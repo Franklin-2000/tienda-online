@@ -1,6 +1,38 @@
 /* =============================================
+   VARIABLES GLOBALES — PALETA Y TIPOGRAFÍA
+   ============================================= */
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --color-primary:       #0c566c;
+  --color-primary-hover: #0a4a5a;
+  --color-primary-light: rgba(12, 86, 108, 0.10);
+  --color-accent:        #7ae4d6;
+  --color-danger:        #dc3545;
+  --color-danger-hover:  #851924;
+  --color-success:       #28a745;
+  --color-success-hover: #1e7e34;
+  --color-neutral:       #6c757d;
+  --color-neutral-hover: #5a6268;
+  --color-surface:       #f9fafb;
+  --color-border:        #e0e0e0;
+  --color-text:          #1a1a2e;
+  --color-text-muted:    #6b7280;
+
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.12);
+  --shadow-lg:  0 8px 24px rgba(0,0,0,0.16);
+
+  --transition: 0.2s ease;
+}
+
+/* =============================================
    SISTEMA DE PANTALLAS — UNA SOLA A LA VEZ
-   Cada div de pantalla ocupa exactamente el 
+   Cada div de pantalla ocupa exactamente el
    viewport y hace su propio scroll interno.
    ============================================= */
 
@@ -10,7 +42,7 @@ html {
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: var(--font-sans);
   text-align: center;
   margin: 0;
   padding: 0;
@@ -140,7 +172,7 @@ body {
 #pantalla-historial-combos.activa { display: block; }
 
 h1 {
-  font-size: 120px;
+  font-size: 40px;
   font-family:'Pacifico', cursive;
   font-weight: bold;
   font-style: italic;
@@ -332,8 +364,13 @@ h1 {
 }
 
 .sidebar-icon {
-  font-size: 1.5em;
+  font-size: 1.4em;
   flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
 }
 
@@ -829,7 +866,7 @@ h1 {
 }
 
 #pantalla-INVENTARIO h1 {
-    font-size: 80px;
+    font-size: 38px;
     color: #fafcfd;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     margin-top: 20px;
@@ -876,8 +913,8 @@ h1 {
 }
 
 #pantalla-INVENTARIO .tarjeta-producto:hover {
-    transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 18px 35px rgba(0,0,0,0.8); 
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.5);
 }
 
 .tarjeta-producto img {
@@ -1015,21 +1052,21 @@ input[type="file"] {
 
 .tarjeta-producto {
     padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
     width: 220px;
     text-align: center;
-    border: 1px solid #eee;
+    border: 1px solid #e8e8e8;
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: transparent;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .tarjeta-producto:hover {
-    transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
 }
 
 .tarjeta-input-producto h2 {
@@ -1042,16 +1079,16 @@ input[type="file"] {
 }
 
 .tarjeta-input-producto {
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    background-color: #f9f9f9;
+    padding: 22px;
+    border-radius: 14px;
+    box-shadow: var(--shadow-md);
+    background-color: #f9fafb;
     width: fit-content;
     max-width: 250px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-border);
 }
 
 .tarjeta-input-producto label {
@@ -1062,20 +1099,23 @@ input[type="file"] {
 
 .tarjeta-input-producto input[type="text"],
 .tarjeta-input-producto input[type="number"] {
-    padding: 8px;
+    padding: 9px 11px;
     margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 1.5px solid #d0d5dd;
+    border-radius: 8px;
     width: 150px;
     box-sizing: border-box;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-family: var(--font-sans);
+    font-size: 0.92em;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: #fff;
 }
 
 .tarjeta-input-producto input[type="text"]:focus,
 .tarjeta-input-producto input[type="number"]:focus {
     outline: none;
-    border-color: #1b1b1b;
-    box-shadow: 0 0 8px rgba(87, 107, 109, 0.5);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(12, 86, 108, 0.12);
 }
 
 .btn-añadir {
@@ -1092,17 +1132,17 @@ input[type="file"] {
 }
 
 .btn-añadir:hover {
-    opacity: 0.9;
+    opacity: 0.92;
     background-color: #87fafa;
-    transform: translateY(-6px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    filter: brightness(1.1);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+    filter: brightness(1.06);
 }
 
 .btn-añadir:active {
-    transform: translateY(2px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    filter: brightness(0.95);
+    transform: translateY(1px) scale(0.99);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    filter: brightness(0.97);
 }
 
 .boton-volver {
@@ -1120,15 +1160,15 @@ input[type="file"] {
 
 .boton-volver:hover {
     background-color: #5a6268;
-    transform: translateY(-6px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    filter: brightness(1.1);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    filter: brightness(1.06);
 }
 
 .boton-volver:active {
-    transform: translateY(2px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    filter: brightness(0.95);
+    transform: translateY(1px) scale(0.99);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    filter: brightness(0.97);
 }
 
 .btn-seleccionar-imagen {
@@ -1147,15 +1187,15 @@ input[type="file"] {
 
 .btn-seleccionar-imagen:hover {
   background-color: #0056b3;
-  transform: translateY(-6px) scale(1.05);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  filter: brightness(1.1);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.18);
+  filter: brightness(1.06);
 }
 
 .btn-seleccionar-imagen:active {
-  transform: translateY(2px) scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  filter: brightness(0.95);
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  filter: brightness(0.97);
 }
 
 .btn-limpiar-formulario {
@@ -1172,15 +1212,15 @@ input[type="file"] {
 
 .btn-limpiar-formulario:hover {
   background-color: #5a6268;
-  transform: translateY(-6px) scale(1.05);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  filter: brightness(1.1);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.18);
+  filter: brightness(1.06);
 }
 
 .btn-limpiar-formulario:active {
-  transform: translateY(2px) scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  filter: brightness(0.95);
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  filter: brightness(0.97);
 }
 
 .btn-borrar-producto {
@@ -1199,15 +1239,15 @@ input[type="file"] {
 
 .btn-borrar-producto:hover {
   background-color: #851924;
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  filter: brightness(1.1);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
+  filter: brightness(1.05);
 }
 
 .btn-borrar-producto:active {
-  transform: translateY(1px) scale(1.02);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-  filter: brightness(0.95);
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  filter: brightness(0.97);
 }
 
 .btn-editar-producto {
@@ -1226,15 +1266,15 @@ input[type="file"] {
 
 .btn-editar-producto:hover {
   background-color: #294461;
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  filter: brightness(1.1);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
+  filter: brightness(1.05);
 }
 
 .btn-editar-producto:active {
-  transform: translateY(1px) scale(1.02);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-  filter: brightness(0.95);
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  filter: brightness(0.97);
 }
 
 .inventory-header {
@@ -1288,18 +1328,20 @@ input[type="file"] {
 }
 
 #inputBuscarProducto {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 9px 11px;
+    border: 1.5px solid #d0d5dd;
+    border-radius: 8px;
     width: 180px;
     box-sizing: border-box;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-family: var(--font-sans);
+    font-size: 0.92em;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 #inputBuscarProducto:focus {
     outline: none;
-    border-color: #28a745;
-    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(12, 86, 108, 0.12);
 }
 
 .btn-buscar {
@@ -1316,15 +1358,15 @@ input[type="file"] {
 
 .btn-buscar:hover {
     background-color: #256978;
-    transform: translateY(-6px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    filter: brightness(1.1);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.18);
+    filter: brightness(1.06);
 }
 
 .btn-buscar:active {
-    transform: translateY(2px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    filter: brightness(0.95);
+    transform: translateY(1px) scale(0.99);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    filter: brightness(0.97);
 }
 
 .btn-limpiar-busqueda {
@@ -1341,15 +1383,15 @@ input[type="file"] {
 
 .btn-limpiar-busqueda:hover {
     background-color: #cc5c5a;
-    transform: translateY(-6px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    filter: brightness(1.1);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.18);
+    filter: brightness(1.06);
 }
 
 .btn-limpiar-busqueda:active {
-    transform: translateY(2px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    filter: brightness(0.95);
+    transform: translateY(1px) scale(0.99);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    filter: brightness(0.97);
 }
 
 .formulario-producto-nuevo {
@@ -1427,15 +1469,15 @@ input[type="file"] {
 
 .btn-exportar:hover {
     background-color: #22787e;
-    transform: translateY(-6px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    filter: brightness(1.1);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.18);
+    filter: brightness(1.06);
 }
 
 .btn-exportar:active {
-    transform: translateY(2px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    filter: brightness(0.95);
+    transform: translateY(1px) scale(0.99);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    filter: brightness(0.97);
 }
 
 /* --- ESTILOS PARA LA PANTALLA DE LOGIN --- */
@@ -1691,7 +1733,7 @@ input[type="file"] {
 }
 
 #pantalla-ventas-fisicas h1 {
-    font-size: 80px;
+    font-size: 38px;
     color: #ffffff;
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(12, 86, 108, 0.4);
     margin-top: 20px;
@@ -1765,12 +1807,22 @@ input[type="file"] {
 .select-venta,
 #inputCantidadVenta {
     width: 100%;
-    padding: 12px; 
-    border: 1px solid #ccc;
+    padding: 12px 14px;
+    border: 1.5px solid #d0d5dd;
     border-radius: 8px;
     box-sizing: border-box;
-    font-size: 16px; 
+    font-size: 16px;
+    font-family: var(--font-sans);
     margin-bottom: 15px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-buscar-producto-venta:focus,
+.select-venta:focus,
+#inputCantidadVenta:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(12, 86, 108, 0.12);
 }
 
 .btn-agregar-al-carrito {
@@ -1807,7 +1859,7 @@ input[type="file"] {
 
 #pantalla-ventas-online h1,
 #pantalla-historial-online h1 {
-    font-size: 80px;
+    font-size: 38px;
     color: #fefefe;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     margin-top: 20px;
@@ -2805,7 +2857,7 @@ input[type="number"] {
 }
 
 #pantalla-historial-fisicas h1 {
-    font-size: 80px;
+    font-size: 38px;
     color: #ffffff;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     margin-top: 20px;
@@ -2875,7 +2927,7 @@ input[type="number"] {
 @media (max-width: 1200px) {
 
     /* Títulos principales */
-    h1 { font-size: 60px; }
+    h1 { font-size: 34px; }
 
     #pantalla-inicio .title,
     #pantalla-menu-ventas .title { font-size: 60px; }
@@ -2884,7 +2936,7 @@ input[type="number"] {
     #pantalla-ventas-fisicas h1,
     #pantalla-ventas-online h1,
     #pantalla-historial-online h1,
-    #pantalla-historial-fisicas h1 { font-size: 55px; }
+    #pantalla-historial-fisicas h1 { font-size: 32px; }
 
     #pantalla-INVENTARIO #inventory-products-title,
     #pantalla-historial-fisicas h2,
@@ -2910,7 +2962,7 @@ input[type="number"] {
 @media (max-width: 900px) {
 
     /* Títulos */
-    h1 { font-size: 44px; }
+    h1 { font-size: 30px; }
 
     #pantalla-inicio .title,
     #pantalla-menu-ventas .title { font-size: 44px; margin-top: 1.5em; }
@@ -2919,7 +2971,7 @@ input[type="number"] {
     #pantalla-ventas-fisicas h1,
     #pantalla-ventas-online h1,
     #pantalla-historial-online h1,
-    #pantalla-historial-fisicas h1 { font-size: 40px; }
+    #pantalla-historial-fisicas h1 { font-size: 28px; }
 
     #pantalla-INVENTARIO #inventory-products-title,
     #pantalla-historial-fisicas h2,
@@ -2992,7 +3044,7 @@ input[type="number"] {
 @media (max-width: 600px) {
 
     /* Títulos */
-    h1 { font-size: 32px; }
+    h1 { font-size: 24px; }
 
     #pantalla-inicio .title,
     #pantalla-menu-ventas .title { font-size: 32px; margin-top: 1em; }
@@ -3001,7 +3053,7 @@ input[type="number"] {
     #pantalla-ventas-fisicas h1,
     #pantalla-ventas-online h1,
     #pantalla-historial-online h1,
-    #pantalla-historial-fisicas h1 { font-size: 28px; margin-top: 15px; margin-bottom: 15px; }
+    #pantalla-historial-fisicas h1 { font-size: 22px; margin-top: 12px; margin-bottom: 12px; }
 
     #pantalla-INVENTARIO #inventory-products-title,
     #pantalla-historial-fisicas h2,
@@ -3348,7 +3400,6 @@ input[type="number"] {
 #pantalla-estadisticas {
   background: #080f1a;
   padding: 0;
-  font-family: 'Segoe UI', system-ui, sans-serif;
   color: #e2eaf5;
 }
 
@@ -3356,7 +3407,6 @@ input[type="number"] {
 #pantalla-estadisticas-online {
   background: #080f1a;
   padding: 0;
-  font-family: 'Segoe UI', system-ui, sans-serif;
   color: #e2eaf5;
 }
 
@@ -3412,7 +3462,7 @@ input[type="number"] {
   width: 100% !important;
 }
 .stats-header-centrado .stats-title {
-  font-size: 56px !important;
+  font-size: 36px !important;
   text-align: center !important;
 }
 .stats-header-centrado .stats-subtitle {
@@ -3431,7 +3481,7 @@ input[type="number"] {
 
 .stats-title {
   font-family: 'Pacifico', cursive;
-  font-size: 44px !important;
+  font-size: 30px !important;
   color: #7ae4d6 !important;
   text-shadow: 0 0 30px rgba(122,228,214,0.3) !important;
   margin: 0 !important;
@@ -3832,7 +3882,7 @@ input[type="number"] {
 }
 
 #pantalla-combos h1 {
-    font-size: 80px;
+    font-size: 38px;
     color: #fafcfd;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     margin-top: 20px;
