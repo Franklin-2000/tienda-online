@@ -2439,9 +2439,94 @@ async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
     }
 
     if (nuevoEstado === 'pago_confirmado') {
+        // Detectar combos en el pedido y procesarlos (descuento inventario + ticket COMBO-ONLINE)
+        const pedidoCacheado = pedidosAdmin.find(p => p.id === pedidoId);
+        const itemsPedido    = pedidoCacheado?.items_pedido || [];
+        const comboItems     = itemsPedido.filter(item =>
+            item.nombre && String(item.nombre).startsWith('🎁 Combo:')
+        );
+        if (comboItems.length > 0) {
+            await procesarCombosOnlineConfirmados(comboItems);
+        }
+
         await loadInventory();
         await loadSales();
+        renderHistorialCombos();
         await mostrarAlerta(`✅ Pago del pedido #${pedidoId} confirmado.\nInventario descontado e historial actualizado.`, 'success');
+    }
+}
+
+// ---------------------------------------------------------------
+// Procesar combos al confirmar pago de un pedido online
+// Descuenta productos del inventario y crea ticket COMBO-ONLINE
+// ---------------------------------------------------------------
+async function procesarCombosOnlineConfirmados(comboItems) {
+    // Asegurarse de tener los combos cargados
+    if (!combos.length) await loadCombos();
+
+    for (const item of comboItems) {
+        const nombreCombo = String(item.nombre).replace('🎁 Combo: ', '').trim();
+        const qty         = Number(item.cantidad) || 1;
+
+        // Buscar el combo en el array local
+        const combo = combos.find(c => c.nombre === nombreCombo);
+        if (!combo) {
+            console.warn('[ComboOnline] Combo no encontrado localmente:', nombreCombo);
+            continue;
+        }
+
+        const prods = combo.combo_productos || [];
+
+        // ── Descontar inventario de cada producto del combo ──────────
+        for (const cp of prods) {
+            const prodId           = cp.product_id || cp.id;
+            if (!prodId) continue;
+            const cantidadADescontar = (Number(cp.cantidad) || 1) * qty;
+
+            const prodLocal   = inventory.find(p => String(p.id) === String(prodId));
+            const cantActual  = prodLocal ? (prodLocal.cantidad || 0) : 0;
+            const nuevaCant   = Math.max(0, cantActual - cantidadADescontar);
+
+            await supabaseClient
+                .from('productos')
+                .update({ cantidad: nuevaCant })
+                .eq('id', prodId)
+                .eq('user_id', currentUserId);
+
+            if (prodLocal) prodLocal.cantidad = nuevaCant;
+        }
+
+        // ── Crear ticket COMBO-ONLINE en ventas ──────────────────────
+        const ahora      = new Date();
+        const fechaStr   = ahora.toLocaleString();
+        const soloFecha  = ahora.toLocaleDateString();
+        const numero     = await generarNumeroTicket();
+        const ticketId   = 'COMBO-ONLINE-' + numero;
+
+        const itemsVenta = prods.map(cp => ({
+            productId: cp.product_id || cp.id || '',
+            name:      cp.nombre || 'Producto',
+            qty:       (Number(cp.cantidad) || 1) * qty,
+            price:     Number(cp.precio) || 0,
+            subtotal:  (Number(cp.precio) || 0) * (Number(cp.cantidad) || 1) * qty
+        }));
+
+        const newSale = {
+            globalId:    Date.now() + Math.random(),
+            id:          ticketId,
+            total:       Number(combo.precio || 0) * qty,
+            date:        fechaStr,
+            fechaLimpia: soloFecha,
+            items:       itemsVenta
+        };
+
+        try {
+            const guardada    = await saveSale(newSale);
+            newSale.supabaseId = guardada.id;
+            sales.unshift(newSale);
+        } catch (e) {
+            console.error('[ComboOnline] Error guardando ticket combo online:', e);
+        }
     }
 }
 
@@ -3943,8 +4028,11 @@ function crearDOMTicketCombo(sale, esDeHoy) {
     itemsHtml += '</ul>';
 
     const esOffline   = String(sale.id).includes('OFF-');
+    const esOnline    = String(sale.id).includes('ONLINE-');
     const badgeOffline = esOffline
         ? '<span class="ticket-badge ticket-badge-offline">⚡ Local</span>' : '';
+    const badgeOnline  = esOnline
+        ? '<span class="ticket-badge ticket-badge-online-combo">🌐 Online</span>' : '';
     const botonEliminarHtml = esDeHoy
         ? `<button class="btn-eliminar-ticket" onclick="eliminarTicket(${sale.globalId}); event.stopPropagation();">✖ Eliminar</button>`
         : '';
@@ -3957,6 +4045,7 @@ function crearDOMTicketCombo(sale, esDeHoy) {
                 <div class="ticket-badges-row">
                     <span class="ticket-badge ticket-badge-combo">🎁 Venta Combo</span>
                     ${badgeOffline}
+                    ${badgeOnline}
                 </div>
                 <strong class="ticket-numero">${sale.id}</strong>
                 <span class="fecha-venta">${horaStr}</span>
