@@ -707,6 +707,12 @@ function showScreen(screenId, pushToHistory = true) {
             renderCombos();
             break;
         }
+        case 'pantalla-historial-combos': {
+            var phc = document.querySelector('#pantalla-historial-combos');
+            show(phc);
+            renderHistorialCombos();
+            break;
+        }
     }
 
     if (pushToHistory) {
@@ -3701,9 +3707,11 @@ function renderTarjetasCombos() {
             ${precioOrig}
             ${stockBadge}
             <div class="combo-card-acciones">
-                <button class="btn-editar-combo" data-comboidx="${combos.indexOf(combo)}">✏️ Editar</button>
-                <button class="btn-vender-combo" data-comboidx="${combos.indexOf(combo)}">💚 Vender</button>
-                <button class="btn-borrar-producto btn-borrar-combo" data-comboid="${combo.id}">🗑️ Eliminar</button>
+                <div class="combo-card-acciones-fila">
+                    <button class="btn-editar-combo" data-comboidx="${combos.indexOf(combo)}">✏️ Editar</button>
+                    <button class="btn-borrar-producto btn-borrar-combo" data-comboid="${combo.id}">🗑️ Eliminar</button>
+                </div>
+                <button class="btn-vender-combo" data-comboidx="${combos.indexOf(combo)}">💵 Vender Combo</button>
             </div>
         </div>`;
     }).join('');
