@@ -3493,15 +3493,15 @@ function renderCombos() {
     }
     if (inputDesc && !inputDesc._enterEv) {
         inputDesc._enterEv = true;
-        inputDesc.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inputPrecio?.focus(); } });
-    }
-    if (inputPrecio && !inputPrecio._enterEv) {
-        inputPrecio._enterEv = true;
-        inputPrecio.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inputStock?.focus(); } });
+        inputDesc.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inputStock?.focus(); } });
     }
     if (inputStock && !inputStock._enterEv) {
         inputStock._enterEv = true;
         inputStock.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inputBuscar?.focus(); } });
+    }
+    if (inputPrecio && !inputPrecio._enterEv) {
+        inputPrecio._enterEv = true;
+        inputPrecio.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); handleGuardarCombo(); } });
     }
 
     loadCombos().then(() => renderTarjetasCombos());
@@ -3571,7 +3571,13 @@ function actualizarChipsCombo() {
         input.addEventListener('keydown', e => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                document.getElementById('inputBuscarProductoCombo')?.focus();
+                // Confirmar cantidad (dispara blur para normalizar)
+                input.blur();
+                // Limpiar búsqueda y enfocar para agregar otro producto
+                const buscar = document.getElementById('inputBuscarProductoCombo');
+                const lista  = document.getElementById('combo-autocomplete-list');
+                if (buscar) { buscar.value = ''; buscar.focus(); }
+                if (lista)  { lista.innerHTML = ''; lista.classList.remove('visible'); }
             }
         });
     });
