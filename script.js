@@ -2441,8 +2441,66 @@ async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
     if (nuevoEstado === 'pago_confirmado') {
         await loadInventory();
         await loadSales();
+        await crearTicketsComboOnline(pedidoId);
         renderHistorialCombos();
         await mostrarAlerta(`✅ Pago del pedido #${pedidoId} confirmado.\nInventario descontado e historial actualizado.`, 'success');
+    }
+}
+
+// ---------------------------------------------------------------
+// Crear tickets COMBO-ONLINE si el trigger SQL no los generó
+// ---------------------------------------------------------------
+async function crearTicketsComboOnline(pedidoId) {
+    const { data: itemsPedido, error } = await supabaseClient
+        .from('items_pedido')
+        .select('id, nombre, cantidad, precio, combo_id')
+        .eq('pedido_id', pedidoId);
+
+    if (error || !itemsPedido) return;
+
+    const comboItems = itemsPedido.filter(i =>
+        i.combo_id || (i.nombre && String(i.nombre).startsWith('🎁 Combo:'))
+    );
+    if (comboItems.length === 0) return;
+
+    if (!combos.length) await loadCombos();
+
+    for (const item of comboItems) {
+        const ticketId = `COMBO-ONLINE-${pedidoId}-${item.id}`;
+        // Si el trigger SQL ya lo creó estará en sales tras loadSales() → no duplicar
+        if (sales.some(s => s.id === ticketId)) continue;
+
+        const combo     = combos.find(c =>
+            c.id === item.combo_id ||
+            c.nombre === String(item.nombre).replace('🎁 Combo: ', '').trim()
+        );
+        const comboProd = combo?.combo_productos || [];
+
+        const ahora      = new Date();
+        const itemsVenta = comboProd.map(cp => ({
+            productId: cp.product_id || '',
+            name:      cp.nombre     || 'Producto',
+            qty:       (Number(cp.cantidad) || 1) * item.cantidad,
+            price:     Number(cp.precio)   || 0,
+            subtotal:  (Number(cp.precio) || 0) * (Number(cp.cantidad) || 1) * item.cantidad
+        }));
+
+        const newSale = {
+            globalId:    Date.now() + Math.floor(Math.random() * 1000),
+            id:          ticketId,
+            total:       Number(item.precio) * item.cantidad,
+            date:        ahora.toLocaleString(),
+            fechaLimpia: ahora.toLocaleDateString(),
+            items:       itemsVenta
+        };
+
+        try {
+            const guardada     = await saveSale(newSale);
+            newSale.supabaseId = guardada.id;
+            sales.unshift(newSale);
+        } catch (e) {
+            console.error('[ComboOnline] Error guardando ticket COMBO-ONLINE:', e);
+        }
     }
 }
 
