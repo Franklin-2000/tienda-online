@@ -3170,20 +3170,33 @@ function filtrarOnlinePorPeriodoAnterior(periodo, ventasOnline) {
 }
 
 function renderEstadisticasOnline(periodo) {
-    const todasOnline    = getVentasOnline();
-    const ventasFiltradas = filtrarOnlinePorPeriodo(periodo, todasOnline);
+    const todasOnline      = getVentasOnline();
+    const ventasFiltradas  = filtrarOnlinePorPeriodo(periodo, todasOnline);
     const ventasAnteriores = filtrarOnlinePorPeriodoAnterior(periodo, todasOnline);
+
+    // Tickets COMBO-ONLINE: sus items individuales contribuyen a stats de productos
+    const todasComboOnline = sales.filter(v => v.id && String(v.id).startsWith('COMBO-ONLINE-'));
+    const comboFiltradas   = filtrarOnlinePorPeriodo(periodo, todasComboOnline);
+
+    // Items fusionados: de ONLINE- excluir resúmenes "🎁 Combo:..." + todos los de COMBO-ONLINE
+    const itemsOnlineSinCombo = ventasFiltradas.flatMap(v =>
+        v.items.filter(i => !String(i.name || '').startsWith('🎁'))
+    );
+    const itemsComboOnline    = comboFiltradas.flatMap(v => v.items);
+    const todosItemsOnline    = [...itemsOnlineSinCombo, ...itemsComboOnline];
 
     const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
 
     // --- KPIs ---
+    // Ingresos y transacciones: solo ONLINE- (ya incluye totales de combos, sin duplicar)
     const totalVentas      = ventasFiltradas.reduce((s,v) => s + (v.total || 0), 0);
     const numTransacciones = ventasFiltradas.length;
-    const totalProductos   = ventasFiltradas.reduce((s,v) => s + v.items.reduce((a,i) => a + (i.qty||0), 0), 0);
+    // Productos: items reales (individuales del combo + productos sueltos online)
+    const totalProductos   = todosItemsOnline.reduce((a,i) => a + (i.qty||0), 0);
     const ticketPromedio   = numTransacciones > 0 ? totalVentas / numTransacciones : 0;
     const totalAnt  = ventasAnteriores.reduce((s,v) => s + (v.total || 0), 0);
     const transAnt  = ventasAnteriores.length;
-    const prodAnt   = ventasAnteriores.reduce((s,v) => s + v.items.reduce((a,i) => a + (i.qty||0), 0), 0);
+    const prodAnt   = ventasAnteriores.reduce((s,v) => s + v.items.filter(i => !String(i.name||'').startsWith('🎁')).reduce((a,i) => a + (i.qty||0), 0), 0);
     const ticketAnt = transAnt > 0 ? totalAnt / transAnt : 0;
 
     const el = id => document.getElementById(id);
@@ -3220,21 +3233,23 @@ function renderEstadisticasOnline(periodo) {
     setTrendOnline('kpio-trend-prod',   'kpio-compare-prod',   totalProductos,   prodAnt);
     setTrendOnline('kpio-trend-ticket', 'kpio-compare-ticket', ticketPromedio,   ticketAnt);
 
-    // --- Agrupar productos ---
+    // --- Agrupar productos (incluye items individuales de combos online) ---
     const prodMap = {}, prodIngresos = {};
-    ventasFiltradas.forEach(v => v.items.forEach(i => {
+    todosItemsOnline.forEach(i => {
+        if (!i.name) return;
         prodMap[i.name]      = (prodMap[i.name] || 0) + (i.qty || 0);
         prodIngresos[i.name] = (prodIngresos[i.name] || 0) + (i.subtotal || 0);
-    }));
+    });
     const topProductos = Object.entries(prodMap).sort((a,b) => b[1]-a[1]).slice(0, 8);
 
-    // --- Agrupar por categoría ---
+    // --- Agrupar por categoría (incluye productos de combos online) ---
     const catMap = {};
-    ventasFiltradas.forEach(v => v.items.forEach(i => {
-        const prod = inventory.find(p => p.id === i.productId);
+    todosItemsOnline.forEach(i => {
+        if (!i.name) return;
+        const prod = inventory.find(p => p.id === i.productId || String(p.id) === String(i.productId));
         const cat  = prod?.categoria || 'Sin categoría';
         catMap[cat] = (catMap[cat] || 0) + (i.subtotal || 0);
-    }));
+    });
 
     // --- Tendencia ---
     const tendenciaLabels = [], tendenciaData = [];
