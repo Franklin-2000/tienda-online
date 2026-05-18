@@ -3562,7 +3562,7 @@ function actualizarChipsCombo() {
                 const invProd = inventory.find(p => String(p.id) === String(prod.id));
                 const maxDisp = invProd ? (invProd.cantidad || 0) : Infinity;
                 if (val > maxDisp) {
-                    input.value = maxDisp > 0 ? maxDisp : 1;
+                    input.value = '';
                     mostrarAlerta(`⚠️ Supera la cantidad existente en el inventario.\n"${prod.nombre}" solo tiene ${maxDisp} unidad${maxDisp !== 1 ? 'es' : ''} disponible${maxDisp !== 1 ? 's' : ''}.`, 'warn');
                     return;
                 }
@@ -3601,7 +3601,7 @@ function actualizarChipsCombo() {
                 const maxDisp = invProd ? (invProd.cantidad || 0) : Infinity;
                 if (!isNaN(val) && val > maxDisp) {
                     await mostrarAlerta(`⚠️ Supera la cantidad existente en el inventario.\n"${prod.nombre}" solo tiene ${maxDisp} unidad${maxDisp !== 1 ? 'es' : ''} disponible${maxDisp !== 1 ? 's' : ''}.`, 'warn');
-                    input.value = maxDisp > 0 ? maxDisp : 1;
+                    input.value = '';
                     input.focus();
                     return;
                 }
