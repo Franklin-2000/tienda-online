@@ -2676,7 +2676,9 @@ function filtrarVentasPorPeriodo(periodo) {
         if (!fechaVenta) return false;
         if (periodo === 'semanal') {
             const inicioSemana = new Date(ahora);
-            inicioSemana.setDate(ahora.getDate() - ahora.getDay());
+            // getDay(): 0=Dom,1=Lun,...,6=Sáb → retroceder al lunes más cercano
+            const diasDesdeElLunes = (ahora.getDay() + 6) % 7; // 0=Lun, 6=Dom
+            inicioSemana.setDate(ahora.getDate() - diasDesdeElLunes);
             inicioSemana.setHours(0,0,0,0);
             return fechaVenta >= inicioSemana;
         } else if (periodo === 'mensual') {
@@ -2705,8 +2707,9 @@ function filtrarVentasPorPeriodoAnterior(periodo) {
         const fechaVenta = parsearFechaVenta(venta);
         if (!fechaVenta) return false;
         if (periodo === 'semanal') {
+            const diasDesdeElLunesAct = (ahora.getDay() + 6) % 7;
             const inicioSemanaAnterior = new Date(ahora);
-            inicioSemanaAnterior.setDate(ahora.getDate() - ahora.getDay() - 7);
+            inicioSemanaAnterior.setDate(ahora.getDate() - diasDesdeElLunesAct - 7);
             inicioSemanaAnterior.setHours(0,0,0,0);
             const finSemanaAnterior = new Date(inicioSemanaAnterior);
             finSemanaAnterior.setDate(inicioSemanaAnterior.getDate() + 7);
@@ -2822,11 +2825,16 @@ function renderEstadisticas(periodo) {
             tendenciaData.push(porHora[h]);
         }
     } else if (periodo === 'semanal') {
-        const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+        // Semana Lun → Dom (índice: 0=Lun,...,6=Dom)
+        const dias = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
         const porDia = Array(7).fill(0);
         ventasFiltradas.forEach(v => {
             const fv = parsearFechaVenta(v);
-            if (fv) porDia[fv.getDay()] += (v.total || 0);
+            if (fv) {
+                // getDay(): 0=Dom,1=Lun,...,6=Sáb → convertir a índice Lun=0..Dom=6
+                const idx = (fv.getDay() + 6) % 7;
+                porDia[idx] += (v.total || 0);
+            }
         });
         dias.forEach((d,i) => { tendenciaLabels.push(d); tendenciaData.push(porDia[i]); });
     } else {
@@ -3045,7 +3053,8 @@ function filtrarOnlinePorPeriodo(periodo, ventasOnline) {
         }
         if (periodo === 'semanal') {
             const ini = new Date(ahora);
-            ini.setDate(ahora.getDate() - ahora.getDay());
+            const diasDesdeElLunes = (ahora.getDay() + 6) % 7;
+            ini.setDate(ahora.getDate() - diasDesdeElLunes);
             ini.setHours(0,0,0,0);
             return fv >= ini;
         }
@@ -3068,8 +3077,9 @@ function filtrarOnlinePorPeriodoAnterior(periodo, ventasOnline) {
             return fv.toDateString() === ayerStr;
         }
         if (periodo === 'semanal') {
+            const diasDesdeElLunesAct = (ahora.getDay() + 6) % 7;
             const ini = new Date(ahora);
-            ini.setDate(ahora.getDate() - ahora.getDay() - 7);
+            ini.setDate(ahora.getDate() - diasDesdeElLunesAct - 7);
             ini.setHours(0,0,0,0);
             const fin = new Date(ini);
             fin.setDate(ini.getDate() + 7);
@@ -3162,9 +3172,10 @@ function renderEstadisticasOnline(periodo) {
         });
         for (let h = 0; h < 24; h++) { tendenciaLabels.push(h+':00'); tendenciaData.push(porHora[h]); }
     } else if (periodo === 'semanal') {
-        const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+        // Semana Lun → Dom
+        const dias = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
         const porDia = Array(7).fill(0);
-        ventasFiltradas.forEach(v => { const fv = parsearFechaVenta(v); if (fv) porDia[fv.getDay()] += (v.total||0); });
+        ventasFiltradas.forEach(v => { const fv = parsearFechaVenta(v); if (fv) { const idx = (fv.getDay() + 6) % 7; porDia[idx] += (v.total||0); } });
         dias.forEach((d,i) => { tendenciaLabels.push(d); tendenciaData.push(porDia[i]); });
     } else {
         const diasEnMes = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
@@ -3309,7 +3320,8 @@ async function saveCombo(combo) {
         nombre: p.nombre,
         precio: p.precio,
         imagen: p.imagen,
-        user_id: currentUserId
+        user_id: currentUserId,
+        cantidad: p.cantidad || 1
     }));
     const { error: err2 } = await supabaseClient.from('combo_productos').insert(items);
     if (err2) throw err2;
@@ -3383,8 +3395,13 @@ function renderCombos() {
 }
 
 function agregarProductoAlCombo(prod) {
-    if (productosEnComboActual.find(p => p.id === prod.id)) return;
-    productosEnComboActual.push(prod);
+    if (productosEnComboActual.find(p => p.id === prod.id)) {
+        // Si ya existe, simplemente mostrar un aviso sutil
+        mostrarAlerta(`"${prod.nombre}" ya está en el combo. Puedes ajustar la cantidad en la lista.`, 'info');
+        return;
+    }
+    // Agregar con cantidad 1 por defecto
+    productosEnComboActual.push({ ...prod, cantidad: 1 });
     actualizarChipsCombo();
     actualizarValorSuma();
 }
@@ -3396,15 +3413,40 @@ function actualizarChipsCombo() {
         contenedor.innerHTML = '<p class="combo-empty-msg">No hay productos agregados al combo.</p>';
         return;
     }
-    contenedor.innerHTML = productosEnComboActual.map(p => `
-        <div class="combo-chip">
+    contenedor.innerHTML = productosEnComboActual.map((p, idx) => `
+        <div class="combo-chip" data-idx="${idx}">
             <img src="${p.imagen || 'https://via.placeholder.com/26'}" alt="">
-            <span>${p.nombre}</span>
-            <button class="combo-chip-remove" data-id="${p.id}" title="Quitar">✕</button>
+            <span class="combo-chip-nombre">${p.nombre}</span>
+            <div class="combo-chip-cantidad-wrap">
+                <label class="combo-chip-qty-label">Cant:</label>
+                <input type="number" class="combo-chip-qty-input" data-idx="${idx}" value="${p.cantidad || 1}" min="1" step="1">
+            </div>
+            <span class="combo-chip-precio">$${((p.precio || 0) * (p.cantidad || 1)).toLocaleString('es-CO')}</span>
+            <button class="combo-chip-remove" data-idx="${idx}" title="Quitar">✕</button>
         </div>`).join('');
+
+    // Actualizar cantidad al cambiar el input
+    contenedor.querySelectorAll('.combo-chip-qty-input').forEach(input => {
+        input.addEventListener('input', () => {
+            const i = parseInt(input.dataset.idx);
+            const val = Math.max(1, parseInt(input.value) || 1);
+            input.value = val;
+            productosEnComboActual[i].cantidad = val;
+            // Actualizar precio mostrado en el chip
+            const chip = input.closest('.combo-chip');
+            if (chip) {
+                const precioSpan = chip.querySelector('.combo-chip-precio');
+                if (precioSpan) precioSpan.textContent = '$' + ((productosEnComboActual[i].precio || 0) * val).toLocaleString('es-CO');
+            }
+            actualizarValorSuma();
+        });
+    });
+
+    // Botones quitar
     contenedor.querySelectorAll('.combo-chip-remove').forEach(btn => {
         btn.onclick = () => {
-            productosEnComboActual = productosEnComboActual.filter(p => p.id !== btn.dataset.id);
+            const i = parseInt(btn.dataset.idx);
+            productosEnComboActual.splice(i, 1);
             actualizarChipsCombo();
             actualizarValorSuma();
         };
@@ -3412,7 +3454,7 @@ function actualizarChipsCombo() {
 }
 
 function actualizarValorSuma() {
-    const suma = productosEnComboActual.reduce((s,p) => s + (p.precio||0), 0);
+    const suma = productosEnComboActual.reduce((s,p) => s + (p.precio||0) * (p.cantidad||1), 0);
     const el = document.getElementById('combo-valor-suma');
     if (el) el.textContent = '$' + suma.toLocaleString('es-CO');
 }
@@ -3434,7 +3476,7 @@ async function handleGuardarCombo() {
     if (!nombre) { mostrarAlerta('⚠️ El combo debe tener un nombre.', 'warn'); return; }
     if (!productosEnComboActual.length) { mostrarAlerta('⚠️ Agrega al menos un producto al combo.', 'warn'); return; }
 
-    const precioSuma = productosEnComboActual.reduce((s,p) => s + (p.precio||0), 0);
+    const precioSuma = productosEnComboActual.reduce((s,p) => s + (p.precio||0) * (p.cantidad||1), 0);
     const precio = precioInput > 0 ? precioInput : precioSuma;
 
     // MODO OFFLINE: guardar combo localmente en IndexedDB
@@ -3480,7 +3522,9 @@ async function handleGuardarCombo() {
 
 function renderTarjetasCombos() {
     const contenedor = document.getElementById('contenedorCombos');
+    const totalEl = document.getElementById('totalCombosCount');
     if (!contenedor) return;
+    if (totalEl) totalEl.textContent = combos.length;
     if (!combos.length) {
         contenedor.innerHTML = '<p class="combo-empty-msg" style="color:rgba(200,180,255,0.4);padding:20px">No hay combos creados todavía.</p>';
         return;
@@ -3491,19 +3535,20 @@ function renderTarjetasCombos() {
             <div class="combo-mini-producto">
                 <img class="combo-mini-img" src="${p.imagen || 'https://via.placeholder.com/48'}" alt="${p.nombre}">
                 <span class="combo-mini-nombre">${(p.nombre||'').slice(0,14)}</span>
+                ${(p.cantidad && p.cantidad > 1) ? `<span class="combo-mini-qty">x${p.cantidad}</span>` : ''}
             </div>`).join('');
         const masProds = prods.length > 5 ? `<span style="color:rgba(200,180,255,0.5);font-size:0.75em;align-self:center">+${prods.length-5} más</span>` : '';
         const precioOrig = combo.precio_suma && combo.precio_suma !== combo.precio
             ? `<div class="combo-card-precio-orig">Valor individual: $${Math.round(combo.precio_suma).toLocaleString('es-CO')}</div>` : '';
         return `
-        <div class="tarjeta-combo">
+        <div class="tarjeta-combo tarjeta-producto">
             <div class="combo-card-nombre">${combo.nombre}</div>
             ${combo.descripcion ? `<div class="combo-card-desc">${combo.descripcion}</div>` : ''}
             <div class="combo-card-productos">${miniImgs}${masProds}</div>
             <div class="combo-card-precio">$${Math.round(combo.precio).toLocaleString('es-CO')}</div>
             ${precioOrig}
             <div class="combo-card-acciones">
-                <button class="btn-borrar-combo" data-comboid="${combo.id}">🗑️ Eliminar</button>
+                <button class="btn-borrar-producto btn-borrar-combo" data-comboid="${combo.id}">🗑️ Eliminar</button>
             </div>
         </div>`;
     }).join('');
