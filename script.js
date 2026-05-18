@@ -327,8 +327,9 @@ async function loadInventory() {
 
     if (error) {
         console.error("Error cargando inventario:", error);
+        await mostrarAlerta('❌ No se pudo cargar el inventario.\n' + (error.message || 'Verifica tu conexión a internet.'), 'error');
     } else {
-        inventory = data; 
+        inventory = data;
         renderProducts();
         updateProductCount();
     }
@@ -414,6 +415,7 @@ async function loadSales() {
 
     if (errorVentas) {
         console.error("Error cargando ventas:", errorVentas);
+        await mostrarAlerta('❌ No se pudo cargar el historial de ventas.\n' + (errorVentas.message || 'Verifica tu conexión a internet.'), 'error');
         return;
     }
 
@@ -3329,7 +3331,8 @@ async function saveCombo(combo) {
 }
 
 async function deleteCombo(comboId) {
-    await supabaseClient.from('combos').delete().eq('id', comboId);
+    const { error } = await supabaseClient.from('combos').delete().eq('id', comboId);
+    if (error) throw error;
 }
 
 function renderCombos() {
@@ -3537,7 +3540,7 @@ async function handleGuardarCombo() {
                 id: 'OFFLINE_COMBO_' + Date.now(),
                 nombre, descripcion, precio, precio_suma: precioSuma,
                 combo_productos: productosEnComboActual.map(p => ({
-                    nombre: p.nombre, precio: p.precio, imagen: p.imagen
+                    nombre: p.nombre, precio: p.precio, imagen: p.imagen, cantidad: p.cantidad || 1
                 }))
             };
             combos.unshift(comboLocal);
@@ -3601,9 +3604,14 @@ function renderTarjetasCombos() {
         btn.onclick = async () => {
             const ok = await mostrarConfirm('¿Eliminar este combo?', 'danger');
             if (!ok) return;
-            await deleteCombo(btn.dataset.comboid);
-            combos = combos.filter(c => String(c.id) !== String(btn.dataset.comboid));
-            renderTarjetasCombos();
+            try {
+                await deleteCombo(btn.dataset.comboid);
+                combos = combos.filter(c => String(c.id) !== String(btn.dataset.comboid));
+                renderTarjetasCombos();
+            } catch (e) {
+                console.error('Error eliminando combo:', e);
+                await mostrarAlerta('❌ No se pudo eliminar el combo.\n' + (e.message || 'Intenta de nuevo.'), 'error');
+            }
         };
     });
 }
