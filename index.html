@@ -64,7 +64,7 @@
 
     <!-- Título sección -->
     <div class="sidebar-section-title">
-      <span class="sidebar-title-icon">⚡</span>
+      <span class="sidebar-title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
       <span>Operaciones Frecuentes</span>
     </div>
 
@@ -123,7 +123,7 @@
           <span id="offlineStatusText">OFF — Usando Supabase</span>
         </div>
         <div class="offline-pending-count" id="offlinePendingCount"></div>
-        <button class="offline-sync-btn" id="offlineSyncBtn">☁️ Sincronizar con Supabase</button>
+        <button class="offline-sync-btn" id="offlineSyncBtn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg> Sincronizar con Supabase</button>
       </div>
     </div>
 
@@ -149,12 +149,12 @@
               <div class="tarjeta-input-producto">
                 <h2>Añadir Nuevo Producto</h2>
                 <input type="file" accept="image/*" id="inputProductoImagen" style="display:none">
-                <button class="btn-seleccionar-imagen" id="btnSeleccionarImagen">📷 Seleccionar Imagen</button>
+                <button class="btn-seleccionar-imagen" id="btnSeleccionarImagen"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Seleccionar Imagen</button>
                 <img id="previewProductoImagen" src="" alt="Vista previa de la imagen" class="preview-producto-imagen">
                 <label for="inputCodigoBarras">Código de Barras:</label>
                 <div class="flex-gap-5">
                     <input type="text" id="inputCodigoBarras" placeholder="Ej: 123456789" class="input-codigo-barras">
-                    <button id="btnEscanearInventario" class="btn-escanear" title="Escanear Código">📷</button>
+                    <button id="btnEscanearInventario" class="btn-escanear" title="Escanear Código"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="8" x2="7" y2="16"/><line x1="10" y1="8" x2="10" y2="16"/><line x1="13" y1="8" x2="13" y2="16"/><line x1="16" y1="8" x2="16" y2="16"/></svg></button>
                 </div>
                 <label for="inputNombreProducto">Nombre:</label>
                 <input type="text" id="inputNombreProducto" placeholder="Nombre del Producto">
@@ -199,21 +199,21 @@
     </div>
     <h2 id="inventory-products-title">Productos en Inventario</h2>
     <div class="categorias-filtro-bar" id="categoriasFiltroBar">
-      <button class="btn-categoria-filtro activo" data-categoria="todas">🏪 Todas</button>
-      <button class="btn-categoria-filtro" data-categoria="Perecederos">🥦 Perecederos</button>
-      <button class="btn-categoria-filtro" data-categoria="Abarrotes">🛒 Abarrotes</button>
-      <button class="btn-categoria-filtro" data-categoria="Bebidas">🥤 Bebidas</button>
-      <button class="btn-categoria-filtro" data-categoria="Congelados">🧊 Congelados</button>
-      <button class="btn-categoria-filtro" data-categoria="Hogar">🧹 Hogar</button>
-      <button class="btn-categoria-filtro" data-categoria="Higiene">🧴 Higiene</button>
-      <button class="btn-categoria-filtro" data-categoria="Otras">📦 Otras</button>
+      <button class="btn-categoria-filtro activo" data-categoria="todas"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Todas</button>
+      <button class="btn-categoria-filtro" data-categoria="Perecederos"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 2-8 2"/></svg> Perecederos</button>
+      <button class="btn-categoria-filtro" data-categoria="Abarrotes"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> Abarrotes</button>
+      <button class="btn-categoria-filtro" data-categoria="Bebidas"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg> Bebidas</button>
+      <button class="btn-categoria-filtro" data-categoria="Congelados"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/><path d="M20 16l-4-4 4-4"/><path d="M4 8l4 4-4 4"/><path d="M16 4l-4 4-4-4"/><path d="M8 20l4-4 4 4"/></svg> Congelados</button>
+      <button class="btn-categoria-filtro" data-categoria="Hogar"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> Hogar</button>
+      <button class="btn-categoria-filtro" data-categoria="Higiene"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg> Higiene</button>
+      <button class="btn-categoria-filtro" data-categoria="Otras"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg> Otras</button>
     </div>
     <div class="contenedor-productos" id="contenedorProductos"></div>
   </div>
 
   <div id="pantalla-ventas-fisicas">
     <h1>Registro de Ventas Físicas</h1>
-    <button id="btnVerHistorial" class="btn-historial-esquina btn-historial-esquina-position">📅 Historial</button>
+    <button id="btnVerHistorial" class="btn-historial-esquina btn-historial-esquina-position"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Historial</button>
 
     <!-- NUEVO CONTENEDOR FLEXIBLE Y RESPONSIVE -->
     <div class="contenedor-ventas-independientes"> 
@@ -225,7 +225,7 @@
                 <label for="inputBuscarProductVenta">Buscar Producto (Nombre o Código):</label>
                 <div class="flex-gap-5">
                     <input type="text" id="inputBuscarProductVenta" placeholder="Ej: arroz o 123456" class="input-buscar-producto-venta">
-                    <button id="btnEscanearVenta" class="btn-escanear" title="Escanear Código">📷</button>
+                    <button id="btnEscanearVenta" class="btn-escanear" title="Escanear Código"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="8" x2="7" y2="16"/><line x1="10" y1="8" x2="10" y2="16"/><line x1="13" y1="8" x2="13" y2="16"/><line x1="16" y1="8" x2="16" y2="16"/></svg></button>
                 </div>
                 <!-- Cantidad -->
                 <div id="panelCantidadVenta" class="panel-cantidad-venta" style="display:none;">
@@ -277,7 +277,7 @@
     <!-- Sección toggle: Ventas de Hoy -->
     <div class="tarjeta-ventas-hoy-independiente">
       <div class="ventas-hoy-header" id="btnToggleVentasHoy">
-        <h2 class="titulo-ventas-hoy-independiente">🧾 Ventas de Hoy</h2>
+        <h2 class="titulo-ventas-hoy-independiente"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Ventas de Hoy</h2>
         <button class="btn-toggle-ventas-hoy" aria-label="Mostrar/Ocultar ventas de hoy">
           <span class="toggle-icono">▼</span>
         </button>
@@ -290,7 +290,7 @@
     <!-- Sección toggle: Días Anteriores -->
     <div class="tarjeta-ventas-hoy-independiente">
       <div class="ventas-hoy-header" id="btnToggleHistorialFisicas">
-        <h2 class="titulo-ventas-hoy-independiente">📅 Ventas de Días Anteriores</h2>
+        <h2 class="titulo-ventas-hoy-independiente"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Ventas de Días Anteriores</h2>
         <button class="btn-toggle-ventas-hoy" aria-label="Mostrar/Ocultar historial">
           <span class="toggle-icono">▼</span>
         </button>
@@ -299,12 +299,12 @@
       </div>
     </div>
 
-    <button id="btnVolverDesdeHistorialFisicas" class="boton-volver">← Volver a Ventas Físicas</button>
+    <button id="btnVolverDesdeHistorialFisicas" class="boton-volver"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Volver a Ventas Físicas</button>
   </div>
 
   <div id="pantalla-ventas-online">
     <h1>Pedidos Online</h1>
-    <button id="btnVerHistorialOnline" class="btn-historial-esquina btn-historial-esquina-position">📅 Historial</button>
+    <button id="btnVerHistorialOnline" class="btn-historial-esquina btn-historial-esquina-position"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Historial</button>
       <div class="inventory-actions-group">
 
         <div class="search-summary-group">
@@ -316,13 +316,13 @@
         <div class="export-section online-filtros-panel-card">
           <div class="filtros-pedidos-wrap">
             <button class="btn-filtro-estado activo" data-estado="todos">Activos</button>
-            <button class="btn-filtro-estado" data-estado="pago_confirmado">✅ Confirmado</button>
-            <button class="btn-filtro-estado" data-estado="entregado">📦 Entregado</button>
-            <button class="btn-filtro-estado" data-estado="cancelado">🚫 Cancelado</button>
+            <button class="btn-filtro-estado" data-estado="pago_confirmado"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Confirmado</button>
+            <button class="btn-filtro-estado" data-estado="entregado"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> Entregado</button>
+            <button class="btn-filtro-estado" data-estado="cancelado"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Cancelado</button>
           </div>
           <div class="online-acciones-wrap">
-            <button id="btnRefrescarPedidosAdmin" class="btn-buscar btn-refrescar-online">🔄 Actualizar</button>
-            <button id="btnBorrarTodasVentasCanceladas" class="btn-borrar-producto btn-borrar-todas-canceladas">🗑️ Borrar canceladas</button>
+            <button id="btnRefrescarPedidosAdmin" class="btn-buscar btn-refrescar-online"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Actualizar</button>
+            <button id="btnBorrarTodasVentasCanceladas" class="btn-borrar-producto btn-borrar-todas-canceladas"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Borrar canceladas</button>
           </div>
         </div>
 
@@ -340,7 +340,7 @@
     <!-- Sección toggle: Entregas de Hoy -->
     <div class="tarjeta-ventas-hoy-independiente">
       <div class="ventas-hoy-header" id="btnToggleEntregasHoy">
-        <h2 class="titulo-ventas-hoy-independiente">📦 Entregas de Hoy</h2>
+        <h2 class="titulo-ventas-hoy-independiente"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> Entregas de Hoy</h2>
         <button class="btn-toggle-ventas-hoy" aria-label="Mostrar/Ocultar entregas de hoy">
           <span class="toggle-icono">▼</span>
         </button>
@@ -352,7 +352,7 @@
     <!-- Sección toggle: Historial Anterior -->
     <div class="tarjeta-ventas-hoy-independiente">
       <div class="ventas-hoy-header" id="btnToggleHistorialOnline">
-        <h2 class="titulo-ventas-hoy-independiente">🗂️ Historial Anterior</h2>
+        <h2 class="titulo-ventas-hoy-independiente"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Historial Anterior</h2>
         <button class="btn-toggle-ventas-hoy" aria-label="Mostrar/Ocultar historial anterior">
           <span class="toggle-icono">▼</span>
         </button>
@@ -361,7 +361,7 @@
       </div>
     </div>
 
-    <button id="btnVolverDesdeHistorialOnline" class="boton-volver">← Volver a Pedidos Online</button>
+    <button id="btnVolverDesdeHistorialOnline" class="boton-volver"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Volver a Pedidos Online</button>
   </div>
 
   <!-- ============================
@@ -402,7 +402,7 @@
       </div>
       <div class="stats-kpi-card">
         <div class="kpi-top">
-          <span class="kpi-label">📦 Productos despachados</span>
+          <span class="kpi-label"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Productos despachados</span>
           <span class="kpi-trend" id="kpi-trend-prod">—</span>
         </div>
         <span class="kpi-value" id="kpi-productos-vendidos">0</span>
@@ -410,7 +410,7 @@
       </div>
       <div class="stats-kpi-card">
         <div class="kpi-top">
-          <span class="kpi-label">🧾 Valor por venta</span>
+          <span class="kpi-label"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Valor por venta</span>
           <span class="kpi-trend" id="kpi-trend-ticket">—</span>
         </div>
         <span class="kpi-value" id="kpi-ticket-promedio">$0</span>
@@ -440,7 +440,7 @@
       <!-- Distribución por categoría -->
       <div class="stats-chart-card">
         <div class="chart-header">
-          <h3 class="chart-title">🗂️ ingresos por categoría</h3>
+          <h3 class="chart-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Ventas por categoría</h3>
         </div>
         <div class="chart-wrap"><canvas id="chartCategorias"></canvas></div>
       </div>
@@ -510,7 +510,7 @@
       </div>
       <div class="stats-kpi-card">
         <div class="kpi-top">
-          <span class="kpi-label">🛒 Pedidos confirmados</span>
+          <span class="kpi-label"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Pedidos confirmados</span>
           <span class="kpi-trend" id="kpio-trend-trans">—</span>
         </div>
         <span class="kpi-value" id="kpio-num-transacciones">0</span>
@@ -518,7 +518,7 @@
       </div>
       <div class="stats-kpi-card">
         <div class="kpi-top">
-          <span class="kpi-label">📦 Productos despachados</span>
+          <span class="kpi-label"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Productos despachados</span>
           <span class="kpi-trend" id="kpio-trend-prod">—</span>
         </div>
         <span class="kpi-value" id="kpio-productos-vendidos">0</span>
@@ -526,7 +526,7 @@
       </div>
       <div class="stats-kpi-card">
         <div class="kpi-top">
-          <span class="kpi-label">🧾 Valor por pedido</span>
+          <span class="kpi-label"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Valor por pedido</span>
           <span class="kpi-trend" id="kpio-trend-ticket">—</span>
         </div>
         <span class="kpi-value" id="kpio-ticket-promedio">$0</span>
@@ -551,7 +551,7 @@
       </div>
       <div class="stats-chart-card">
         <div class="chart-header">
-          <h3 class="chart-title">🗂️ ingresos por categoría</h3>
+          <h3 class="chart-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Ventas por categoría</h3>
         </div>
         <div class="chart-wrap"><canvas id="chartOnlineCategorias"></canvas></div>
       </div>
@@ -592,7 +592,7 @@
        ============================ -->
   <div id="pantalla-combos">
     <h1>Gestión de Combos</h1>
-    <button id="btnVerHistorialCombos" class="btn-historial-esquina btn-historial-esquina-position">📅 Historial</button>
+    <button id="btnVerHistorialCombos" class="btn-historial-esquina btn-historial-esquina-position"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Historial</button>
 
     <div class="inventory-header">
       <div class="inventory-actions-group">
@@ -600,7 +600,7 @@
         <!-- Tarjeta de creación de combo — mismos estilos que tarjeta-input-producto -->
         <div class="formulario-producto-nuevo">
           <div class="tarjeta-input-producto">
-            <h2>➕ Crear Nuevo Combo</h2>
+            <h2><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Crear Nuevo Combo</h2>
 
             <label class="combo-label" for="inputComboNombre">Nombre del combo</label>
             <input type="text" id="inputComboNombre" placeholder="Ej: Combo Desayuno">
@@ -631,7 +631,7 @@
             <input type="number" id="inputComboPrecio" placeholder="$ 0" min="0" step="1">
 
             <button class="btn-añadir btn-limpiar-formulario" id="btnLimpiarCombo">Limpiar</button>
-            <button class="btn-añadir" id="btnGuardarCombo">💾 Guardar Combo</button>
+            <button class="btn-añadir" id="btnGuardarCombo"><svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar Combo</button>
           </div>
         </div>
 
@@ -660,7 +660,7 @@
 
     <div class="tarjeta-ventas-hoy-independiente">
       <div class="ventas-hoy-header" id="btnToggleCombosHoy">
-        <h2 class="titulo-ventas-hoy-independiente">🎁 Combos Vendidos Hoy</h2>
+        <h2 class="titulo-ventas-hoy-independiente"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg> Combos Vendidos Hoy</h2>
         <button class="btn-toggle-ventas-hoy" aria-label="Mostrar/Ocultar combos de hoy">
           <span class="toggle-icono">▼</span>
         </button>
@@ -672,7 +672,7 @@
 
     <div class="tarjeta-ventas-hoy-independiente">
       <div class="ventas-hoy-header" id="btnToggleHistorialCombos">
-        <h2 class="titulo-ventas-hoy-independiente">📅 Combos de Días Anteriores</h2>
+        <h2 class="titulo-ventas-hoy-independiente"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Combos de Días Anteriores</h2>
         <button class="btn-toggle-ventas-hoy" aria-label="Mostrar/Ocultar historial combos">
           <span class="toggle-icono">▼</span>
         </button>
@@ -681,7 +681,7 @@
       </div>
     </div>
 
-    <button id="btnVolverDesdeHistorialCombos" class="boton-volver">← Volver a Combos</button>
+    <button id="btnVolverDesdeHistorialCombos" class="boton-volver"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Volver a Combos</button>
   </div>
 
   <div id="modal-escaner" class="modal-overlay pantalla-display-none">
@@ -714,7 +714,7 @@
 
 <!-- Indicador global modo offline -->
 <div id="offline-indicator">
-  <span>⚡</span>
+  <span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
   <span id="offline-indicator-text">Modo Sin Internet activo</span>
 </div>
 </body>
