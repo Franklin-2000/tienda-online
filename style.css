@@ -68,7 +68,7 @@ body {
   left: 0;
   width: 240px;
   height: 100%;
-  background: linear-gradient(180deg, rgba(3,14,35,0.98) 0%, rgba(5,30,60,0.96) 60%, rgba(8,20,45,0.99) 100%);
+  background: linear-gradient(180deg, #051e2c 0%, #0a2d3f 55%, #061a28 100%);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border-right: 1px solid rgba(122, 228, 214, 0.15);
