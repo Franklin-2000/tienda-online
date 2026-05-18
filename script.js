@@ -3946,6 +3946,7 @@ async function sincronizarConSupabase() {
             try {
                 const { data: { user } } = await supabaseClient.auth.getUser();
                 if (!user) throw new Error('Sin sesión activa');
+                currentUserId = user.id;
                 await saveCombo({ ...item.datos });
                 await idbDelete('productos_pending', item.localId);
             } catch(e) {
