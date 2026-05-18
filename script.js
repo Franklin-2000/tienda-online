@@ -3515,6 +3515,12 @@ function agregarProductoAlCombo(prod) {
         mostrarAlerta(`"${prod.nombre}" ya está en el combo. Puedes ajustar la cantidad en la lista.`, 'info');
         return;
     }
+    const invProd = inventory.find(p => String(p.id) === String(prod.id));
+    const stockDisp = invProd ? (invProd.cantidad || 0) : 0;
+    if (stockDisp <= 0) {
+        mostrarAlerta(`⚠️ "${prod.nombre}" no tiene stock disponible en el inventario y no puede agregarse al combo.`, 'warn');
+        return;
+    }
     productosEnComboActual.push({ ...prod, cantidad: 1 });
     actualizarChipsCombo();
     actualizarValorSuma();
@@ -3655,6 +3661,20 @@ async function handleGuardarCombo() {
     if (conCantidadCero.length) {
         const lista = conCantidadCero.map(p => `• "${p.nombre}"`).join('\n');
         mostrarAlerta(`⚠️ La cantidad debe ser mayor a cero en:\n${lista}`, 'warn');
+        return;
+    }
+    const excedidos = productosEnComboActual.filter(p => {
+        const invP = inventory.find(inv => String(inv.id) === String(p.id));
+        const maxDisp = invP ? (invP.cantidad || 0) : 0;
+        return p.cantidad > maxDisp;
+    });
+    if (excedidos.length) {
+        const lista = excedidos.map(p => {
+            const invP = inventory.find(inv => String(inv.id) === String(p.id));
+            const maxDisp = invP ? (invP.cantidad || 0) : 0;
+            return `• "${p.nombre}": solicitado ${p.cantidad}, disponible ${maxDisp}`;
+        }).join('\n');
+        mostrarAlerta(`⚠️ La cantidad supera el stock disponible:\n${lista}`, 'warn');
         return;
     }
 
