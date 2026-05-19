@@ -195,22 +195,17 @@ h1 {
     /* position: relative eliminado — no debe sobreescribir el position: absolute global */
 }
 
-/* Logo SOFTVENT — esquina superior derecha (fuera del sidebar) */
-#pantalla-inicio .softvent-logo {
+/* Logo SOFTVEN imagen — esquina superior derecha (fuera del sidebar) */
+#pantalla-inicio .softvent-logo-img {
   position: absolute;
   top: 22px;
   right: 36px;
-  left: auto;
-  margin: 0;
-  font-size: 58px;
-  color: #ccbbbb;
-  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.95);
-  font-family: 'Pacifico', cursive;
-  font-weight: bold;
-  font-style: italic;
-  line-height: 1;
+  height: 64px;
+  width: auto;
   pointer-events: none;
   z-index: 10;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 /* ==============================
@@ -833,8 +828,8 @@ h1 {
     right: 0;
     width: auto;
   }
-  #pantalla-inicio .softvent-logo {
-    font-size: 34px;
+  #pantalla-inicio .softvent-logo-img {
+    height: 38px;
     top: 12px;
     right: 14px;
   }

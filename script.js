@@ -2007,6 +2007,38 @@ btnLogout.addEventListener("click", handleLogout);
 })();
 
 // ==========================================
+// LOGO SOFTVEN — eliminar fondo blanco via canvas
+// ==========================================
+(function() {
+    function quitarFondoBlanco(img) {
+        const canvas = document.createElement('canvas');
+        canvas.width  = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const d = imgData.data;
+        for (let i = 0; i < d.length; i += 4) {
+            const r = d[i], g = d[i+1], b = d[i+2];
+            // Umbral: píxeles muy claros (fondo blanco/grisáceo) → transparentes
+            if (r > 210 && g > 210 && b > 210) {
+                d[i+3] = 0;
+            }
+        }
+        ctx.putImageData(imgData, 0, 0);
+        img.src = canvas.toDataURL('image/png');
+    }
+    const logoImg = document.getElementById('softven-logo-img');
+    if (!logoImg) return;
+    if (logoImg.complete && logoImg.naturalWidth > 0) {
+        quitarFondoBlanco(logoImg);
+    } else {
+        logoImg.addEventListener('load', function() { quitarFondoBlanco(logoImg); });
+    }
+    logoImg.addEventListener('error', function() { logoImg.style.display = 'none'; });
+})();
+
+// ==========================================
 // INICIALIZACIÓN DE LA APP
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
