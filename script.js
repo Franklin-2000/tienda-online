@@ -2617,7 +2617,13 @@ function crearDOMTicketOnline(pedido, esDeHoy) {
     ticketDiv.className = `venta-ticket ${esCombo ? 'venta-ticket-combo' : 'venta-ticket-online'}`;
     ticketDiv.dataset.tipo = esCombo ? 'combo-online' : 'online';
 
-    const nombreTicket = esCombo ? `COMBO-ONLINE-${pedido.id}` : `Pedido #${pedido.id}`;
+    // Usar el ID real del ticket en sales para que coincida exactamente con historial de combos
+    const ticketReal = esCombo
+        ? sales.find(s => s.id && String(s.id).startsWith(`COMBO-ONLINE-${pedido.id}`))
+        : null;
+    const nombreTicket = esCombo
+        ? (ticketReal ? ticketReal.id : `COMBO-ONLINE-${pedido.id}`)
+        : `Pedido #${pedido.id}`;
     const badgePrincipal = esCombo
         ? '<span class="ticket-badge ticket-badge-combo">🎁 Venta Combo</span><span class="ticket-badge ticket-badge-online-combo">🌐 Online</span>'
         : '<span class="ticket-badge ticket-badge-online">🌐 Pedido Online</span>';
