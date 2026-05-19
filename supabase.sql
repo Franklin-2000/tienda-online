@@ -453,7 +453,7 @@ FOR EACH ROW EXECUTE FUNCTION fn_reponer_inventario_fisico();
 --   1. Verifica stock de productos regulares y de productos dentro de combos
 --   2. Descuenta inventario: productos regulares + productos de combos
 --   3. Crea ticket ONLINE-{pedido_id} con TODOS los ítems del pedido
---   4. Por cada combo en el pedido, crea ticket COMBO-ONLINE-{pedido_id}-{item_id}
+--   4. Por cada combo: COMBO-ONLINE-{pedido_id} (1 combo) o COMBO-ONLINE-{pedido_id}-N (varios)
 --      con el detalle de los productos que componen el combo
 -- ================================================================
 CREATE OR REPLACE FUNCTION fn_descontar_inventario_pedido()
@@ -465,6 +465,8 @@ DECLARE
     v_admin_id       UUID;
     v_combo_venta_id BIGINT;
     v_combo_item     RECORD;
+    v_combo_count    INT;
+    v_combo_idx      INT;
 BEGIN
     -- Solo actuar cuando el estado cambia A pago_confirmado
     IF NEW.estado <> 'pago_confirmado' OR OLD.estado = 'pago_confirmado' THEN
@@ -554,6 +556,12 @@ BEGIN
     WHERE ip.pedido_id = NEW.id;
 
     -- ── 7. Crear ticket COMBO-ONLINE por cada combo del pedido ────
+    SELECT COUNT(*) INTO v_combo_count
+    FROM items_pedido ip
+    WHERE ip.pedido_id = NEW.id AND ip.combo_id IS NOT NULL;
+
+    v_combo_idx := 0;
+
     FOR v_combo_item IN (
         SELECT ip.id       AS ip_id,
                ip.cantidad AS ip_qty,
@@ -564,13 +572,17 @@ BEGIN
         JOIN combos c ON c.id = ip.combo_id
         WHERE ip.pedido_id = NEW.id
           AND ip.combo_id IS NOT NULL
+        ORDER BY ip.id
     ) LOOP
+        v_combo_idx := v_combo_idx + 1;
 
         INSERT INTO ventas (global_id, numero_ticket, total, fecha, fecha_limpia, user_id)
         VALUES (
-            -- global_id único combinando epoch y el ID del ítem
             EXTRACT(EPOCH FROM NOW())::BIGINT * 1000 + v_combo_item.ip_id,
-            'COMBO-ONLINE-' || NEW.id || '-' || v_combo_item.ip_id,
+            CASE
+                WHEN v_combo_count = 1 THEN 'COMBO-ONLINE-' || NEW.id
+                ELSE 'COMBO-ONLINE-' || NEW.id || '-' || v_combo_idx
+            END,
             v_combo_item.c_precio * v_combo_item.ip_qty,
             TO_CHAR(NOW(), 'DD/MM/YYYY, HH24:MI:SS'),
             TO_CHAR(NOW(), 'DD/MM/YYYY'),
