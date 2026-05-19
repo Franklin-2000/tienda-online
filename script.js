@@ -3383,6 +3383,29 @@ function renderEstadisticasOnline(periodo) {
             }).join('');
         }
     }
+
+    // --- Sección Tickets COMBO-ONLINE del período ---
+    const seccionCombos = document.getElementById('seccionCombosOnlineStats');
+    const listaCombos   = document.getElementById('listaCombosOnlineStats');
+    if (seccionCombos && listaCombos) {
+        if (comboFiltradas.length === 0) {
+            seccionCombos.style.display = 'none';
+        } else {
+            seccionCombos.style.display = 'block';
+            listaCombos.innerHTML = [...comboFiltradas].reverse().map(ticket => {
+                const nombre = ticket.items.length > 0
+                    ? ticket.items.map(i => i.name).slice(0,2).join(', ') + (ticket.items.length > 2 ? '…' : '')
+                    : '—';
+                return `
+                <div class="combo-online-stat-row">
+                    <span class="combo-stat-id">🎁 ${ticket.id}</span>
+                    <span class="combo-stat-nombre">${nombre}</span>
+                    <span class="combo-stat-fecha">${ticket.fechaLimpia || ''}</span>
+                    <span class="combo-stat-total">${fmt(ticket.total || 0)}</span>
+                </div>`;
+            }).join('');
+        }
+    }
 }
 let combos = [];
 let productosEnComboActual = []; // [{id, nombre, precio, imagen}]

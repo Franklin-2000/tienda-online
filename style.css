@@ -4702,6 +4702,59 @@ input[type="number"] {
     border: 1px solid rgba(12,86,108,0.35);
 }
 
+/* Lista de tickets COMBO-ONLINE en estadísticas online */
+.lista-combos-online-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(122,228,214,0.15);
+}
+
+.combo-online-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 16px;
+    gap: 12px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.combo-online-stat-row:last-child { border-bottom: none; }
+.combo-online-stat-row:hover      { background: rgba(122,228,214,0.06); }
+
+.combo-stat-id {
+    font-size: 0.78em;
+    font-weight: 700;
+    color: #7ae4d6;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.combo-stat-nombre {
+    font-size: 0.82em;
+    color: rgba(255,255,255,0.75);
+    flex: 1;
+}
+
+.combo-stat-fecha {
+    font-size: 0.75em;
+    color: rgba(255,255,255,0.45);
+    white-space: nowrap;
+}
+
+.combo-stat-total {
+    font-size: 0.9em;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+}
+
 /* ── Ticket COMBO — borde izquierdo verde ── */
 .venta-ticket-combo {
     border-left: 4px solid #388e3c !important;
