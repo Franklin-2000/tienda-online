@@ -2007,11 +2007,31 @@ btnLogout.addEventListener("click", handleLogout);
 })();
 
 // ==========================================
-// LOGO SOFTVEN — SVG nativo (sin procesamiento canvas necesario)
+// LOGO SOFTVEN — quitar fondo blanco via canvas
 // ==========================================
 (function() {
+    function procesarLogo(img) {
+        const origW = img.naturalWidth;
+        const origH = img.naturalHeight;
+        const canvas = document.createElement('canvas');
+        canvas.width = origW; canvas.height = origH;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        const imgData = ctx.getImageData(0, 0, origW, origH);
+        const d = imgData.data;
+        for (let i = 0; i < d.length; i += 4) {
+            if (d[i] > 210 && d[i+1] > 210 && d[i+2] > 210) d[i+3] = 0;
+        }
+        ctx.putImageData(imgData, 0, 0);
+        img.src = canvas.toDataURL('image/png');
+    }
     const logoImg = document.getElementById('softven-logo-img');
     if (!logoImg) return;
+    if (logoImg.complete && logoImg.naturalWidth > 0) {
+        procesarLogo(logoImg);
+    } else {
+        logoImg.addEventListener('load', function() { procesarLogo(logoImg); });
+    }
     logoImg.addEventListener('error', function() { logoImg.style.display = 'none'; });
 })();
 
