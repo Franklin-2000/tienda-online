@@ -2007,64 +2007,11 @@ btnLogout.addEventListener("click", handleLogout);
 })();
 
 // ==========================================
-// LOGO SOFTVEN — fondo blanco + nitidez + escala 3x
+// LOGO SOFTVEN — SVG nativo (sin procesamiento canvas necesario)
 // ==========================================
 (function() {
-    function procesarLogo(img) {
-        const origW = img.naturalWidth;
-        const origH = img.naturalHeight;
-
-        // Paso 1: quitar fondo blanco
-        const c1 = document.createElement('canvas');
-        c1.width = origW; c1.height = origH;
-        const ctx1 = c1.getContext('2d');
-        ctx1.drawImage(img, 0, 0);
-        const imgData = ctx1.getImageData(0, 0, origW, origH);
-        const d = imgData.data;
-        for (let i = 0; i < d.length; i += 4) {
-            if (d[i] > 210 && d[i+1] > 210 && d[i+2] > 210) d[i+3] = 0;
-        }
-        ctx1.putImageData(imgData, 0, 0);
-
-        // Paso 2: sharpening (kernel unsharp mask 3x3)
-        const sharp = ctx1.getImageData(0, 0, origW, origH);
-        const src   = new Uint8ClampedArray(sharp.data);
-        const dst   = sharp.data;
-        const kernel = [0, -1, 0, -1, 5, -1, 0, -1, 0];
-        for (let y = 1; y < origH - 1; y++) {
-            for (let x = 1; x < origW - 1; x++) {
-                const idx = (y * origW + x) * 4;
-                if (src[idx + 3] === 0) continue;
-                for (let c = 0; c < 3; c++) {
-                    let v = 0;
-                    for (let ky = -1; ky <= 1; ky++)
-                        for (let kx = -1; kx <= 1; kx++)
-                            v += src[((y+ky)*origW + (x+kx))*4 + c] * kernel[(ky+1)*3+(kx+1)];
-                    dst[idx + c] = Math.max(0, Math.min(255, v));
-                }
-                dst[idx + 3] = src[idx + 3];
-            }
-        }
-        ctx1.putImageData(sharp, 0, 0);
-
-        // Paso 3: escalar 3x para mayor resolución visual
-        const escala = 3;
-        const c2 = document.createElement('canvas');
-        c2.width = origW * escala; c2.height = origH * escala;
-        const ctx2 = c2.getContext('2d');
-        ctx2.imageSmoothingEnabled = true;
-        ctx2.imageSmoothingQuality = 'high';
-        ctx2.drawImage(c1, 0, 0, c2.width, c2.height);
-
-        img.src = c2.toDataURL('image/png');
-    }
     const logoImg = document.getElementById('softven-logo-img');
     if (!logoImg) return;
-    if (logoImg.complete && logoImg.naturalWidth > 0) {
-        procesarLogo(logoImg);
-    } else {
-        logoImg.addEventListener('load', function() { procesarLogo(logoImg); });
-    }
     logoImg.addEventListener('error', function() { logoImg.style.display = 'none'; });
 })();
 

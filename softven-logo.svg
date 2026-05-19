@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 295 78">
+  <defs>
+    <linearGradient id="sg" x1="0" y1="0" x2="0" y2="78" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#68C030"/>
+      <stop offset="44%"  stop-color="#5AAA28"/>
+      <stop offset="56%"  stop-color="#327E14"/>
+      <stop offset="100%" stop-color="#2A6C10"/>
+    </linearGradient>
+  </defs>
+  <!-- Icono S -->
+  <path d="M 55 11 C 55 3 46 0 36 0 C 22 0 8 8 8 21 C 8 34 22 40 36 40 C 50 40 62 46 62 59 C 62 72 49 78 35 78 C 21 78 8 72 8 62"
+        fill="none"
+        stroke="url(#sg)"
+        stroke-width="18"
+        stroke-linecap="round"/>
+  <!-- Texto Softven -->
+  <text x="80" y="57"
+        font-family="'Segoe UI', Arial, Helvetica, sans-serif"
+        font-weight="700"
+        font-size="50"
+        fill="#17698A">Softven</text>
+</svg>
