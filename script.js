@@ -1987,17 +1987,22 @@ btnLogout.addEventListener("click", handleLogout);
 (function() {
     const btnActualizar = document.getElementById('btnActualizar');
     if (!btnActualizar) return;
-    btnActualizar.addEventListener('click', function() {
+    btnActualizar.addEventListener('click', async function() {
         btnActualizar.classList.add('girando');
-        setTimeout(function() { btnActualizar.classList.remove('girando'); }, 520);
-        const pantallaActiva = document.querySelector(
-            '#pantalla-inicio.activa, #pantalla-INVENTARIO.activa, ' +
-            '#pantalla-ventas-fisicas.activa, #pantalla-historial-fisicas.activa, ' +
-            '#pantalla-ventas-online.activa, #pantalla-historial-online.activa, ' +
-            '#pantalla-estadisticas.activa, #pantalla-estadisticas-online.activa, ' +
-            '#pantalla-combos.activa'
-        );
-        if (pantallaActiva) showScreen(pantallaActiva.id, false);
+        btnActualizar.disabled = true;
+        try {
+            await Promise.all([
+                loadInventory(),
+                loadSales(),
+                loadCombos(),
+                cargarPedidosAdmin()
+            ]);
+        } catch(e) {
+            console.error('Error actualizando datos:', e);
+        }
+        showScreen('pantalla-inicio', false);
+        btnActualizar.classList.remove('girando');
+        btnActualizar.disabled = false;
     });
 })();
 
