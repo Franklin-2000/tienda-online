@@ -2468,7 +2468,9 @@ async function crearTicketsComboOnline(pedidoId) {
 
     if (!combos.length) await loadCombos();
 
-    const ahora = new Date();
+    // Usar la fecha del pedido original, no la hora de confirmación (puede ser día siguiente)
+    const pedidoRef = pedidosAdmin.find(p => String(p.id) === String(pedidoId));
+    const ahora = pedidoRef?.fecha ? new Date(pedidoRef.fecha) : new Date();
     const fechaLimpia = `${String(ahora.getDate()).padStart(2,'0')}/${String(ahora.getMonth()+1).padStart(2,'0')}/${ahora.getFullYear()}`;
 
     for (let idx = 0; idx < comboItems.length; idx++) {

@@ -578,14 +578,14 @@ BEGIN
 
         INSERT INTO ventas (global_id, numero_ticket, total, fecha, fecha_limpia, user_id)
         VALUES (
-            EXTRACT(EPOCH FROM NOW())::BIGINT * 1000 + v_combo_item.ip_id,
+            EXTRACT(EPOCH FROM NEW.fecha)::BIGINT * 1000 + v_combo_item.ip_id,
             CASE
                 WHEN v_combo_count = 1 THEN 'COMBO-ONLINE-' || NEW.id
                 ELSE 'COMBO-ONLINE-' || NEW.id || '-' || v_combo_idx
             END,
             v_combo_item.c_precio * v_combo_item.ip_qty,
-            TO_CHAR(NOW(), 'DD/MM/YYYY, HH24:MI:SS'),
-            TO_CHAR(NOW(), 'DD/MM/YYYY'),
+            TO_CHAR(NEW.fecha, 'DD/MM/YYYY, HH24:MI:SS'),
+            TO_CHAR(NEW.fecha, 'DD/MM/YYYY'),
             v_admin_id
         ) RETURNING id INTO v_combo_venta_id;
 
