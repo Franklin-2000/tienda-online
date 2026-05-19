@@ -2608,8 +2608,19 @@ function renderHistorialOnline() {
 // ──────────────────────────────────────────────────────
 function crearDOMTicketOnline(pedido, esDeHoy) {
     const ticketDiv = document.createElement('div');
-    ticketDiv.className = 'venta-ticket venta-ticket-online';
-    ticketDiv.dataset.tipo = 'online';
+
+    // Detectar si es un pedido de combo
+    const esCombo = (pedido.items_pedido || []).some(i =>
+        i.combo_id || (i.nombre && String(i.nombre).startsWith('🎁 Combo:'))
+    );
+
+    ticketDiv.className = `venta-ticket ${esCombo ? 'venta-ticket-combo' : 'venta-ticket-online'}`;
+    ticketDiv.dataset.tipo = esCombo ? 'combo-online' : 'online';
+
+    const nombreTicket = esCombo ? `COMBO-ONLINE-${pedido.id}` : `Pedido #${pedido.id}`;
+    const badgePrincipal = esCombo
+        ? '<span class="ticket-badge ticket-badge-combo">🎁 Venta Combo</span><span class="ticket-badge ticket-badge-online-combo">🌐 Online</span>'
+        : '<span class="ticket-badge ticket-badge-online">🌐 Pedido Online</span>';
 
     let itemsHtml = '<ul class="ticket-items-list">';
     (pedido.items_pedido || []).forEach(item => {
@@ -2631,10 +2642,10 @@ function crearDOMTicketOnline(pedido, esDeHoy) {
         <div class="venta-ticket-header">
             <div class="ticket-header-left">
                 <div class="ticket-badges-row">
-                    <span class="ticket-badge ticket-badge-online">🌐 Pedido Online</span>
+                    ${badgePrincipal}
                     ${metodoBadge}
                 </div>
-                <strong class="ticket-numero">Pedido #${pedido.id}</strong>
+                <strong class="ticket-numero">${nombreTicket}</strong>
                 <span class="fecha-venta">${fecha}</span>
             </div>
             <div class="ticket-header-right">
