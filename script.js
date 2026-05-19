@@ -2463,12 +2463,19 @@ async function crearTicketsComboOnline(pedidoId) {
     );
     if (comboItems.length === 0) return;
 
+    // Si el trigger SQL ya creó algún ticket para este pedido, no duplicar
+    if (sales.some(s => s.id && String(s.id).startsWith(`COMBO-ONLINE-${pedidoId}`))) return;
+
     if (!combos.length) await loadCombos();
 
-    for (const item of comboItems) {
-        const ticketId = `COMBO-ONLINE-${pedidoId}-${item.id}`;
-        // Si el trigger SQL ya lo creó estará en sales tras loadSales() → no duplicar
-        if (sales.some(s => s.id === ticketId)) continue;
+    const ahora = new Date();
+    const fechaLimpia = `${String(ahora.getDate()).padStart(2,'0')}/${String(ahora.getMonth()+1).padStart(2,'0')}/${ahora.getFullYear()}`;
+
+    for (let idx = 0; idx < comboItems.length; idx++) {
+        const item     = comboItems[idx];
+        const ticketId = comboItems.length === 1
+            ? `COMBO-ONLINE-${pedidoId}`
+            : `COMBO-ONLINE-${pedidoId}-${idx + 1}`;
 
         const combo     = combos.find(c =>
             c.id === item.combo_id ||
@@ -2476,7 +2483,6 @@ async function crearTicketsComboOnline(pedidoId) {
         );
         const comboProd = combo?.combo_productos || [];
 
-        const ahora      = new Date();
         const itemsVenta = comboProd.map(cp => ({
             productId: cp.product_id || '',
             name:      cp.nombre     || 'Producto',
@@ -2490,7 +2496,7 @@ async function crearTicketsComboOnline(pedidoId) {
             id:          ticketId,
             total:       Number(item.precio) * item.cantidad,
             date:        ahora.toLocaleString(),
-            fechaLimpia: ahora.toLocaleDateString(),
+            fechaLimpia: fechaLimpia,
             items:       itemsVenta
         };
 
@@ -4087,7 +4093,8 @@ function crearDOMTicketCombo(sale, esDeHoy) {
 // HISTORIAL DE COMBOS VENDIDOS
 // ──────────────────────────────────────────────────────
 function renderHistorialCombos() {
-    const hoy = new Date().toLocaleDateString();
+    const _ahora = new Date();
+    const hoy = `${String(_ahora.getDate()).padStart(2,'0')}/${String(_ahora.getMonth()+1).padStart(2,'0')}/${_ahora.getFullYear()}`;
     const ventasCombo = sales.filter(s => s.id && String(s.id).startsWith('COMBO-'));
 
     // Sección "hoy"

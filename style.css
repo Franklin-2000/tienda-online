@@ -2250,8 +2250,9 @@ input[type="number"] {
     padding: 15px;
     background-color: #fff;
     border-top: 1px dashed #eee;
-    display: none; 
+    display: none;
     font-size: 0.95em;
+    color: #1a1a1a;
 }
 
 .venta-ticket-details ul {
@@ -4774,8 +4775,9 @@ input[type="number"] {
     justify-content: space-between;
     align-items: center;
     padding: 5px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
+    border-bottom: 1px solid #e0e0e0;
     font-size: 0.9em;
+    color: #1a1a1a;
 }
 .ticket-item-name {
     flex: 1;
