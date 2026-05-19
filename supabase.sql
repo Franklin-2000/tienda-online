@@ -461,12 +461,15 @@ RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
-    v_venta_id       BIGINT;
-    v_admin_id       UUID;
-    v_combo_venta_id BIGINT;
-    v_combo_item     RECORD;
-    v_combo_count    INT;
-    v_combo_idx      INT;
+    v_venta_id        BIGINT;
+    v_admin_id        UUID;
+    v_combo_venta_id  BIGINT;
+    v_combo_item      RECORD;
+    v_combo_count     INT;
+    v_combo_idx       INT;
+    v_prod_nombre     TEXT;
+    v_prod_disponible INT;
+    v_prod_requerido  INT;
 BEGIN
     -- Solo actuar cuando el estado cambia A pago_confirmado
     IF NEW.estado <> 'pago_confirmado' OR OLD.estado = 'pago_confirmado' THEN
@@ -474,28 +477,31 @@ BEGIN
     END IF;
 
     -- ── 1. Verificar stock: productos regulares ──────────────────
-    IF EXISTS (
-        SELECT 1
-        FROM items_pedido ip
-        JOIN productos p ON p.id = ip.product_id
-        WHERE ip.pedido_id = NEW.id
-          AND p.cantidad < ip.cantidad
-    ) THEN
-        RAISE EXCEPTION 'Stock insuficiente en uno o más productos del pedido #%.', NEW.id;
+    SELECT p.nombre, p.cantidad, ip.cantidad
+    INTO v_prod_nombre, v_prod_disponible, v_prod_requerido
+    FROM items_pedido ip
+    JOIN productos p ON p.id = ip.product_id
+    WHERE ip.pedido_id = NEW.id
+      AND p.cantidad < ip.cantidad
+    LIMIT 1;
+
+    IF FOUND THEN
+        RAISE EXCEPTION 'STOCK_INSUF|%|%|%', v_prod_nombre, v_prod_disponible, v_prod_requerido;
     END IF;
 
     -- ── 2. Verificar stock: productos dentro de combos ───────────
-    IF EXISTS (
-        SELECT 1
-        FROM items_pedido ip
-        JOIN combo_productos cp ON cp.combo_id = ip.combo_id
-        JOIN productos p
-          ON p.id = NULLIF(cp.product_id, '')::BIGINT
-        WHERE ip.pedido_id = NEW.id
-          AND ip.combo_id IS NOT NULL
-          AND p.cantidad < (cp.cantidad * ip.cantidad)
-    ) THEN
-        RAISE EXCEPTION 'Stock insuficiente en productos de un combo del pedido #%.', NEW.id;
+    SELECT p.nombre, p.cantidad, (cp.cantidad * ip.cantidad)
+    INTO v_prod_nombre, v_prod_disponible, v_prod_requerido
+    FROM items_pedido ip
+    JOIN combo_productos cp ON cp.combo_id = ip.combo_id
+    JOIN productos p ON p.id = NULLIF(cp.product_id, '')::BIGINT
+    WHERE ip.pedido_id = NEW.id
+      AND ip.combo_id IS NOT NULL
+      AND p.cantidad < (cp.cantidad * ip.cantidad)
+    LIMIT 1;
+
+    IF FOUND THEN
+        RAISE EXCEPTION 'STOCK_INSUF|%|%|%', v_prod_nombre, v_prod_disponible, v_prod_requerido;
     END IF;
 
     -- ── 3. Descontar inventario: productos regulares ─────────────

@@ -2411,10 +2411,15 @@ async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
 
     if (error) {
         console.error('Error actualizando pedido:', error);
-        // Mostrar mensaje amigable si es error de stock insuficiente
-        const msg = error.message.includes('Stock insuficiente')
-            ? `❌ Stock insuficiente:\n${error.message}`
-            : `Error: ${error.message}`;
+        let msg;
+        const partes = (error.message || '').split('|');
+        if (partes[0] === 'STOCK_INSUF' && partes.length === 4) {
+            const [, nombre, disponible, necesario] = partes;
+            const faltan = Number(necesario) - Number(disponible);
+            msg = `❌ Stock insuficiente\n\nProducto: "${nombre}"\nDisponible: ${disponible} unidad${Number(disponible) !== 1 ? 'es' : ''}\nNecesario: ${necesario} unidad${Number(necesario) !== 1 ? 'es' : ''}\nFaltan: ${faltan} unidad${faltan !== 1 ? 'es' : ''}\n\nRecarga el inventario antes de confirmar este pedido.`;
+        } else {
+            msg = `Error: ${error.message}`;
+        }
         await mostrarAlerta(msg, 'error');
         btnEl.disabled    = false;
         btnEl.textContent = textoOrig;
