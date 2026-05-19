@@ -2657,9 +2657,9 @@ function crearDOMTicketOnline(pedido, esDeHoy) {
     });
     itemsHtml += '</ul>';
 
-    // Combos: mostrar fecha/hora de confirmación (ticket); pedidos normales: fecha del pedido
+    // Combos: mostrar fecha/hora de confirmación (ticket) en formato AM/PM; pedidos normales: fecha del pedido
     const fecha = (esCombo && ticketReal?.date)
-        ? ticketReal.date
+        ? fechaDBaLocale(ticketReal.date)
         : new Date(pedido.fecha).toLocaleString('es-CO');
     const totalFmt = Number(pedido.total).toLocaleString('es-CO');
     const metodoBadge = pedido.metodo_pago === 'contraentrega'
@@ -4065,6 +4065,15 @@ async function venderCombo(combo) {
 // ──────────────────────────────────────────────────────
 // TICKET COMBOS
 // ──────────────────────────────────────────────────────
+// Convierte "DD/MM/YYYY, HH:MM:SS" (24h, formato BD) a locale es-CO con AM/PM.
+// Si la cadena ya viene del navegador (ej. "18/5/2026, 8:01:17 p. m.") la devuelve igual.
+function fechaDBaLocale(str) {
+    if (!str) return str;
+    const m = String(str).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}),\s*(\d{2}):(\d{2}):(\d{2})$/);
+    if (!m) return str;
+    return new Date(+m[3], +m[2]-1, +m[1], +m[4], +m[5], +m[6]).toLocaleString('es-CO');
+}
+
 function crearDOMTicketCombo(sale, esDeHoy) {
     const ticketDiv = document.createElement('div');
     ticketDiv.className = 'venta-ticket venta-ticket-combo';
@@ -4093,8 +4102,9 @@ function crearDOMTicketCombo(sale, esDeHoy) {
     const botonEliminarHtml = esDeHoy
         ? `<button class="btn-eliminar-ticket" onclick="eliminarTicket(${sale.globalId}); event.stopPropagation();">✖ Eliminar</button>`
         : '';
-    const totalFmt = Number(sale.total).toLocaleString('es-CO');
-    const horaStr  = sale.date ? (sale.date.split(',')[1] || sale.date).trim() : '';
+    const totalFmt  = Number(sale.total).toLocaleString('es-CO');
+    const fechaFmt  = fechaDBaLocale(sale.date || '');
+    const horaStr   = fechaFmt ? (fechaFmt.split(',')[1] || fechaFmt).trim() : '';
 
     ticketDiv.innerHTML = `
         <div class="venta-ticket-header">
