@@ -4093,6 +4093,13 @@ function crearDOMTicketCombo(sale, esDeHoy) {
 // HISTORIAL DE COMBOS VENDIDOS
 // ──────────────────────────────────────────────────────
 function renderHistorialCombos() {
+    // Normaliza "18/5/2026" y "18/05/2026" al mismo string "18/05/2026"
+    const normFecha = f => {
+        if (!f) return '';
+        const p = String(f).split('/');
+        if (p.length !== 3) return f;
+        return `${p[0].padStart(2,'0')}/${p[1].padStart(2,'0')}/${p[2]}`;
+    };
     const _ahora = new Date();
     const hoy = `${String(_ahora.getDate()).padStart(2,'0')}/${String(_ahora.getMonth()+1).padStart(2,'0')}/${_ahora.getFullYear()}`;
     const ventasCombo = sales.filter(s => s.id && String(s.id).startsWith('COMBO-'));
@@ -4103,7 +4110,7 @@ function renderHistorialCombos() {
         const estabaOculto = listHoy.classList.contains('oculto');
         listHoy.innerHTML = '';
         const deHoy = ventasCombo.filter(s => {
-            const f = s.fechaLimpia || (s.date ? s.date.split(',')[0].trim() : '');
+            const f = normFecha(s.fechaLimpia || (s.date ? s.date.split(',')[0].trim() : ''));
             return f === hoy;
         });
         if (!deHoy.length) {
@@ -4121,7 +4128,7 @@ function renderHistorialCombos() {
 
     const pasados = {};
     ventasCombo.forEach(s => {
-        const f = s.fechaLimpia || (s.date ? s.date.split(',')[0].trim() : '');
+        const f = normFecha(s.fechaLimpia || (s.date ? s.date.split(',')[0].trim() : ''));
         if (f && f !== hoy) {
             if (!pasados[f]) pasados[f] = [];
             pasados[f].push(s);
