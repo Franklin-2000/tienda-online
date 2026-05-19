@@ -2468,9 +2468,8 @@ async function crearTicketsComboOnline(pedidoId) {
 
     if (!combos.length) await loadCombos();
 
-    // Usar la fecha del pedido original, no la hora de confirmación (puede ser día siguiente)
-    const pedidoRef = pedidosAdmin.find(p => String(p.id) === String(pedidoId));
-    const ahora = pedidoRef?.fecha ? new Date(pedidoRef.fecha) : new Date();
+    // Usar el momento de confirmación como fecha real de la venta
+    const ahora = new Date();
     const fechaLimpia = `${String(ahora.getDate()).padStart(2,'0')}/${String(ahora.getMonth()+1).padStart(2,'0')}/${ahora.getFullYear()}`;
 
     for (let idx = 0; idx < comboItems.length; idx++) {
@@ -2538,8 +2537,26 @@ function renderHistorialOnline() {
     const entregasHoy = [];
     const entregasPasadas = {};
 
+    // Normaliza DD/MM/YYYY o D/M/YYYY a localeDateString('es-CO') para comparar
+    const normFechaLimpia = fl => {
+        if (!fl) return '';
+        const p = String(fl).split('/');
+        if (p.length !== 3) return fl;
+        return new Date(Number(p[2]), Number(p[1]) - 1, Number(p[0])).toLocaleDateString('es-CO');
+    };
+
     pedidosEntregados.forEach(pedido => {
-        const fecha = new Date(pedido.fecha).toLocaleDateString('es-CO');
+        const esComboP = (pedido.items_pedido || []).some(i =>
+            i.combo_id || (i.nombre && String(i.nombre).startsWith('🎁 Combo:'))
+        );
+        let fecha;
+        if (esComboP) {
+            // Para combos usar la fecha del ticket (momento de confirmación)
+            const t = sales.find(s => s.id && String(s.id).startsWith(`COMBO-ONLINE-${pedido.id}`));
+            fecha = t?.fechaLimpia ? normFechaLimpia(t.fechaLimpia) : new Date(pedido.fecha).toLocaleDateString('es-CO');
+        } else {
+            fecha = new Date(pedido.fecha).toLocaleDateString('es-CO');
+        }
 
         if (fecha === fechaHoy) {
             entregasHoy.push(pedido);
@@ -2640,7 +2657,10 @@ function crearDOMTicketOnline(pedido, esDeHoy) {
     });
     itemsHtml += '</ul>';
 
-    const fecha = new Date(pedido.fecha).toLocaleString('es-CO');
+    // Combos: mostrar fecha/hora de confirmación (ticket); pedidos normales: fecha del pedido
+    const fecha = (esCombo && ticketReal?.date)
+        ? ticketReal.date
+        : new Date(pedido.fecha).toLocaleString('es-CO');
     const totalFmt = Number(pedido.total).toLocaleString('es-CO');
     const metodoBadge = pedido.metodo_pago === 'contraentrega'
         ? '<span class="ticket-badge ticket-badge-contraentrega">💵 Contra entrega</span>'
