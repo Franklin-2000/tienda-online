@@ -538,8 +538,8 @@ BEGIN
         EXTRACT(EPOCH FROM NOW())::BIGINT,
         'ONLINE-' || NEW.id,
         NEW.total,
-        TO_CHAR(NOW(), 'DD/MM/YYYY, HH24:MI:SS'),
-        TO_CHAR(NOW(), 'DD/MM/YYYY'),
+        TO_CHAR(NOW() AT TIME ZONE 'America/Bogota', 'DD/MM/YYYY, HH24:MI:SS'),
+        TO_CHAR(NOW() AT TIME ZONE 'America/Bogota', 'DD/MM/YYYY'),
         v_admin_id
     ) RETURNING id INTO v_venta_id;
 
@@ -584,8 +584,8 @@ BEGIN
                 ELSE 'COMBO-ONLINE-' || NEW.id || '-' || v_combo_idx
             END,
             v_combo_item.c_precio * v_combo_item.ip_qty,
-            TO_CHAR(NOW(), 'DD/MM/YYYY, HH24:MI:SS'),
-            TO_CHAR(NOW(), 'DD/MM/YYYY'),
+            TO_CHAR(NOW() AT TIME ZONE 'America/Bogota', 'DD/MM/YYYY, HH24:MI:SS'),
+            TO_CHAR(NOW() AT TIME ZONE 'America/Bogota', 'DD/MM/YYYY'),
             v_admin_id
         ) RETURNING id INTO v_combo_venta_id;
 
