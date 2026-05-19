@@ -200,7 +200,7 @@ h1 {
   position: absolute;
   top: 22px;
   right: 36px;
-  height: 64px;
+  height: 128px;
   width: auto;
   pointer-events: none;
   z-index: 10;
@@ -829,7 +829,7 @@ h1 {
     width: auto;
   }
   #pantalla-inicio .softvent-logo-img {
-    height: 38px;
+    height: 76px;
     top: 12px;
     right: 14px;
   }
