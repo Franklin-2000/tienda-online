@@ -4936,6 +4936,10 @@ body.modo-miopia #pantalla-combos h1,
 body.modo-miopia #pantalla-historial-combos h1 {
   color: #0c566c !important;
   text-shadow: none !important;
+  font-family: 'Inter', sans-serif !important;
+  font-style: normal !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em;
 }
 
 /* ── Subtítulos h2 con color claro por pantalla ── */
