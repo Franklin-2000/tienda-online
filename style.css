@@ -4926,6 +4926,150 @@ body.modo-miopia .btn-toggle-ventas-hoy {
   color: #0c566c;
 }
 
+/* ── Títulos y subtítulos de estadísticas ── */
+body.modo-miopia .stats-title {
+  color: #1a1a2e !important;
+  text-shadow: none !important;
+}
+body.modo-miopia .stats-subtitle { color: #5a7a8a; }
+body.modo-miopia .stats-tabla-titulo {
+  color: #1a3a4a;
+  background: #e8eff4;
+  border-bottom-color: #c0d4de;
+}
+
+/* ── Botones de período (selector de rango fechas) ── */
+body.modo-miopia .btn-period,
+body.modo-miopia .btn-period-online {
+  color: #1a3a4a;
+  border-color: rgba(12,86,108,0.2);
+  background: rgba(12,86,108,0.05);
+}
+body.modo-miopia .btn-period:hover,
+body.modo-miopia .btn-period-online:hover {
+  color: #0c566c;
+  background: rgba(12,86,108,0.1);
+  border-color: rgba(12,86,108,0.4);
+}
+body.modo-miopia .btn-period.activo,
+body.modo-miopia .btn-period-online.activo {
+  color: #0c566c;
+  background: rgba(12,86,108,0.12);
+  border-color: #0c566c;
+}
+
+/* ── KPI trend badge ── */
+body.modo-miopia .kpi-trend { color: #5a7a8a; background: rgba(12,86,108,0.06); }
+body.modo-miopia .kpi-trend.positivo { color: #27ae60; background: rgba(39,174,96,0.1); }
+body.modo-miopia .kpi-trend.negativo { color: #dc3545; background: rgba(220,53,69,0.1); }
+
+/* ── Tarjetas resumen (summary card: contador de productos/combos) ── */
+body.modo-miopia .inventory-summary-card {
+  background: #ffffff !important;
+  border: 1px solid #d8e3ea !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07) !important;
+  backdrop-filter: none !important;
+}
+body.modo-miopia .inventory-summary-card h2 {
+  color: #1a3a4a !important;
+  text-shadow: none !important;
+}
+body.modo-miopia .summary-count {
+  color: #0c566c !important;
+  text-shadow: none !important;
+}
+
+/* ── Formularios de agregar producto/combo ── */
+body.modo-miopia .tarjeta-input-producto {
+  background: #ffffff;
+  border-color: #d8e3ea;
+}
+body.modo-miopia .tarjeta-input-producto label {
+  color: #1a3a4a !important;
+  text-shadow: none !important;
+}
+body.modo-miopia .tarjeta-input-producto h2 {
+  color: #1a3a4a !important;
+  text-shadow: none !important;
+}
+body.modo-miopia .search-section h2 {
+  color: #1a3a4a !important;
+  text-shadow: none !important;
+}
+body.modo-miopia .search-section {
+  background: #ffffff;
+  border-color: #d8e3ea;
+}
+body.modo-miopia .tarjeta-input-producto input[type="text"],
+body.modo-miopia .tarjeta-input-producto input[type="number"] {
+  background: #ffffff;
+  color: #1a1a2e;
+  border-color: rgba(12,86,108,0.25);
+}
+body.modo-miopia .export-section {
+  background: #ffffff;
+  border-color: #d8e3ea;
+}
+
+/* ── Historial online: secciones por página ── */
+body.modo-miopia .seccion-historial-online-page {
+  background: #ffffff;
+  border: 1px solid #d8e3ea;
+  backdrop-filter: none;
+}
+body.modo-miopia .seccion-historial-online-page h3 {
+  color: #1a3a4a !important;
+  text-shadow: none !important;
+  border-bottom-color: #d8e3ea;
+}
+
+/* ── Switch offline en sidebar blanco ── */
+body.modo-miopia .offline-switch-label { color: #1a3a4a; }
+
+/* ── Botones historial inline y esquina ── */
+body.modo-miopia .btn-historial-inline { color: #1a3a4a; }
+body.modo-miopia .btn-historial-inline:hover { color: #0c566c; }
+body.modo-miopia .btn-historial-esquina { color: #1a3a4a; }
+body.modo-miopia .btn-historial-esquina:hover { color: #0c566c; }
+
+/* ── Tickets de venta en historial ── */
+body.modo-miopia .venta-ticket {
+  background: #ffffff;
+  border-color: #d8e3ea;
+}
+body.modo-miopia .venta-ticket-header { background-color: #f0f4f8 !important; }
+body.modo-miopia .venta-ticket-header strong { color: #1a3a4a; }
+body.modo-miopia .ticket-numero { color: #1a1a2e; }
+body.modo-miopia .ticket-total { color: #0c566c; }
+body.modo-miopia .fecha-venta { color: #5a7a8a; }
+body.modo-miopia .venta-ticket-details {
+  background-color: #ffffff;
+  color: #1a1a2e;
+  border-top-color: #e8eff4;
+}
+body.modo-miopia .venta-ticket-details li { border-bottom-color: #e8eff4; }
+
+/* ── Panel de ventas físicas (carrito) ── */
+body.modo-miopia .panel-venta-seccion { background: rgba(255,255,255,0.95); }
+body.modo-miopia .panel-venta-seccion-transparent { background: rgba(255,255,255,0.95); }
+body.modo-miopia .panel-venta-seccion-transparent-column { background: rgba(255,255,255,0.95); }
+body.modo-miopia .carrito-item { color: #1a1a2e; border-bottom-color: #e8eff4; }
+body.modo-miopia .total-venta-preview { color: #1a1a2e; }
+body.modo-miopia .producto-seleccionado-info { color: #1a1a2e; }
+
+/* ── Input búsqueda en pantalla ventas ── */
+body.modo-miopia .input-buscar-producto-venta {
+  background: #ffffff;
+  color: #1a1a2e;
+  border-color: rgba(12,86,108,0.25);
+}
+
+/* ── Barra de filtros de categorías ── */
+body.modo-miopia .categorias-filtro-bar {
+  background: rgba(12,86,108,0.04);
+  border-color: rgba(12,86,108,0.1);
+}
+
 /* ── Responsivo modo miopía ── */
 @media (max-width: 600px) {
   body.modo-miopia .sidebar-modo-toggle { font-size: 11px; }
