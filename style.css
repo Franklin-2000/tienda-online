@@ -5114,6 +5114,72 @@ body.modo-miopia .categorias-filtro-bar {
   border-color: rgba(12,86,108,0.1);
 }
 
+/* ════════════════════════════════════════════════════════════
+   REGLA MAESTRA: todo texto de contenido → negro oscuro
+   El sidebar (#sidebar-menu) queda fuera: no está dentro de
+   ningún #pantalla-* por lo que esta regla no lo afecta.
+   ════════════════════════════════════════════════════════════ */
+body.modo-miopia #pantalla-INVENTARIO *,
+body.modo-miopia #pantalla-ventas-fisicas *,
+body.modo-miopia #pantalla-historial-fisicas *,
+body.modo-miopia #pantalla-ventas-online *,
+body.modo-miopia #pantalla-historial-online *,
+body.modo-miopia #pantalla-estadisticas *,
+body.modo-miopia #pantalla-estadisticas-online *,
+body.modo-miopia #pantalla-combos *,
+body.modo-miopia #pantalla-historial-combos * {
+  color: #1a1a2e !important;
+}
+
+/* ── Excepciones: botones con fondo de color → texto blanco ── */
+body.modo-miopia .btn-añadir,
+body.modo-miopia .btn-añadir *,
+body.modo-miopia .btn-borrar-producto,
+body.modo-miopia .btn-borrar-producto *,
+body.modo-miopia .btn-exportar,
+body.modo-miopia .btn-exportar *,
+body.modo-miopia .btn-seleccionar-imagen,
+body.modo-miopia .btn-seleccionar-imagen *,
+body.modo-miopia .btn-buscar,
+body.modo-miopia .btn-buscar *,
+body.modo-miopia .btn-limpiar-busqueda,
+body.modo-miopia .btn-limpiar-busqueda *,
+body.modo-miopia .boton-volver,
+body.modo-miopia .boton-volver *,
+body.modo-miopia .btn-editar-producto,
+body.modo-miopia .btn-editar-producto *,
+body.modo-miopia .btn-agregar-al-carrito,
+body.modo-miopia .btn-agregar-al-carrito *,
+body.modo-miopia .btn-eliminar-ticket,
+body.modo-miopia .btn-eliminar-ticket * { color: #ffffff !important; }
+
+/* ── Excepciones: filtros estado activo y cat venta → texto blanco ── */
+body.modo-miopia .btn-filtro-estado.activo,
+body.modo-miopia .btn-filtro-estado.activo *,
+body.modo-miopia .btn-cat-venta.activo,
+body.modo-miopia .btn-cat-venta.activo * { color: #ffffff !important; }
+
+/* ── Excepciones: filtros inactivos → texto oscuro visible ── */
+body.modo-miopia .btn-filtro-estado,
+body.modo-miopia .btn-filtro-estado * { color: #1a3a4a !important; }
+body.modo-miopia .btn-filtro-estado.activo,
+body.modo-miopia .btn-filtro-estado.activo * { color: #ffffff !important; }
+
+/* ── Excepciones: acordeon-fecha (filas de fecha con fondo teal) ── */
+body.modo-miopia .acordeon-fecha,
+body.modo-miopia .acordeon-fecha * { color: #ffffff !important; }
+
+/* ── Excepciones: header-carrito (cabecera tabla carrito, fondo teal) ── */
+body.modo-miopia .header-carrito,
+body.modo-miopia .header-carrito * { color: #ffffff !important; }
+
+/* ── Excepciones: badges de estado de pedidos (texto semántico) ── */
+body.modo-miopia .estado-pagado,
+body.modo-miopia .estado-cancelado { color: #ffffff !important; }
+body.modo-miopia .estado-pendiente { color: #423000 !important; }
+body.modo-miopia .estado-despachado { color: #032b35 !important; }
+body.modo-miopia .estado-entregado { color: #00402e !important; }
+
 /* ── Responsivo modo miopía ── */
 @media (max-width: 600px) {
   body.modo-miopia .sidebar-modo-toggle { font-size: 11px; }
