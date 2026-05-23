@@ -1866,11 +1866,20 @@ function searchProducts() {
         return;
     }
 
-    searchResults = inventory.filter(product => {
-        const coincidenciaNombre = normalizeStringForSearch(product.nombre).includes(searchTerm);
-        const coincidenciaCodigo = product.codigoBarras && product.codigoBarras.includes(searchTermRaw);
-        return coincidenciaNombre || coincidenciaCodigo;
-    });
+    searchResults = inventory
+        .map(product => {
+            const nombre = normalizeStringForSearch(product.nombre);
+            const codigo = product.codigoBarras || '';
+            let score = 0;
+            if (nombre === searchTerm)                      score = 4; // coincidencia exacta
+            else if (nombre.startsWith(searchTerm))         score = 3; // empieza con el término
+            else if (nombre.includes(searchTerm))           score = 2; // contiene el término
+            else if (codigo.includes(searchTermRaw))        score = 1; // solo código de barras
+            return { product, score };
+        })
+        .filter(({ score }) => score > 0)
+        .sort((a, b) => b.score - a.score)
+        .map(({ product }) => product);
 
     renderProducts(searchResults);
 }
