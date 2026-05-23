@@ -5159,7 +5159,7 @@ body.modo-miopia #pantalla-estadisticas button *,
 body.modo-miopia #pantalla-estadisticas-online button *,
 body.modo-miopia #pantalla-combos button *,
 body.modo-miopia #pantalla-historial-combos button * {
-  color: revert !important;
+  color: #ffffff !important;
 }
 
 /* ── Sidebar: botones con colores legibles sobre fondo blanco ── */
@@ -5184,11 +5184,18 @@ body.modo-miopia .sidebar-logout * { color: #dc2626 !important; }
 body.modo-miopia .sidebar-logout:hover,
 body.modo-miopia .sidebar-logout:hover * { color: #b91c1c !important; }
 
-/* ── Elementos con fondo oscuro que NO son botones → texto blanco ── */
-body.modo-miopia .acordeon-fecha,
-body.modo-miopia .acordeon-fecha * { color: #ffffff !important; }
-body.modo-miopia .header-carrito,
-body.modo-miopia .header-carrito * { color: #ffffff !important; }
+/* ── Barras de acordeón y encabezado de carrito: fondo claro + texto negro ── */
+body.modo-miopia .acordeon-fecha {
+  background-color: #dce8ef !important;
+  color: #1a1a2e !important;
+}
+body.modo-miopia .acordeon-fecha * { color: #1a1a2e !important; }
+body.modo-miopia .acordeon-fecha:hover { background-color: #c8d9e4 !important; }
+body.modo-miopia .header-carrito {
+  background-color: #dce8ef !important;
+  color: #1a1a2e !important;
+}
+body.modo-miopia .header-carrito * { color: #1a1a2e !important; }
 
 /* ── Badges de estado de pedidos → color semántico ── */
 body.modo-miopia .estado-pagado,
