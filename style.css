@@ -851,11 +851,8 @@ h1 {
 }
 
 #pantalla-INVENTARIO {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://image.slidesdocs.com/responsive-images/background/website-mobile-app-explore-the-world-of-virtual-shopping-with-digital-marketing-powerpoint-background_bb972eee09__960_540.jpg);
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
+    background: #080f1a;
+    color: #e2eaf5;
     padding: 20px 28px;
     box-sizing: border-box;
     text-align: center;
@@ -1731,11 +1728,8 @@ input[type="file"] {
 
 /* --- ESTILOS PANTALLAS DE VENTAS --- */
 #pantalla-ventas-fisicas {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://www.loquequierasya.com/wp-content/uploads/2012/09/aumentar-ventas.jpg);
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
+    background: #080f1a;
+    color: #e2eaf5;
     padding: 20px;
     box-sizing: border-box;
     text-align: center;
@@ -1857,11 +1851,8 @@ input[type="file"] {
 /* === VENTAS ONLINE === */
 #pantalla-ventas-online,
 #pantalla-historial-online {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://static.vecteezy.com/ti/vetor-gratis/p1/5723793-icone-de-compras-linha-compras-simbolo-atraves-de-telefone-movel-isolado-em-fundo-branco-vetor.jpg);
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
+    background: #080f1a;
+    color: #e2eaf5;
     padding: 20px;
     box-sizing: border-box;
     text-align: center;
@@ -2857,11 +2848,8 @@ input[type="number"] {
 }
 
 #pantalla-historial-fisicas {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://www.loquequierasya.com/wp-content/uploads/2012/09/aumentar-ventas.jpg);
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
+    background: #080f1a;
+    color: #e2eaf5;
     padding: 20px;
     box-sizing: border-box;
     text-align: center;
@@ -3862,27 +3850,19 @@ input[type="number"] {
    PANTALLA COMBOS
    ============================================================ */
 #pantalla-combos {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://image.slidesdocs.com/responsive-images/background/website-mobile-app-explore-the-world-of-virtual-shopping-with-digital-marketing-powerpoint-background_bb972eee09__960_540.jpg);
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: scroll;
+  background: #080f1a;
+  color: #e2eaf5;
   padding: 20px 28px;
   box-sizing: border-box;
   text-align: center;
-  color: #e0f7f4;
 }
 
 #pantalla-historial-combos {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url(https://image.slidesdocs.com/responsive-images/background/website-mobile-app-explore-the-world-of-virtual-shopping-with-digital-marketing-powerpoint-background_bb972eee09__960_540.jpg);
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: scroll;
+  background: #080f1a;
+  color: #e2eaf5;
   padding: 28px 36px;
   box-sizing: border-box;
   text-align: center;
-  color: #e0f7f4;
 }
 
 #pantalla-historial-combos h1 {
