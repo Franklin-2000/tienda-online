@@ -1908,8 +1908,15 @@ inputBuscarProducto.addEventListener("input", searchProducts);
 
 inputBuscarProducto.addEventListener("keydown", function(event) {
     if (event.key === 'Enter') {
-        event.preventDefault(); 
+        event.preventDefault();
         searchProducts();
+        // Scroll al primer resultado (mayor relevancia) tras actualizar el DOM
+        setTimeout(() => {
+            const primerResultado = contenedorProductos.querySelector('.tarjeta-producto');
+            if (primerResultado) {
+                primerResultado.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 50);
     }
 });
 
