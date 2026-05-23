@@ -5222,6 +5222,53 @@ body.modo-miopia .estado-pendiente { color: #423000 !important; }
 body.modo-miopia .estado-despachado { color: #032b35 !important; }
 body.modo-miopia .estado-entregado { color: #00402e !important; }
 
+/* ── Ventas online: botones de filtro de estado (texto + icono) ── */
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado,
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado * {
+  color: #0c566c !important;
+  background: #ffffff !important;
+}
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado:hover,
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado:hover *,
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado.activo,
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado.activo * {
+  background: #0c566c !important;
+  color: #ffffff !important;
+}
+
+/* ── Botón escanear código de barras: icono visible ── */
+body.modo-miopia #pantalla-INVENTARIO .btn-escanear,
+body.modo-miopia #pantalla-INVENTARIO .btn-escanear *,
+body.modo-miopia #pantalla-ventas-fisicas .btn-escanear,
+body.modo-miopia #pantalla-ventas-fisicas .btn-escanear * {
+  color: #1a1a2e !important;
+}
+
+/* ── Estadísticas: botones Hoy / Esta semana / Este mes visibles y sin solapar título ── */
+body.modo-miopia #pantalla-estadisticas .btn-period,
+body.modo-miopia #pantalla-estadisticas .btn-period *,
+body.modo-miopia #pantalla-estadisticas-online .btn-period-online,
+body.modo-miopia #pantalla-estadisticas-online .btn-period-online * {
+  color: #1a1a2e !important;
+  background: rgba(12,86,108,0.07) !important;
+  border-color: #0c566c !important;
+}
+body.modo-miopia #pantalla-estadisticas .btn-period:hover,
+body.modo-miopia #pantalla-estadisticas .btn-period.activo,
+body.modo-miopia #pantalla-estadisticas-online .btn-period-online:hover,
+body.modo-miopia #pantalla-estadisticas-online .btn-period-online.activo {
+  background: #0c566c !important;
+  color: #ffffff !important;
+}
+/* Selector de período: sacar del flujo absoluto para que quede bajo el título */
+body.modo-miopia #pantalla-estadisticas .stats-period-selector,
+body.modo-miopia #pantalla-estadisticas-online .stats-period-selector {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  margin-top: 1cm !important;
+}
+
 /* ── Responsivo modo miopía ── */
 @media (max-width: 600px) {
   body.modo-miopia .sidebar-modo-toggle { font-size: 11px; }
