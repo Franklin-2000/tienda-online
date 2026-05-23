@@ -4922,7 +4922,7 @@ function actualizarBotonModo() {
     const esMiopia = document.body.classList.contains('modo-miopia');
     if (ico)   ico.outerHTML; // referencia fresca después de innerHTML
     btn.querySelector('.sidebar-icon').outerHTML = esMiopia ? _icoLuna : _icoSol;
-    if (label) label.textContent = esMiopia ? 'Modo Desarrollador' : 'Modo Miopía';
+    if (label) label.textContent = esMiopia ? 'Oscuro' : 'Claro';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
