@@ -1497,11 +1497,10 @@ function crearDOMTicket(sale, esDeHoy) {
 function renderProducts(productsToRender = null) {
     if (!contenedorProductos) return;
 
-    // Si no se pasan productos, aplicar categoría sobre inventario completo
-    // Si se pasan productos (búsqueda), sólo filtrar categoría encima de ellos
     let base = productsToRender !== null ? productsToRender : inventory;
     let productosFiltrados = base;
-    if (categoriaActivaFiltro && categoriaActivaFiltro !== 'todas') {
+    // La categoría solo filtra cuando NO hay búsqueda activa
+    if (productsToRender === null && categoriaActivaFiltro && categoriaActivaFiltro !== 'todas') {
         productosFiltrados = base.filter(p => p.categoria === categoriaActivaFiltro);
     }
 

@@ -5078,11 +5078,29 @@ body.modo-miopia .seccion-historial-online-page h3 {
 /* ── Switch offline en sidebar blanco ── */
 body.modo-miopia .offline-switch-label { color: #1a3a4a; }
 
+/* ── Botones de categoría en inventario: texto oscuro, fondo blanco; hover/activo con teal ── */
+/* Especificidad (1,2,1) supera la regla global de botones blancos (1,1,2) */
+body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro {
+  color: #0c566c !important;
+  background: #ffffff !important;
+  border-color: #0c566c !important;
+}
+body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro:hover,
+body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro.activo {
+  background: #0c566c !important;
+  color: #ffffff !important;
+}
+
 /* ── Botones historial inline y esquina ── */
 body.modo-miopia .btn-historial-inline { color: #1a3a4a; }
 body.modo-miopia .btn-historial-inline:hover { color: #0c566c; }
-body.modo-miopia .btn-historial-esquina { color: #1a3a4a; }
-body.modo-miopia .btn-historial-esquina:hover { color: #0c566c; }
+/* Especificidad (1,2,1) supera la regla global de botones blancos (1,1,2) */
+body.modo-miopia #pantalla-ventas-fisicas .btn-historial-esquina,
+body.modo-miopia #pantalla-ventas-fisicas .btn-historial-esquina *,
+body.modo-miopia #pantalla-ventas-online .btn-historial-esquina,
+body.modo-miopia #pantalla-ventas-online .btn-historial-esquina * { color: #1a1a2e !important; }
+body.modo-miopia #pantalla-ventas-fisicas .btn-historial-esquina:hover,
+body.modo-miopia #pantalla-ventas-online .btn-historial-esquina:hover { color: #0c566c !important; }
 
 /* ── Tickets de venta en historial ── */
 body.modo-miopia .venta-ticket {
