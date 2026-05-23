@@ -910,11 +910,22 @@ function seleccionarProductoVenta(productId) {
     if (panelCantidad) panelCantidad.style.display = 'block';
     if (infoEl) {
         infoEl.innerHTML = `
-            <img src="${product.imagen || 'https://via.placeholder.com/50'}" alt="${product.nombre}">
-            <div class="producto-seleccionado-datos">
-                <strong>${product.nombre}</strong>
-                <span>$${Number(product.precio).toLocaleString('es-CO')} · Stock: ${product.cantidad}</span>
-                <button class="btn-eliminar-seleccion" id="btnEliminarSeleccion">✕ Eliminar</button>
+            <div class="producto-sel-card">
+                <img src="${product.imagen || 'https://via.placeholder.com/50'}" alt="${product.nombre}">
+                <div class="producto-sel-izq">
+                    <strong class="producto-sel-nombre">${product.nombre}</strong>
+                    <button class="btn-eliminar-seleccion" id="btnEliminarSeleccion">✕ Eliminar</button>
+                </div>
+                <div class="producto-sel-stats">
+                    <div class="producto-sel-stat">
+                        <span class="stat-lbl">v.unit</span>
+                        <span class="stat-val">$${Number(product.precio).toLocaleString('es-CO')}</span>
+                    </div>
+                    <div class="producto-sel-stat">
+                        <span class="stat-lbl">stock.disp</span>
+                        <span class="stat-val">${product.cantidad}</span>
+                    </div>
+                </div>
             </div>
         `;
         // Evento del botón eliminar
