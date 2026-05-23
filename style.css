@@ -5081,15 +5081,15 @@ body.modo-miopia .seccion-historial-online-page h3 {
 /* ── Switch offline en sidebar blanco ── */
 body.modo-miopia .offline-switch-label { color: #1a3a4a; }
 
-/* ── Botones de categoría en inventario: texto + iconos teal sobre blanco; hover/activo con teal ── */
+/* ── Botones de categoría en inventario: texto + iconos negro sobre blanco; hover/activo con teal ── */
 /* .btn-categoria-filtro * → (1,2,1) supera la regla global button * (1,1,2) */
 body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro,
 body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro * {
-  color: #0c566c !important;
+  color: #000000 !important;
 }
 body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro {
   background: #ffffff !important;
-  border-color: #0c566c !important;
+  border-color: #000000 !important;
 }
 body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro:hover,
 body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro:hover *,
@@ -5100,6 +5100,7 @@ body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro.activo * {
 body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro:hover,
 body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro.activo {
   background: #0c566c !important;
+  border-color: #0c566c !important;
 }
 
 /* ── Botones historial inline y esquina ── */
@@ -5237,8 +5238,11 @@ body.modo-miopia .estado-entregado { color: #00402e !important; }
 /* ── Ventas online: botones de filtro de estado (texto + icono) ── */
 body.modo-miopia #pantalla-ventas-online .btn-filtro-estado,
 body.modo-miopia #pantalla-ventas-online .btn-filtro-estado * {
-  color: #0c566c !important;
+  color: #000000 !important;
   background: #ffffff !important;
+}
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado {
+  border-color: #000000 !important;
 }
 body.modo-miopia #pantalla-ventas-online .btn-filtro-estado:hover,
 body.modo-miopia #pantalla-ventas-online .btn-filtro-estado:hover *,
@@ -5246,6 +5250,10 @@ body.modo-miopia #pantalla-ventas-online .btn-filtro-estado.activo,
 body.modo-miopia #pantalla-ventas-online .btn-filtro-estado.activo * {
   background: #0c566c !important;
   color: #ffffff !important;
+}
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado:hover,
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado.activo {
+  border-color: #0c566c !important;
 }
 
 /* ── Botón escanear código de barras: icono visible ── */
