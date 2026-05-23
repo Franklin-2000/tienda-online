@@ -5155,9 +5155,12 @@ body.modo-miopia .btn-historial-inline:hover { color: #0c566c; }
 body.modo-miopia #pantalla-ventas-fisicas .btn-historial-esquina,
 body.modo-miopia #pantalla-ventas-fisicas .btn-historial-esquina *,
 body.modo-miopia #pantalla-ventas-online .btn-historial-esquina,
-body.modo-miopia #pantalla-ventas-online .btn-historial-esquina * { color: #1a1a2e !important; }
+body.modo-miopia #pantalla-ventas-online .btn-historial-esquina *,
+body.modo-miopia #pantalla-combos .btn-historial-esquina,
+body.modo-miopia #pantalla-combos .btn-historial-esquina * { color: #1a1a2e !important; }
 body.modo-miopia #pantalla-ventas-fisicas .btn-historial-esquina:hover,
-body.modo-miopia #pantalla-ventas-online .btn-historial-esquina:hover { color: #0c566c !important; }
+body.modo-miopia #pantalla-ventas-online .btn-historial-esquina:hover,
+body.modo-miopia #pantalla-combos .btn-historial-esquina:hover { color: #0c566c !important; }
 
 /* ── Tickets de venta en historial ── */
 body.modo-miopia .venta-ticket {
