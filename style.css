@@ -5139,13 +5139,31 @@ body.modo-miopia #pantalla-historial-combos * {
   color: #1a1a2e !important;
 }
 
-/* ── Excepción general: botones recuperan su color CSS original ── */
-body.modo-miopia button,
-body.modo-miopia button * {
+/* ── Excepción: botones dentro de pantallas recuperan su color CSS original ── */
+/* Especificidad (1,1,2) > regla global (1,1,1) → gana entre !important del mismo origen */
+body.modo-miopia #pantalla-INVENTARIO button,
+body.modo-miopia #pantalla-ventas-fisicas button,
+body.modo-miopia #pantalla-historial-fisicas button,
+body.modo-miopia #pantalla-ventas-online button,
+body.modo-miopia #pantalla-historial-online button,
+body.modo-miopia #pantalla-estadisticas button,
+body.modo-miopia #pantalla-estadisticas-online button,
+body.modo-miopia #pantalla-combos button,
+body.modo-miopia #pantalla-historial-combos button,
+body.modo-miopia #pantalla-INVENTARIO button *,
+body.modo-miopia #pantalla-ventas-fisicas button *,
+body.modo-miopia #pantalla-historial-fisicas button *,
+body.modo-miopia #pantalla-ventas-online button *,
+body.modo-miopia #pantalla-historial-online button *,
+body.modo-miopia #pantalla-estadisticas button *,
+body.modo-miopia #pantalla-estadisticas-online button *,
+body.modo-miopia #pantalla-combos button *,
+body.modo-miopia #pantalla-historial-combos button * {
   color: revert !important;
 }
 
-/* ── Sidebar: colores ajustados al fondo blanco del modo miopía ── */
+/* ── Sidebar: botones con colores legibles sobre fondo blanco ── */
+/* Sin !important competidor de "revert" → estos !important ganan sobre las bases sin !important */
 body.modo-miopia .sidebar-refresh-btn,
 body.modo-miopia .sidebar-refresh-btn * { color: #16a34a !important; }
 body.modo-miopia .sidebar-refresh-btn:hover,
