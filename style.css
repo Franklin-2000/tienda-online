@@ -1915,21 +1915,24 @@ input[type="file"] {
 }
 
 .btn-historial-inline {
-    background-color: #0c566c;
-    color: white;
+    background: transparent;
+    color: #a8f0e8;
     border: none;
     padding: 8px 16px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: background-color 0.2s ease, transform 0.15s ease;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transition: color 0.2s, transform 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn-historial-inline:hover {
-    background-color: #0a4a5a;
-    transform: translateY(-3px);
+    color: #fff;
+    transform: scale(1.07);
 }
 
 #contenedorHistorialOnline {
@@ -2045,19 +2048,24 @@ input[type="file"] {
 }
 
 .btn-historial-esquina {
-    background-color: #0c566c;
-    color: white;
+    background: transparent;
+    color: #a8f0e8;
     border: none;
     padding: 10px 15px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 14px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: background-color 0.3s;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transition: color 0.2s, transform 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn-historial-esquina:hover {
-    background-color: #0a4a5a;
+    color: #fff;
+    transform: scale(1.07);
 }
 
 .historial-ventas {
@@ -3001,7 +3009,7 @@ input[type="number"] {
     .pedido-admin-card { max-width: 100%; min-width: unset; width: 100%; }
 
     /* Botón historial esquina */
-    .btn-historial-esquina-position { top: 10px; right: 10px; font-size: 12px; padding: 8px 10px; }
+    .btn-historial-esquina-position { top: 10px; right: 10px; font-size: 15px; padding: 8px 10px; }
 
     /* Filtros pedidos online */
     .filtros-pedidos-wrap { gap: 6px; }
@@ -3084,7 +3092,7 @@ input[type="number"] {
 
     /* Ventas online */
     #pantalla-ventas-online { padding: 12px; }
-    .btn-historial-esquina-position { top: 8px; right: 8px; font-size: 11px; padding: 6px 8px; }
+    .btn-historial-esquina-position { top: 8px; right: 8px; font-size: 14px; padding: 6px 8px; }
     .filtros-pedidos-wrap { gap: 5px; }
     .btn-filtro-estado { font-size: 0.75em; padding: 5px 8px; }
     .online-acciones-wrap { flex-direction: column; width: 100%; }
