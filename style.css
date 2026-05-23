@@ -4926,6 +4926,50 @@ body.modo-miopia .btn-toggle-ventas-hoy {
   color: #0c566c;
 }
 
+/* ── Títulos principales h1 (Pacifico, blanco en modo oscuro) ── */
+body.modo-miopia #pantalla-INVENTARIO h1,
+body.modo-miopia #pantalla-ventas-fisicas h1,
+body.modo-miopia #pantalla-historial-fisicas h1,
+body.modo-miopia #pantalla-ventas-online h1,
+body.modo-miopia #pantalla-historial-online h1,
+body.modo-miopia #pantalla-combos h1,
+body.modo-miopia #pantalla-historial-combos h1 {
+  color: #0c566c !important;
+  text-shadow: none !important;
+}
+
+/* ── Subtítulos h2 con color claro por pantalla ── */
+body.modo-miopia #pantalla-INVENTARIO h2,
+body.modo-miopia #pantalla-combos h2 {
+  color: #1a3a4a !important;
+  text-shadow: none !important;
+}
+body.modo-miopia #inventory-products-title { color: #1a3a4a !important; text-shadow: none !important; }
+body.modo-miopia #combos-list-title        { color: #1a3a4a !important; text-shadow: none !important; }
+body.modo-miopia #online-pedidos-title     { color: #1a3a4a !important; text-shadow: none !important; }
+body.modo-miopia .combos-title             { color: #0c566c !important; text-shadow: none !important; }
+
+/* ── Header de estadísticas (banner oscuro con gradiente) ── */
+body.modo-miopia .stats-header {
+  background: #f0f4f8 !important;
+  border-bottom-color: #d8e3ea !important;
+}
+
+/* ── Cards de gráficas y sección de tabla ── */
+body.modo-miopia .stats-chart-card {
+  background: #ffffff !important;
+  border-color: #d8e3ea !important;
+}
+body.modo-miopia .stats-tabla-section {
+  background: #ffffff !important;
+  border-color: #d8e3ea !important;
+}
+body.modo-miopia .chart-badge {
+  color: #1a3a4a;
+  background: rgba(12,86,108,0.08);
+  border-color: rgba(12,86,108,0.2);
+}
+
 /* ── Títulos y subtítulos de estadísticas ── */
 body.modo-miopia .stats-title {
   color: #1a1a2e !important;
