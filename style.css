@@ -334,36 +334,31 @@ h1 {
   line-height: 1.2;
 }
 
-/* --- Botón Actualizar — verde --- */
+/* --- Botón Actualizar --- */
 .sidebar-refresh-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: 12px;
   margin: 8px 0 0 0;
-  padding: 12px 18px;
-  background: linear-gradient(135deg, #1a7a3a 0%, #27ae60 100%);
-  color: #fff;
+  padding: 10px 16px;
+  background: transparent;
+  color: #27ae60;
   border: none;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  transition: color 0.2s, transform 0.15s;
   width: 100%;
   box-sizing: border-box;
-  box-shadow: 0 4px 18px rgba(39,174,96,0.40), 0 0 0 1px rgba(39,174,96,0.25);
 }
 .sidebar-refresh-btn:hover {
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(46,204,113,0.55), 0 0 0 2px rgba(46,204,113,0.35);
+  color: #2ecc71;
+  transform: translateX(4px);
 }
 .sidebar-refresh-btn:active {
-  transform: translateY(1px);
-  box-shadow: 0 3px 10px rgba(39,174,96,0.4);
+  transform: translateX(2px);
 }
 .sidebar-refresh-btn .sidebar-icon {
   display: inline-block;
@@ -373,38 +368,33 @@ h1 {
   transform: rotate(360deg);
 }
 
-/* --- Botón Cerrar Sesión — rojo llamativo --- */
+/* --- Botón Cerrar Sesión --- */
 .sidebar-logout {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: 12px;
   margin: 16px 14px 0 14px;
-  padding: 14px 18px;
-  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
-  color: #fff;
+  padding: 10px 16px;
+  background: transparent;
+  color: #e74c3c;
   border: none;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  transition: color 0.2s, transform 0.15s;
   width: calc(100% - 28px);
   box-sizing: border-box;
-  box-shadow: 0 4px 18px rgba(192,57,43,0.45), 0 0 0 1px rgba(231,76,60,0.3);
 }
 
 .sidebar-logout:hover {
-  background: linear-gradient(135deg, #e74c3c 0%, #ff6b6b 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(231,76,60,0.60), 0 0 0 2px rgba(255,107,107,0.4);
+  color: #ff6b6b;
+  transform: translateX(4px);
 }
 
 .sidebar-logout:active {
-  transform: translateY(1px);
-  box-shadow: 0 3px 10px rgba(192,57,43,0.4);
+  transform: translateX(2px);
 }
 
 
@@ -560,24 +550,24 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 11px 14px;
-  background: rgba(255, 180, 50, 0.08);
+  padding: 10px 16px;
+  background: transparent;
   color: #ffd580;
-  border: 1.5px solid rgba(255, 180, 50, 0.22);
-  border-radius: 12px 12px 0 0;
-  font-size: 12.5px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition: color 0.2s, transform 0.15s;
   width: 100%;
   box-sizing: border-box;
   text-align: left;
 }
 
 .sidebar-modo-trabajo-btn:hover {
-  background: rgba(255, 180, 50, 0.18);
-  border-color: #ffd580;
+  color: #ffe9a0;
+  transform: translateX(4px);
 }
 
 .sidebar-modo-trabajo-btn .sidebar-icon {
@@ -1705,7 +1695,7 @@ input[type="file"] {
 
 /* --- ESTILOS PANTALLAS DE VENTAS --- */
 #pantalla-ventas-fisicas {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://www.loquequierasya.com/wp-content/uploads/2012/09/aumentar-ventas.jpg);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://image.slidesdocs.com/responsive-images/background/website-mobile-app-explore-the-world-of-virtual-shopping-with-digital-marketing-powerpoint-background_bb972eee09__960_540.jpg);
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -1713,7 +1703,6 @@ input[type="file"] {
     padding: 20px;
     box-sizing: border-box;
     text-align: center;
-    /* position: relative eliminado — no debe sobreescribir el position: absolute global */
 }
 
 #pantalla-ventas-fisicas h1 {
@@ -1831,7 +1820,7 @@ input[type="file"] {
 /* === VENTAS ONLINE === */
 #pantalla-ventas-online,
 #pantalla-historial-online {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://static.vecteezy.com/ti/vetor-gratis/p1/5723793-icone-de-compras-linha-compras-simbolo-atraves-de-telefone-movel-isolado-em-fundo-branco-vetor.jpg);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://image.slidesdocs.com/responsive-images/background/website-mobile-app-explore-the-world-of-virtual-shopping-with-digital-marketing-powerpoint-background_bb972eee09__960_540.jpg);
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -2831,7 +2820,7 @@ input[type="number"] {
 }
 
 #pantalla-historial-fisicas {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://www.loquequierasya.com/wp-content/uploads/2012/09/aumentar-ventas.jpg);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://image.slidesdocs.com/responsive-images/background/website-mobile-app-explore-the-world-of-virtual-shopping-with-digital-marketing-powerpoint-background_bb972eee09__960_540.jpg);
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
