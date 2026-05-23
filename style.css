@@ -88,18 +88,9 @@ body {
 }
 
 /* Marca el ítem activo en el sidebar */
-.sidebar-boton.sidebar-activo {
-  background: rgba(122, 228, 214, 0.20);
-  color: #fff;
-  border-color: #7ae4d6;
-  box-shadow: 0 4px 18px rgba(122, 228, 214, 0.20);
-}
-
+.sidebar-boton.sidebar-activo,
 .sidebar-boton-secondary.sidebar-activo {
-  background: rgba(122, 228, 214, 0.20);
-  color: #fff;
-  border-color: #7ae4d6;
-  box-shadow: 0 4px 18px rgba(122, 228, 214, 0.20);
+  color: #7ae4d6;
 }
 
 /* ======================================================
@@ -279,11 +270,11 @@ h1 {
   filter: drop-shadow(0 0 6px rgba(122,228,214,0.8));
 }
 
-/* --- Botones de navegación --- */
+/* --- Opciones de navegación --- */
 .sidebar-nav-links {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 2px;
   padding: 0 14px;
   flex: 1;
   overflow-y: auto;
@@ -293,70 +284,34 @@ h1 {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 16px;
-  background: rgba(122, 228, 214, 0.08);
+  padding: 10px 16px;
+  background: transparent;
   color: #a8f0e8;
   text-decoration: none;
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.06em;
-  border: 1.5px solid rgba(122, 228, 214, 0.18);
-  transition: background 0.25s, color 0.25s, border-color 0.25s,
-              transform 0.2s cubic-bezier(0.34,1.56,0.64,1),
-              box-shadow 0.25s, letter-spacing 0.25s;
+  border: none;
+  transition: color 0.2s, transform 0.15s;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Efecto shimmer al pasar el mouse */
-.sidebar-boton::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(122,228,214,0.18), transparent);
-  transform: skewX(-20deg);
-  transition: left 0.45s ease;
-}
-
-.sidebar-boton:hover::after {
-  left: 150%;
 }
 
 .sidebar-boton:hover {
-  background: rgba(122, 228, 214, 0.22);
   color: #fff;
-  border-color: #7ae4d6;
-  transform: translateX(6px) scale(1.02);
-  box-shadow: 0 6px 22px rgba(122, 228, 214, 0.30);
-  letter-spacing: 0.09em;
+  transform: translateX(4px);
 }
 
 .sidebar-boton:active {
-  transform: translateX(3px) scale(0.98);
+  transform: translateX(2px);
 }
 
-/* Botones secundarios (Estadísticas, Combos) con tono diferente */
 .sidebar-boton-secondary {
-  background: rgba(122, 228, 214, 0.08);
   color: #a8f0e8;
-  border-color: rgba(122, 228, 214, 0.18);
-}
-
-.sidebar-boton-secondary::after {
-  background: linear-gradient(90deg, transparent, rgba(122,228,214,0.18), transparent);
 }
 
 .sidebar-boton-secondary:hover {
-  background: rgba(122, 228, 214, 0.22);
   color: #fff;
-  border-color: #7ae4d6;
-  box-shadow: 0 6px 22px rgba(122, 228, 214, 0.30);
-  letter-spacing: 0.09em;
 }
 
 .sidebar-icon {
@@ -850,7 +805,13 @@ h1 {
   flex-wrap: wrap;
 }
 
-#pantalla-INVENTARIO {
+#pantalla-INVENTARIO,
+#pantalla-ventas-fisicas,
+#pantalla-historial-fisicas,
+#pantalla-ventas-online,
+#pantalla-historial-online,
+#pantalla-combos,
+#pantalla-historial-combos {
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://image.slidesdocs.com/responsive-images/background/website-mobile-app-explore-the-world-of-virtual-shopping-with-digital-marketing-powerpoint-background_bb972eee09__960_540.jpg);
     background-size: cover;
     background-position: center center;
@@ -858,7 +819,20 @@ h1 {
     background-attachment: scroll;
     padding: 20px 28px;
     box-sizing: border-box;
+}
+
+#pantalla-INVENTARIO {
     text-align: center;
+}
+
+#pantalla-ventas-fisicas h1,
+#pantalla-historial-fisicas h1,
+#pantalla-ventas-online h1,
+#pantalla-historial-online h1,
+#pantalla-combos h1,
+#pantalla-historial-combos h1 {
+    color: #fafcfd;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
 }
 
 #pantalla-INVENTARIO h1 {
