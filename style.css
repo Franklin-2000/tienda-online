@@ -2050,6 +2050,12 @@ input[type="file"] {
     transform: scale(1.07);
 }
 
+.btn-historial-esquina svg,
+.btn-historial-inline svg {
+    width: 36px;
+    height: 36px;
+}
+
 .historial-ventas {
     flex: 1.5;
     min-width: 300px;
