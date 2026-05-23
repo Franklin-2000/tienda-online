@@ -379,13 +379,18 @@ h1 {
   color: #ff4757;
   border: none;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   letter-spacing: 0.06em;
   cursor: pointer;
   transition: color 0.2s, transform 0.15s;
   width: 100%;
   box-sizing: border-box;
+}
+.sidebar-logout svg {
+  width: 1.3em;
+  height: 1.3em;
+  flex-shrink: 0;
 }
 
 .sidebar-logout:hover {
@@ -784,7 +789,7 @@ h1 {
   .sidebar-user-name { font-size: 0.78em; }
   .sidebar-icon { font-size: 1.1em; }
   .sidebar-refresh-btn { font-size: 12px; padding: 10px 14px; }
-  .sidebar-logout { font-size: 12px; padding: 12px 14px; }
+  .sidebar-logout { font-size: 14px; padding: 12px 14px; }
 }
 
 .botones-container {
