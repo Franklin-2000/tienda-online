@@ -1660,28 +1660,10 @@ input[type="file"] {
 }
 
 #btnLogout {
-    margin-top: 20px;
-    background-color: #6c757d;
-    color: white;
-    padding: 10px 20px;
+    background: transparent;
+    color: #ff4757;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-#btnLogout:hover {
-    background-color: #5a6268;
-    transform: translateY(-6px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    filter: brightness(1.1);
-}
-
-#btnLogout:active {
-    transform: translateY(2px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    filter: brightness(0.95);
+    box-shadow: none;
 }
 
 #pantalla-registro {
