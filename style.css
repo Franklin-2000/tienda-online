@@ -4766,3 +4766,167 @@ input[type="number"] {
     font-weight: 700;
     opacity: 0.7;
 }
+
+/* ============================================================
+   MODO MIOPÍA — Tema Día
+   Se activa con: body.modo-miopia
+   ============================================================ */
+
+/* ── Botón toggle en sidebar ── */
+.sidebar-modo-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: transparent;
+  color: #a8f0e8;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+.sidebar-modo-toggle:hover { color: #fff; transform: translateX(4px); }
+
+/* ── Base ── */
+body.modo-miopia {
+  background-color: #f0f4f8;
+}
+
+/* ── Sidebar ── */
+body.modo-miopia #sidebar-menu {
+  background: #ffffff;
+  border-right: 1px solid #d8e3ea;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.07);
+}
+/* Perfil de usuario: se mantiene con fondo oscuro tal como está */
+body.modo-miopia .sidebar-user-profile {
+  background: linear-gradient(180deg, #0d3347 0%, #163d52 100%);
+  border-radius: 0 0 12px 12px;
+  margin-bottom: 4px;
+}
+body.modo-miopia .sidebar-section-title {
+  color: #5a7a8a;
+  border-bottom-color: #d8e3ea;
+}
+body.modo-miopia .sidebar-boton { color: #1a3a4a; }
+body.modo-miopia .sidebar-boton:hover { color: #0c566c; }
+body.modo-miopia .sidebar-boton.sidebar-activo {
+  color: #0c566c;
+  background: rgba(12,86,108,0.08);
+}
+body.modo-miopia .sidebar-modo-toggle { color: #1a3a4a; }
+body.modo-miopia .sidebar-modo-toggle:hover { color: #0c566c; }
+
+/* ── Pantallas: quitar fondo oscuro ── */
+body.modo-miopia #pantalla-INVENTARIO,
+body.modo-miopia #pantalla-ventas-fisicas,
+body.modo-miopia #pantalla-historial-fisicas,
+body.modo-miopia #pantalla-ventas-online,
+body.modo-miopia #pantalla-historial-online,
+body.modo-miopia #pantalla-combos,
+body.modo-miopia #pantalla-historial-combos {
+  background-image: none !important;
+  background-color: #f0f4f8 !important;
+}
+body.modo-miopia #pantalla-estadisticas,
+body.modo-miopia #pantalla-estadisticas-online {
+  background: #f0f4f8 !important;
+}
+
+/* ── Títulos blancos → oscuro ── */
+body.modo-miopia .titulo-ventas-hoy-independiente {
+  color: #1a3a4a;
+  text-shadow: none;
+}
+body.modo-miopia .chart-title { color: #1a3a4a; }
+body.modo-miopia .stats-kpi-section-title { color: #1a3a4a; }
+
+/* ── KPI cards ── */
+body.modo-miopia .stats-kpi-card {
+  background: #ffffff;
+  border: 1px solid #d8e3ea;
+}
+body.modo-miopia .stats-kpi-primary { background: rgba(12,86,108,0.04); }
+body.modo-miopia .kpi-label { color: #5a7a8a; }
+body.modo-miopia .kpi-value { color: #1a1a2e; }
+body.modo-miopia .stats-kpi-primary .kpi-value { color: #0c566c; }
+
+/* ── Tablas de estadísticas ── */
+body.modo-miopia .stats-tabla thead th {
+  color: #1a3a4a;
+  background: #e0ecf2;
+  border-bottom-color: #c0d4de;
+}
+body.modo-miopia .stats-tabla tbody td {
+  color: #1a1a2e;
+  border-bottom-color: #e8eff4;
+}
+body.modo-miopia .stats-tabla tbody tr:nth-child(even) {
+  background: rgba(12,86,108,0.025);
+}
+body.modo-miopia .stats-tabla tbody tr:hover {
+  background: rgba(12,86,108,0.06) !important;
+}
+body.modo-miopia .stats-tabla-empty { color: #5a7a8a; }
+
+/* ── Tarjeta producto (inventario) ── */
+body.modo-miopia .tarjeta-producto {
+  background-color: #ffffff;
+  border-color: #d8e3ea;
+}
+
+/* ── Sección combos ── */
+body.modo-miopia .tarjeta-combo {
+  background: #ffffff;
+  border: 1.5px solid #d8e3ea;
+}
+body.modo-miopia .combo-card-nombre { color: #1a1a2e; }
+body.modo-miopia .combo-card-desc   { color: #5a7a8a; }
+body.modo-miopia .combo-card-precio { color: #0c566c; }
+body.modo-miopia .combo-form-card {
+  background: #ffffff;
+  border: 1px solid #d8e3ea;
+}
+body.modo-miopia .combo-form-card h2 { color: #1a3a4a; }
+body.modo-miopia .combo-label { color: #5a7a8a; }
+body.modo-miopia .combo-input {
+  background: #ffffff;
+  color: #1a1a2e;
+  border-color: rgba(12,86,108,0.3);
+}
+body.modo-miopia .combo-input:focus {
+  border-color: #0c566c;
+  background: #f0f8fc;
+}
+body.modo-miopia .combo-input::placeholder { color: #9ab0bb; }
+body.modo-miopia .combo-autocomplete {
+  background: #ffffff;
+  border-color: #d8e3ea;
+}
+body.modo-miopia .combo-auto-item:hover { background: rgba(12,86,108,0.07); }
+body.modo-miopia .combo-auto-item-nombre { color: #1a1a2e; }
+body.modo-miopia .combo-auto-item-precio { color: #0c566c; }
+body.modo-miopia .combo-chip {
+  background: #e4f1f7;
+  border-color: rgba(12,86,108,0.18);
+}
+body.modo-miopia #pantalla-combos .combo-chip-nombre { color: #1a1a2e; }
+body.modo-miopia #pantalla-combos .combo-chip-qty-label { color: #5a7a8a; }
+body.modo-miopia #pantalla-combos .combo-chip-precio { color: #0c566c; }
+
+/* ── Botón toggle ventas hoy ── */
+body.modo-miopia .btn-toggle-ventas-hoy {
+  background: rgba(12,86,108,0.1);
+  border-color: rgba(12,86,108,0.25);
+  color: #0c566c;
+}
+
+/* ── Responsivo modo miopía ── */
+@media (max-width: 600px) {
+  body.modo-miopia .sidebar-modo-toggle { font-size: 11px; }
+}
