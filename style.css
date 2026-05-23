@@ -301,8 +301,8 @@ h1 {
   font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.06em;
-  border: 1.5px solid rgba(122, 228, 214, 0.18);
-  transition: background 0.25s, color 0.25s, border-color 0.25s,
+  border: none;
+  transition: background 0.25s, color 0.25s,
               transform 0.2s cubic-bezier(0.34,1.56,0.64,1),
               box-shadow 0.25s, letter-spacing 0.25s;
   cursor: pointer;
@@ -330,7 +330,6 @@ h1 {
 .sidebar-boton:hover {
   background: rgba(122, 228, 214, 0.22);
   color: #fff;
-  border-color: #7ae4d6;
   transform: translateX(6px) scale(1.02);
   box-shadow: 0 6px 22px rgba(122, 228, 214, 0.30);
   letter-spacing: 0.09em;
@@ -344,7 +343,7 @@ h1 {
 .sidebar-boton-secondary {
   background: rgba(122, 228, 214, 0.08);
   color: #a8f0e8;
-  border-color: rgba(122, 228, 214, 0.18);
+  border: none;
 }
 
 .sidebar-boton-secondary::after {
@@ -354,7 +353,6 @@ h1 {
 .sidebar-boton-secondary:hover {
   background: rgba(122, 228, 214, 0.22);
   color: #fff;
-  border-color: #7ae4d6;
   box-shadow: 0 6px 22px rgba(122, 228, 214, 0.30);
   letter-spacing: 0.09em;
 }
@@ -379,7 +377,7 @@ h1 {
   line-height: 1.2;
 }
 
-/* --- Botón Actualizar — verde --- */
+/* --- Botón Actualizar — texto verde --- */
 .sidebar-refresh-btn {
   display: flex;
   align-items: center;
@@ -387,8 +385,8 @@ h1 {
   gap: 10px;
   margin: 8px 0 0 0;
   padding: 12px 18px;
-  background: linear-gradient(135deg, #1a7a3a 0%, #27ae60 100%);
-  color: #fff;
+  background: transparent;
+  color: #27ae60;
   border: none;
   border-radius: 12px;
   font-size: 14px;
@@ -396,19 +394,17 @@ h1 {
   letter-spacing: 0.07em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  transition: color 0.2s, transform 0.15s, background 0.2s;
   width: 100%;
   box-sizing: border-box;
-  box-shadow: 0 4px 18px rgba(39,174,96,0.40), 0 0 0 1px rgba(39,174,96,0.25);
 }
 .sidebar-refresh-btn:hover {
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(46,204,113,0.55), 0 0 0 2px rgba(46,204,113,0.35);
+  background: rgba(39, 174, 96, 0.12);
+  color: #2ecc71;
+  transform: translateX(4px);
 }
 .sidebar-refresh-btn:active {
-  transform: translateY(1px);
-  box-shadow: 0 3px 10px rgba(39,174,96,0.4);
+  transform: translateX(2px);
 }
 .sidebar-refresh-btn .sidebar-icon {
   display: inline-block;
@@ -426,8 +422,8 @@ h1 {
   gap: 10px;
   margin: 16px 14px 0 14px;
   padding: 14px 18px;
-  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
-  color: #fff;
+  background: transparent;
+  color: #e74c3c;
   border: none;
   border-radius: 12px;
   font-size: 14px;
@@ -435,21 +431,19 @@ h1 {
   letter-spacing: 0.07em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  transition: color 0.2s, transform 0.15s, background 0.2s;
   width: calc(100% - 28px);
   box-sizing: border-box;
-  box-shadow: 0 4px 18px rgba(192,57,43,0.45), 0 0 0 1px rgba(231,76,60,0.3);
 }
 
 .sidebar-logout:hover {
-  background: linear-gradient(135deg, #e74c3c 0%, #ff6b6b 100%);
+  background: rgba(231, 76, 60, 0.12);
+  color: #ff6b6b;
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(231,76,60,0.60), 0 0 0 2px rgba(255,107,107,0.4);
 }
 
 .sidebar-logout:active {
   transform: translateY(1px);
-  box-shadow: 0 3px 10px rgba(192,57,43,0.4);
 }
 
 
@@ -606,23 +600,23 @@ h1 {
   justify-content: space-between;
   gap: 8px;
   padding: 11px 14px;
-  background: rgba(255, 180, 50, 0.08);
+  background: transparent;
   color: #ffd580;
-  border: 1.5px solid rgba(255, 180, 50, 0.22);
+  border: none;
   border-radius: 12px 12px 0 0;
   font-size: 12.5px;
   font-weight: 700;
   letter-spacing: 0.04em;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition: color 0.2s, background 0.2s;
   width: 100%;
   box-sizing: border-box;
   text-align: left;
 }
 
 .sidebar-modo-trabajo-btn:hover {
-  background: rgba(255, 180, 50, 0.18);
-  border-color: #ffd580;
+  background: rgba(255, 180, 50, 0.12);
+  color: #ffe9a0;
 }
 
 .sidebar-modo-trabajo-btn .sidebar-icon {
