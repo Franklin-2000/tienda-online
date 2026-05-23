@@ -4927,14 +4927,17 @@ body.modo-miopia .btn-toggle-ventas-hoy {
 }
 
 /* ── Títulos principales h1 (Pacifico, blanco en modo oscuro) ── */
+body.modo-miopia #pantalla-inicio h1,
 body.modo-miopia #pantalla-INVENTARIO h1,
 body.modo-miopia #pantalla-ventas-fisicas h1,
 body.modo-miopia #pantalla-historial-fisicas h1,
 body.modo-miopia #pantalla-ventas-online h1,
 body.modo-miopia #pantalla-historial-online h1,
+body.modo-miopia #pantalla-estadisticas h1,
+body.modo-miopia #pantalla-estadisticas-online h1,
 body.modo-miopia #pantalla-combos h1,
 body.modo-miopia #pantalla-historial-combos h1 {
-  color: #0c566c !important;
+  color: #000000 !important;
   text-shadow: none !important;
   font-family: 'Inter', sans-serif !important;
   font-style: normal !important;
@@ -4945,13 +4948,13 @@ body.modo-miopia #pantalla-historial-combos h1 {
 /* ── Subtítulos h2 con color claro por pantalla ── */
 body.modo-miopia #pantalla-INVENTARIO h2,
 body.modo-miopia #pantalla-combos h2 {
-  color: #1a3a4a !important;
+  color: #000000 !important;
   text-shadow: none !important;
 }
-body.modo-miopia #inventory-products-title { color: #1a3a4a !important; text-shadow: none !important; }
-body.modo-miopia #combos-list-title        { color: #1a3a4a !important; text-shadow: none !important; }
-body.modo-miopia #online-pedidos-title     { color: #1a3a4a !important; text-shadow: none !important; }
-body.modo-miopia .combos-title             { color: #0c566c !important; text-shadow: none !important; }
+body.modo-miopia #inventory-products-title { color: #000000 !important; text-shadow: none !important; }
+body.modo-miopia #combos-list-title        { color: #000000 !important; text-shadow: none !important; }
+body.modo-miopia #online-pedidos-title     { color: #000000 !important; text-shadow: none !important; }
+body.modo-miopia .combos-title             { color: #000000 !important; text-shadow: none !important; }
 
 /* ── Header de estadísticas (banner oscuro con gradiente) ── */
 body.modo-miopia .stats-header {
@@ -4976,7 +4979,7 @@ body.modo-miopia .chart-badge {
 
 /* ── Títulos y subtítulos de estadísticas ── */
 body.modo-miopia .stats-title {
-  color: #1a1a2e !important;
+  color: #000000 !important;
   text-shadow: none !important;
   font-family: 'Inter', sans-serif !important;
   font-style: normal !important;
@@ -5023,11 +5026,11 @@ body.modo-miopia .inventory-summary-card {
   backdrop-filter: none !important;
 }
 body.modo-miopia .inventory-summary-card h2 {
-  color: #1a3a4a !important;
+  color: #000000 !important;
   text-shadow: none !important;
 }
 body.modo-miopia .summary-count {
-  color: #0c566c !important;
+  color: #000000 !important;
   text-shadow: none !important;
 }
 
@@ -5037,15 +5040,15 @@ body.modo-miopia .tarjeta-input-producto {
   border-color: #d8e3ea;
 }
 body.modo-miopia .tarjeta-input-producto label {
-  color: #1a3a4a !important;
+  color: #000000 !important;
   text-shadow: none !important;
 }
 body.modo-miopia .tarjeta-input-producto h2 {
-  color: #1a3a4a !important;
+  color: #000000 !important;
   text-shadow: none !important;
 }
 body.modo-miopia .search-section h2 {
-  color: #1a3a4a !important;
+  color: #000000 !important;
   text-shadow: none !important;
 }
 body.modo-miopia .search-section {
@@ -5070,7 +5073,7 @@ body.modo-miopia .seccion-historial-online-page {
   backdrop-filter: none;
 }
 body.modo-miopia .seccion-historial-online-page h3 {
-  color: #1a3a4a !important;
+  color: #000000 !important;
   text-shadow: none !important;
   border-bottom-color: #d8e3ea;
 }
@@ -5153,6 +5156,7 @@ body.modo-miopia .categorias-filtro-bar {
    El sidebar (#sidebar-menu) queda fuera: no es descendiente
    de ningún #pantalla-* por lo que esta regla no lo afecta.
    ════════════════════════════════════════════════════════════ */
+body.modo-miopia #pantalla-inicio *,
 body.modo-miopia #pantalla-INVENTARIO *,
 body.modo-miopia #pantalla-ventas-fisicas *,
 body.modo-miopia #pantalla-historial-fisicas *,
@@ -5162,7 +5166,7 @@ body.modo-miopia #pantalla-estadisticas *,
 body.modo-miopia #pantalla-estadisticas-online *,
 body.modo-miopia #pantalla-combos *,
 body.modo-miopia #pantalla-historial-combos * {
-  color: #1a1a2e !important;
+  color: #000000 !important;
 }
 
 /* ── Excepción: botones dentro de pantallas recuperan su color CSS original ── */
@@ -5213,15 +5217,15 @@ body.modo-miopia .sidebar-logout:hover * { color: #b91c1c !important; }
 /* ── Barras de acordeón y encabezado de carrito: fondo claro + texto negro ── */
 body.modo-miopia .acordeon-fecha {
   background-color: #dce8ef !important;
-  color: #1a1a2e !important;
+  color: #000000 !important;
 }
-body.modo-miopia .acordeon-fecha * { color: #1a1a2e !important; }
+body.modo-miopia .acordeon-fecha * { color: #000000 !important; }
 body.modo-miopia .acordeon-fecha:hover { background-color: #c8d9e4 !important; }
 body.modo-miopia .header-carrito {
   background-color: #dce8ef !important;
-  color: #1a1a2e !important;
+  color: #000000 !important;
 }
-body.modo-miopia .header-carrito * { color: #1a1a2e !important; }
+body.modo-miopia .header-carrito * { color: #000000 !important; }
 
 /* ── Badges de estado de pedidos → color semántico ── */
 body.modo-miopia .estado-pagado,
