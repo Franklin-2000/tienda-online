@@ -4978,6 +4978,10 @@ body.modo-miopia .chart-badge {
 body.modo-miopia .stats-title {
   color: #1a1a2e !important;
   text-shadow: none !important;
+  font-family: 'Inter', sans-serif !important;
+  font-style: normal !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
 }
 body.modo-miopia .stats-subtitle { color: #5a7a8a; }
 body.modo-miopia .stats-tabla-titulo {
