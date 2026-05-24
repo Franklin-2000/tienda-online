@@ -3627,6 +3627,7 @@ function renderEstadisticasOnline(periodo) {
     // Tickets COMBO-ONLINE: sus items individuales contribuyen a stats de productos
     const todasComboOnline = sales.filter(v => v.id && String(v.id).startsWith('COMBO-ONLINE-'));
     const comboFiltradas   = filtrarOnlinePorPeriodo(periodo, todasComboOnline);
+    const comboAnteriores  = filtrarOnlinePorPeriodoAnterior(periodo, todasComboOnline);
 
     // Items fusionados: de ONLINE- excluir resúmenes "🎁 Combo:..." + todos los de COMBO-ONLINE
     const itemsOnlineSinCombo = ventasFiltradas.flatMap(v =>
@@ -3638,15 +3639,25 @@ function renderEstadisticasOnline(periodo) {
     const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
 
     // --- KPIs ---
-    // Ingresos y transacciones: solo ONLINE- (ya incluye totales de combos, sin duplicar)
-    const totalVentas      = ventasFiltradas.reduce((s,v) => s + (v.total || 0), 0);
-    const numTransacciones = ventasFiltradas.length;
+    // Ingresos: tickets ONLINE- (productos) + COMBO-ONLINE- (combos)
+    const totalVentas      = ventasFiltradas.reduce((s,v) => s + (v.total || 0), 0)
+                           + comboFiltradas.reduce((s,v) => s + (v.total || 0), 0);
+    // Transacciones: pedidos únicos (por globalId) entre ambos tipos de ticket
+    const numTransacciones = new Set([
+        ...ventasFiltradas.map(v => v.globalId),
+        ...comboFiltradas.map(v => v.globalId)
+    ]).size;
     // Productos: items reales (individuales del combo + productos sueltos online)
     const totalProductos   = todosItemsOnline.reduce((a,i) => a + (i.qty||0), 0);
     const ticketPromedio   = numTransacciones > 0 ? totalVentas / numTransacciones : 0;
-    const totalAnt  = ventasAnteriores.reduce((s,v) => s + (v.total || 0), 0);
-    const transAnt  = ventasAnteriores.length;
-    const prodAnt   = ventasAnteriores.reduce((s,v) => s + v.items.filter(i => !String(i.name||'').startsWith('🎁')).reduce((a,i) => a + (i.qty||0), 0), 0);
+    const totalAnt  = ventasAnteriores.reduce((s,v) => s + (v.total || 0), 0)
+                    + comboAnteriores.reduce((s,v) => s + (v.total || 0), 0);
+    const transAnt  = new Set([
+        ...ventasAnteriores.map(v => v.globalId),
+        ...comboAnteriores.map(v => v.globalId)
+    ]).size;
+    const prodAnt   = ventasAnteriores.reduce((s,v) => s + v.items.filter(i => !String(i.name||'').startsWith('🎁')).reduce((a,i) => a + (i.qty||0), 0), 0)
+                    + comboAnteriores.reduce((s,v) => s + v.items.reduce((a,i) => a + (i.qty||0), 0), 0);
     const ticketAnt = transAnt > 0 ? totalAnt / transAnt : 0;
 
     const el = id => document.getElementById(id);
@@ -3705,22 +3716,21 @@ function renderEstadisticasOnline(periodo) {
     const tendenciaLabels = [], tendenciaData = [];
     if (periodo === 'diaria') {
         const porHora = Array(24).fill(0);
-        ventasFiltradas.forEach(v => {
-            const fv = parsearFechaVenta(v);
-            const h = fv ? fv.getHours() : NaN;
-            if (!isNaN(h) && h >= 0) porHora[h] += (v.total || 0);
-        });
+        ventasFiltradas.forEach(v => { const fv = parsearFechaVenta(v); const h = fv ? fv.getHours() : NaN; if (!isNaN(h) && h >= 0) porHora[h] += (v.total || 0); });
+        comboFiltradas.forEach(v => { const fv = parsearFechaVenta(v); const h = fv ? fv.getHours() : NaN; if (!isNaN(h) && h >= 0) porHora[h] += (v.total || 0); });
         for (let h = 0; h < 24; h++) { tendenciaLabels.push(h+':00'); tendenciaData.push(porHora[h]); }
     } else if (periodo === 'semanal') {
         // Semana Lun → Dom
         const dias = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
         const porDia = Array(7).fill(0);
         ventasFiltradas.forEach(v => { const fv = parsearFechaVenta(v); if (fv) { const idx = (fv.getDay() + 6) % 7; porDia[idx] += (v.total||0); } });
+        comboFiltradas.forEach(v => { const fv = parsearFechaVenta(v); if (fv) { const idx = (fv.getDay() + 6) % 7; porDia[idx] += (v.total||0); } });
         dias.forEach((d,i) => { tendenciaLabels.push(d); tendenciaData.push(porDia[i]); });
     } else {
         const diasEnMes = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
         const porDia = Array(diasEnMes).fill(0);
         ventasFiltradas.forEach(v => { const fv = parsearFechaVenta(v); if (fv) { const d = fv.getDate()-1; if (d>=0&&d<diasEnMes) porDia[d]+=(v.total||0); } });
+        comboFiltradas.forEach(v => { const fv = parsearFechaVenta(v); if (fv) { const d = fv.getDate()-1; if (d>=0&&d<diasEnMes) porDia[d]+=(v.total||0); } });
         for (let d = 1; d <= diasEnMes; d++) { tendenciaLabels.push('D'+d); tendenciaData.push(porDia[d-1]); }
     }
 
