@@ -514,6 +514,33 @@ async function generarNumeroTicket() {
     return nuevoContador;
 }
 
+/**
+ * Contador diario exclusivo para combos.
+ * Consulta ventas en Supabase para obtener el mayor número COMBO-N o COMBO-ONLINE-N de hoy
+ * y devuelve max+1, de modo que la secuencia de combos (físicos y online) sea continua e
+ * independiente del contador general de productos.
+ */
+async function generarNumeroCombo() {
+    const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+    const { data } = await supabaseClient
+        .from('ventas')
+        .select('numero_ticket')
+        .eq('user_id', currentUserId)
+        .gte('created_at', today + 'T00:00:00')
+        .ilike('numero_ticket', 'COMBO-%');
+
+    let maxNum = 0;
+    for (const row of (data || [])) {
+        // Captura el número de secuencia de COMBO-N o COMBO-ONLINE-N (ignora COMBO-OFF-*)
+        const m = String(row.numero_ticket || '').match(/^COMBO-(?:ONLINE-)?(\d+)/);
+        if (m) {
+            const n = parseInt(m[1], 10);
+            if (n > maxNum) maxNum = n;
+        }
+    }
+    return maxNum + 1;
+}
+
 // ==========================================
 // LÓGICA DEL ESCÁNER DE CÓDIGOS DE BARRAS (Intacta)
 // ==========================================
@@ -2686,10 +2713,10 @@ async function crearTicketsComboOnline(pedidoId) {
         }
     }
 
-    // ── Ticket(s) de combos — comparten UN solo número (N+1) ──────────────
+    // ── Ticket(s) de combos — comparten UN solo número del contador exclusivo de combos ──
     // 1 combo → COMBO-ONLINE-N
     // 2+ combos → COMBO-ONLINE-N-1, COMBO-ONLINE-N-2, ...
-    const numCombo = await generarNumeroTicket();
+    const numCombo = await generarNumeroCombo();
     const multiCombo = comboItems.length > 1;
 
     for (let idx = 0; idx < comboItems.length; idx++) {
@@ -4266,7 +4293,7 @@ async function venderCombo(combo) {
             renderTarjetasCombos();
             mostrarAlerta(`Venta guardada localmente.\n${combo.nombre} — $${precioFmt}`, 'success');
         } else {
-            const numero  = await generarNumeroTicket();
+            const numero  = await generarNumeroCombo();
             newSale.id    = 'COMBO-' + numero;
             const guardada = await saveSale(newSale);
             newSale.supabaseId = guardada.id;
