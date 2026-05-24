@@ -2651,13 +2651,12 @@ const _ticketsPedidosConfirmados = new Set();
 async function crearTicketsComboOnline(pedidoId) {
     if (_ticketsPedidosConfirmados.has(pedidoId)) return;
 
-    // Protección cross-sesión: consulta directa a Supabase para evitar duplicados tras refresh
+    // Anti-dup cross-sesión: si ya existe CUALQUIER ticket generado para este pedido, no crear más
     const { data: existing } = await supabaseClient
         .from('ventas')
         .select('id')
         .eq('user_id', currentUserId)
         .eq('global_id', pedidoId)
-        .ilike('numero_ticket', 'COMBO-ONLINE-%')
         .limit(1);
     if (existing && existing.length > 0) {
         _ticketsPedidosConfirmados.add(pedidoId);
@@ -2669,7 +2668,7 @@ async function crearTicketsComboOnline(pedidoId) {
         .select('id, nombre, cantidad, precio, subtotal, combo_id, product_id')
         .eq('pedido_id', pedidoId);
 
-    if (error || !itemsPedido) return;
+    if (error || !itemsPedido || itemsPedido.length === 0) return;
 
     const comboItems   = itemsPedido.filter(i =>
         i.combo_id || (i.nombre && String(i.nombre).startsWith('Combo: '))
@@ -2678,11 +2677,9 @@ async function crearTicketsComboOnline(pedidoId) {
         !i.combo_id && !(i.nombre && String(i.nombre).startsWith('Combo: '))
     );
 
-    if (comboItems.length === 0) return;
-
     _ticketsPedidosConfirmados.add(pedidoId);
 
-    if (!combos.length) await loadCombos();
+    if (comboItems.length > 0 && !combos.length) await loadCombos();
 
     const ahora = new Date();
     const fechaLimpia = `${String(ahora.getDate()).padStart(2,'0')}/${String(ahora.getMonth()+1).padStart(2,'0')}/${ahora.getFullYear()}`;
@@ -2932,9 +2929,11 @@ function _buildTicketOnlineDiv(pedido, esCombo, items) {
     itemsHtml += '</ul>';
 
     const totalSubset = items.reduce((s, i) => s + Number(i.subtotal), 0);
-    const fecha = (ticketReal?.date)
-        ? fechaDBaLocale(ticketReal.date)
-        : new Date(pedido.fecha).toLocaleString('es-CO');
+    // La fecha del ticket es la hora en que el admin confirmó el pago,
+    // no la hora en que el cliente hizo el pedido (pedido.fecha).
+    const fecha = esCombo
+        ? (ticketReal?.date ? fechaDBaLocale(ticketReal.date) : new Date(pedido.fecha).toLocaleString('es-CO'))
+        : (prodTicket?.date ? fechaDBaLocale(prodTicket.date) : new Date(pedido.fecha).toLocaleString('es-CO'));
     const totalFmt = totalSubset.toLocaleString('es-CO');
     const metodoBadge = pedido.metodo_pago === 'contraentrega'
         ? '<span class="ticket-badge ticket-badge-contraentrega"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Contra entrega</span>'
