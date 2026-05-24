@@ -4888,6 +4888,8 @@ body.modo-miopia .sidebar-modo-toggle { color: #1a3a4a; }
 body.modo-miopia .sidebar-modo-toggle:hover { color: #0c566c; }
 
 /* ── Pantallas: quitar fondo oscuro ── */
+body.modo-miopia #pantalla-inicio,
+body.modo-miopia #pantalla-menu-ventas,
 body.modo-miopia #pantalla-INVENTARIO,
 body.modo-miopia #pantalla-ventas-fisicas,
 body.modo-miopia #pantalla-historial-fisicas,
