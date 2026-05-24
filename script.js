@@ -2202,7 +2202,7 @@ async function cargarPedidosAdmin() {
             id, estado, total, metodo_pago, fecha, fecha_confirmacion,
             cliente_nombre, cliente_email, cliente_tel,
             direccion, notas,
-            items_pedido ( nombre, cantidad, precio, subtotal )
+            items_pedido ( nombre, cantidad, precio, subtotal, combo_id )
         `)
         .order('id', { ascending: false });
  
@@ -2378,8 +2378,8 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
 
         // Detectar pedido mixto (combos + productos regulares)
         const _todosItems   = pedido.items_pedido || [];
-        const _itemsCombo   = _todosItems.filter(i => i.combo_id || (i.nombre && String(i.nombre).startsWith('🎁 Combo:')));
-        const _itemsProds   = _todosItems.filter(i => !i.combo_id && !(i.nombre && String(i.nombre).startsWith('🎁 Combo:')));
+        const _itemsCombo   = _todosItems.filter(i => i.combo_id || (i.nombre && String(i.nombre).startsWith('Combo: ')));
+        const _itemsProds   = _todosItems.filter(i => !i.combo_id && !(i.nombre && String(i.nombre).startsWith('Combo: ')));
         const _esMixto      = _itemsCombo.length > 0 && _itemsProds.length > 0;
  
         // Botones según el estado actual del pedido
@@ -2571,10 +2571,10 @@ async function crearTicketsComboOnline(pedidoId) {
     if (error || !itemsPedido) return;
 
     const comboItems   = itemsPedido.filter(i =>
-        i.combo_id || (i.nombre && String(i.nombre).startsWith('🎁 Combo:'))
+        i.combo_id || (i.nombre && String(i.nombre).startsWith('Combo: '))
     );
     const productItems = itemsPedido.filter(i =>
-        !i.combo_id && !(i.nombre && String(i.nombre).startsWith('🎁 Combo:'))
+        !i.combo_id && !(i.nombre && String(i.nombre).startsWith('Combo: '))
     );
 
     if (comboItems.length === 0) return;
@@ -2586,45 +2586,8 @@ async function crearTicketsComboOnline(pedidoId) {
     const ahora = new Date();
     const fechaLimpia = `${String(ahora.getDate()).padStart(2,'0')}/${String(ahora.getMonth()+1).padStart(2,'0')}/${ahora.getFullYear()}`;
 
-    // ── Ticket(s) de combos ─────────────────────────────────────
-    for (let idx = 0; idx < comboItems.length; idx++) {
-        const item   = comboItems[idx];
-        const numero = await generarNumeroTicket();
-        const numInt = parseInt(numero, 10);
-
-        const combo     = combos.find(c =>
-            c.id === item.combo_id ||
-            c.nombre === String(item.nombre).replace('🎁 Combo: ', '').trim()
-        );
-        const comboProd = combo?.combo_productos || [];
-
-        const itemsVenta = comboProd.map(cp => ({
-            productId: cp.product_id || '',
-            name:      cp.nombre     || 'Producto',
-            qty:       (Number(cp.cantidad) || 1) * item.cantidad,
-            price:     Number(cp.precio)   || 0,
-            subtotal:  (Number(cp.precio) || 0) * (Number(cp.cantidad) || 1) * item.cantidad
-        }));
-
-        const newSale = {
-            globalId:    pedidoId,   // referencia al pedido para lookup posterior
-            id:          `COMBO-ONLINE-${numInt}`,
-            total:       Number(item.precio) * item.cantidad,
-            date:        ahora.toLocaleString(),
-            fechaLimpia: fechaLimpia,
-            items:       itemsVenta
-        };
-
-        try {
-            const guardada     = await saveSale(newSale);
-            newSale.supabaseId = guardada.id;
-            sales.unshift(newSale);
-        } catch (e) {
-            console.error('[ComboOnline] Error guardando ticket COMBO-ONLINE:', e);
-        }
-    }
-
-    // ── Ticket de productos regulares (solo en pedido mixto) ────
+    // ── Ticket de productos regulares PRIMERO (pedido mixto) ───
+    // El ticket de productos toma el número N, los combos toman N+1
     if (productItems.length > 0) {
         const numero = await generarNumeroTicket();
         const numInt = parseInt(numero, 10);
@@ -2637,8 +2600,6 @@ async function crearTicketsComboOnline(pedidoId) {
             subtotal:  Number(i.subtotal)
         }));
 
-        // ID interno: ONLINE-{pedidoId}-PROD-{numero} — excluido del historial físico
-        // y no empieza con COMBO- así que no aparece en historial combos
         const newSale = {
             globalId:    Date.now() + Math.floor(Math.random() * 1000) + 1,
             id:          `ONLINE-${pedidoId}-PROD-${numInt}`,
@@ -2654,6 +2615,48 @@ async function crearTicketsComboOnline(pedidoId) {
             sales.unshift(newSale);
         } catch (e) {
             console.error('[ComboOnline] Error guardando ticket ONLINE-PROD:', e);
+        }
+    }
+
+    // ── Ticket(s) de combos — todos comparten UN solo número ───
+    // 1 combo → COMBO-ONLINE-N
+    // 2+ combos → COMBO-ONLINE-N-1, COMBO-ONLINE-N-2, ...
+    const numCombo = parseInt(await generarNumeroTicket(), 10);
+    const multiCombo = comboItems.length > 1;
+
+    for (let idx = 0; idx < comboItems.length; idx++) {
+        const item = comboItems[idx];
+        const comboId = multiCombo ? `COMBO-ONLINE-${numCombo}-${idx + 1}` : `COMBO-ONLINE-${numCombo}`;
+
+        const combo     = combos.find(c =>
+            c.id === item.combo_id ||
+            c.nombre === String(item.nombre).replace('Combo: ', '').trim()
+        );
+        const comboProd = combo?.combo_productos || [];
+
+        const itemsVenta = comboProd.map(cp => ({
+            productId: cp.product_id || '',
+            name:      cp.nombre     || 'Producto',
+            qty:       (Number(cp.cantidad) || 1) * item.cantidad,
+            price:     Number(cp.precio)   || 0,
+            subtotal:  (Number(cp.precio) || 0) * (Number(cp.cantidad) || 1) * item.cantidad
+        }));
+
+        const newSale = {
+            globalId:    pedidoId,
+            id:          comboId,
+            total:       Number(item.precio) * item.cantidad,
+            date:        ahora.toLocaleString(),
+            fechaLimpia: fechaLimpia,
+            items:       itemsVenta
+        };
+
+        try {
+            const guardada     = await saveSale(newSale);
+            newSale.supabaseId = guardada.id;
+            sales.unshift(newSale);
+        } catch (e) {
+            console.error('[ComboOnline] Error guardando ticket COMBO-ONLINE:', e);
         }
     }
 }
@@ -2694,7 +2697,7 @@ function renderHistorialOnline() {
 
     pedidosEntregados.forEach(pedido => {
         const esComboP = (pedido.items_pedido || []).some(i =>
-            i.combo_id || (i.nombre && String(i.nombre).startsWith('🎁 Combo:'))
+            i.combo_id || (i.nombre && String(i.nombre).startsWith('Combo: '))
         );
         let fecha;
         if (esComboP) {
@@ -2854,8 +2857,8 @@ function _buildTicketOnlineDiv(pedido, esCombo, items) {
 // Retorna un DocumentFragment con 1 ticket (pedido puro) o 2 tickets (pedido mixto)
 function crearDOMTicketOnline(pedido, esDeHoy) {
     const todos         = pedido.items_pedido || [];
-    const itemsCombo    = todos.filter(i => i.combo_id || (i.nombre && String(i.nombre).startsWith('🎁 Combo:')));
-    const itemsProductos = todos.filter(i => !i.combo_id && !(i.nombre && String(i.nombre).startsWith('🎁 Combo:')));
+    const itemsCombo    = todos.filter(i => i.combo_id || (i.nombre && String(i.nombre).startsWith('Combo: ')));
+    const itemsProductos = todos.filter(i => !i.combo_id && !(i.nombre && String(i.nombre).startsWith('Combo: ')));
 
     const frag = document.createDocumentFragment();
 
