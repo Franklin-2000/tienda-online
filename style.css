@@ -4805,6 +4805,16 @@ input[type="number"] {
     white-space: nowrap;
     flex-shrink: 0;
 }
+.ticket-combo-subheader {
+    background: rgba(56, 142, 60, 0.10);
+    border-radius: 4px;
+    padding: 3px 6px !important;
+    margin-top: 4px;
+    font-weight: 700;
+    font-size: 0.8em;
+    color: #2e7d32;
+    border-bottom: none !important;
+}
 
 /* Info de cliente en ticket online */
 .ticket-cliente-info {

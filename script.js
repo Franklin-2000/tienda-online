@@ -2878,10 +2878,13 @@ function _buildTicketOnlineDiv(pedido, esCombo, items) {
     ticketDiv.className = `venta-ticket ${esCombo ? 'venta-ticket-combo' : 'venta-ticket-online'}`;
     ticketDiv.dataset.tipo = esCombo ? 'combo-online' : 'online';
 
-    // Buscar ticket combo: globalId almacena el pedido.id como referencia
-    const ticketReal = esCombo
-        ? sales.find(s => String(s.id).startsWith('COMBO-ONLINE-') && Number(s.globalId) === Number(pedido.id))
-        : null;
+    // Todos los tickets COMBO-ONLINE para este pedido (ordenados por id)
+    const ticketsCombo = esCombo
+        ? sales.filter(s => String(s.id).startsWith('COMBO-ONLINE-') && Number(s.globalId) === Number(pedido.id))
+               .sort((a, b) => String(a.id).localeCompare(String(b.id)))
+        : [];
+    const ticketReal = ticketsCombo[0] || null;
+
     // Buscar ticket de productos (ONLINE-{pedidoId}-PROD-{N}) para mostrar el número del contador
     const prodTicket = !esCombo
         ? sales.find(s => s.id && String(s.id).startsWith(`ONLINE-${pedido.id}-PROD-`))
@@ -2894,13 +2897,33 @@ function _buildTicketOnlineDiv(pedido, esCombo, items) {
         : '<span class="ticket-badge ticket-badge-online"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Pedido Online</span>';
 
     let itemsHtml = '<ul class="ticket-items-list">';
-    items.forEach(item => {
-        const sub = Number(item.subtotal).toLocaleString('es-CO');
-        itemsHtml += `<li class="ticket-item-row">
-            <span class="ticket-item-name">${item.cantidad}x ${item.nombre}</span>
-            <span class="ticket-item-sub">$${sub}</span>
-        </li>`;
-    });
+    if (esCombo && ticketsCombo.length > 0) {
+        // Mostrar los productos reales de cada combo (guardados en ventas → items_venta)
+        const multiCombo = ticketsCombo.length > 1;
+        ticketsCombo.forEach(tc => {
+            if (multiCombo) {
+                itemsHtml += `<li class="ticket-item-row ticket-combo-subheader">
+                    <span class="ticket-item-name">${tc.id}</span>
+                </li>`;
+            }
+            (tc.items || []).forEach(it => {
+                const sub = Number(it.subtotal).toLocaleString('es-CO');
+                itemsHtml += `<li class="ticket-item-row">
+                    <span class="ticket-item-name">${it.qty}x ${it.name}</span>
+                    <span class="ticket-item-sub">$${sub}</span>
+                </li>`;
+            });
+        });
+    } else {
+        // Productos normales del pedido
+        items.forEach(item => {
+            const sub = Number(item.subtotal).toLocaleString('es-CO');
+            itemsHtml += `<li class="ticket-item-row">
+                <span class="ticket-item-name">${item.cantidad}x ${item.nombre}</span>
+                <span class="ticket-item-sub">$${sub}</span>
+            </li>`;
+        });
+    }
     itemsHtml += '</ul>';
 
     const totalSubset = items.reduce((s, i) => s + Number(i.subtotal), 0);
