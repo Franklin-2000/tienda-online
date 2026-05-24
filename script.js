@@ -476,7 +476,8 @@ async function deleteSaleFromSupabase(ticketGlobalId) {
  * Reemplaza los localStorage 'ultimaFechaVenta' y 'contadorDiarioVentas'.
  */
 async function generarNumeroTicket() {
-    const fechaActual = new Date().toLocaleDateString();
+    // ISO YYYY-MM-DD: formato consistente sin importar el idioma del navegador
+    const fechaActual = new Date().toISOString().split('T')[0];
 
     const { data, error } = await supabaseClient
         .from('contador_tickets')
@@ -490,12 +491,12 @@ async function generarNumeroTicket() {
         // Primera vez: crear registro
         nuevoContador = 1;
         await supabaseClient.from('contador_tickets').insert([{
-            user_id:        currentUserId,
-            ultima_fecha:   fechaActual,
+            user_id:         currentUserId,
+            ultima_fecha:    fechaActual,
             contador_diario: nuevoContador
         }]);
     } else if (data.ultima_fecha !== fechaActual) {
-        // Nuevo día: reiniciar
+        // Nuevo día: reiniciar desde 1
         nuevoContador = 1;
         await supabaseClient
             .from('contador_tickets')
@@ -510,7 +511,7 @@ async function generarNumeroTicket() {
             .eq('user_id', currentUserId);
     }
 
-    return nuevoContador.toString().padStart(4, '0');
+    return nuevoContador;
 }
 
 // ==========================================
@@ -2618,11 +2619,15 @@ const _ticketsPedidosConfirmados = new Set();
 async function crearTicketsComboOnline(pedidoId) {
     if (_ticketsPedidosConfirmados.has(pedidoId)) return;
 
-    // Protección cross-sesión: si ya existen tickets COMBO-ONLINE para este pedido no crear más
-    const yaExiste = sales.some(s =>
-        String(s.id).startsWith('COMBO-ONLINE-') && Number(s.globalId) === Number(pedidoId)
-    );
-    if (yaExiste) {
+    // Protección cross-sesión: consulta directa a Supabase para evitar duplicados tras refresh
+    const { data: existing } = await supabaseClient
+        .from('ventas')
+        .select('id')
+        .eq('user_id', currentUserId)
+        .eq('global_id', pedidoId)
+        .ilike('numero_ticket', 'COMBO-ONLINE-%')
+        .limit(1);
+    if (existing && existing.length > 0) {
         _ticketsPedidosConfirmados.add(pedidoId);
         return;
     }
@@ -2653,7 +2658,7 @@ async function crearTicketsComboOnline(pedidoId) {
     // ── Ticket productos regulares PRIMERO (solo pedido mixto) ─────────────
     // Toma el número N del contador → se muestra como "Pedido #N" en historial
     if (productItems.length > 0) {
-        const numProd = parseInt(await generarNumeroTicket(), 10);
+        const numProd = await generarNumeroTicket();
 
         const itemsVenta = productItems.map(i => ({
             productId: i.product_id || '',
@@ -2684,7 +2689,7 @@ async function crearTicketsComboOnline(pedidoId) {
     // ── Ticket(s) de combos — comparten UN solo número (N+1) ──────────────
     // 1 combo → COMBO-ONLINE-N
     // 2+ combos → COMBO-ONLINE-N-1, COMBO-ONLINE-N-2, ...
-    const numCombo   = parseInt(await generarNumeroTicket(), 10);
+    const numCombo = await generarNumeroTicket();
     const multiCombo = comboItems.length > 1;
 
     for (let idx = 0; idx < comboItems.length; idx++) {
