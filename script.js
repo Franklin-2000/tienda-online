@@ -2758,17 +2758,24 @@ async function crearTicketsComboOnline(pedidoId) {
 // ---------------------------------------------------------------
 // Renderizar historial de entregas (pedidos con estado entregado)
 // ---------------------------------------------------------------
-// Renderizar historial de entregas (pedidos con estado entregado)
-// ---------------------------------------------------------------
+function _ticketSortKey(id) {
+    if (!id) return 0;
+    const s = String(id);
+    const mCombo = s.match(/^COMBO-ONLINE-(\d+)$/);
+    if (mCombo) return Number(mCombo[1]);
+    const mProd = s.match(/PROD-(\d+)$/);
+    if (mProd) return Number(mProd[1]);
+    return 0;
+}
+
 function renderHistorialOnline() {
     const listaEntregasHoy = document.getElementById('listaEntregasHoy');
     const listaHistorialEntregasAcordeon = document.getElementById('listaHistorialEntregasAcordeon');
     if (!listaEntregasHoy || !listaHistorialEntregasAcordeon) return;
-    
+
     listaEntregasHoy.innerHTML = '';
     listaHistorialEntregasAcordeon.innerHTML = '';
 
-    // Filtrar solo pedidos entregados
     const pedidosEntregados = pedidosAdmin.filter(p => p.estado === 'entregado');
 
     if (pedidosEntregados.length === 0) {
@@ -2777,11 +2784,8 @@ function renderHistorialOnline() {
         return;
     }
 
-    const fechaHoy = new Date().toLocaleDateString('es-CO');
-    const entregasHoy = [];
-    const entregasPasadas = {};
+    const fechaHoyStr = new Date().toLocaleDateString('es-CO');
 
-    // Normaliza DD/MM/YYYY o D/M/YYYY a localeDateString('es-CO') para comparar
     const normFechaLimpia = fl => {
         if (!fl) return '';
         const p = String(fl).split('/');
@@ -2789,66 +2793,116 @@ function renderHistorialOnline() {
         return new Date(Number(p[2]), Number(p[1]) - 1, Number(p[0])).toLocaleDateString('es-CO');
     };
 
+    // Construir lista plana: un elemento por ticket individual
+    const allUnits = [];
+
     pedidosEntregados.forEach(pedido => {
-        const esComboP = (pedido.items_pedido || []).some(i =>
-            i.combo_id || (i.nombre && String(i.nombre).startsWith('Combo: '))
-        );
-        let fecha;
-        if (esComboP) {
-            // Para combos usar la fecha del ticket (momento de confirmación)
-            const t = sales.find(s => String(s.id).startsWith('COMBO-ONLINE-') && Number(s.globalId) === Number(pedido.id));
-            fecha = t?.fechaLimpia ? normFechaLimpia(t.fechaLimpia) : new Date(pedido.fecha).toLocaleDateString('es-CO');
-        } else {
-            fecha = new Date(pedido.fecha).toLocaleDateString('es-CO');
+        const todos = pedido.items_pedido || [];
+        const tieneCombo = todos.some(i => i.combo_id || (i.nombre && String(i.nombre).startsWith('Combo: ')));
+        const tieneProductos = todos.some(i => !i.combo_id && !(i.nombre && String(i.nombre).startsWith('Combo: ')));
+
+        if (tieneCombo) {
+            const comboTickets = sales
+                .filter(s => String(s.id).startsWith('COMBO-ONLINE-') && Number(s.globalId) === Number(pedido.id))
+                .sort((a, b) => _ticketSortKey(a.id) - _ticketSortKey(b.id));
+
+            if (comboTickets.length > 0) {
+                comboTickets.forEach(ct => {
+                    allUnits.push({
+                        pedido, type: 'combo', ticket: ct,
+                        sortKey: _ticketSortKey(ct.id),
+                        fechaNorm: normFechaLimpia(ct.fechaLimpia) || new Date(pedido.fecha).toLocaleDateString('es-CO')
+                    });
+                });
+            } else {
+                const itemsCombo = todos.filter(i => i.combo_id || (i.nombre && String(i.nombre).startsWith('Combo: ')));
+                allUnits.push({
+                    pedido, type: 'combo-fallback', ticket: null, items: itemsCombo,
+                    sortKey: 0,
+                    fechaNorm: new Date(pedido.fecha).toLocaleDateString('es-CO')
+                });
+            }
         }
 
-        if (fecha === fechaHoy) {
-            entregasHoy.push(pedido);
-        } else {
-            if (!entregasPasadas[fecha]) entregasPasadas[fecha] = [];
-            entregasPasadas[fecha].push(pedido);
+        if (tieneProductos) {
+            const prodTicket = sales.find(s => s.id && String(s.id).startsWith(`ONLINE-${pedido.id}-PROD-`));
+            const itemsProductos = todos.filter(i => !i.combo_id && !(i.nombre && String(i.nombre).startsWith('Combo: ')));
+            allUnits.push({
+                pedido, type: 'product', ticket: prodTicket || null, items: itemsProductos,
+                sortKey: prodTicket ? _ticketSortKey(prodTicket.id) : 0,
+                fechaNorm: prodTicket?.fechaLimpia
+                    ? normFechaLimpia(prodTicket.fechaLimpia)
+                    : new Date(pedido.fecha).toLocaleDateString('es-CO')
+            });
+        }
+
+        if (!tieneCombo && !tieneProductos) {
+            allUnits.push({
+                pedido, type: 'product', ticket: null, items: todos,
+                sortKey: 0,
+                fechaNorm: new Date(pedido.fecha).toLocaleDateString('es-CO')
+            });
         }
     });
 
-    // Mostrar entregas de hoy
-    if (entregasHoy.length === 0) {
+    const renderUnit = unit => {
+        if (unit.type === 'combo') {
+            return _buildSingleComboTicketDiv(unit.pedido, unit.ticket);
+        }
+        return _buildTicketOnlineDiv(unit.pedido, unit.type === 'combo-fallback', unit.items || []);
+    };
+
+    const unitsHoy = allUnits
+        .filter(u => u.fechaNorm === fechaHoyStr)
+        .sort((a, b) => b.sortKey - a.sortKey);
+    const unitsPasados = allUnits
+        .filter(u => u.fechaNorm !== fechaHoyStr)
+        .sort((a, b) => b.sortKey - a.sortKey);
+
+    // Sección de hoy
+    if (unitsHoy.length === 0) {
         listaEntregasHoy.innerHTML = '<p>Aún no hay entregas registradas hoy.</p>';
     } else {
         const titleHoy = document.createElement('h4');
-        titleHoy.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Entregas de Hoy (${entregasHoy.length})`;
+        titleHoy.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Entregas de Hoy (${unitsHoy.length})`;
         titleHoy.style.cssText = 'color: #0c566c; margin-bottom: 10px;';
         listaEntregasHoy.appendChild(titleHoy);
-        
-        [...entregasHoy].reverse().forEach(pedido => {
-            listaEntregasHoy.appendChild(crearDOMTicketOnline(pedido, true));
-        });
+        unitsHoy.forEach(unit => listaEntregasHoy.appendChild(renderUnit(unit)));
     }
 
-    // Mostrar entregas de días pasados en acordeón
-    const fechasOrdenadas = Object.keys(entregasPasadas).sort((a, b) => {
-        const dateA = new Date(a.split('/').reverse().join('-'));
-        const dateB = new Date(b.split('/').reverse().join('-'));
-        return dateB - dateA;
+    // Acordeón de días anteriores
+    const pasadosByDate = {};
+    unitsPasados.forEach(u => {
+        if (!pasadosByDate[u.fechaNorm]) pasadosByDate[u.fechaNorm] = [];
+        pasadosByDate[u.fechaNorm].push(u);
+    });
+
+    const fechasOrdenadas = Object.keys(pasadosByDate).sort((a, b) => {
+        const da = new Date(a.split('/').reverse().join('-'));
+        const db = new Date(b.split('/').reverse().join('-'));
+        return db - da;
     });
 
     if (fechasOrdenadas.length === 0) {
         listaHistorialEntregasAcordeon.innerHTML = '<p style="color: #666;">No hay entregas de días anteriores.</p>';
     } else {
         fechasOrdenadas.forEach(fecha => {
-            const entregasDelDia = entregasPasadas[fecha];
-            const totalDia = entregasDelDia.reduce((sum, p) => sum + Number(p.total), 0);
-            
+            const unitsDelDia = pasadosByDate[fecha];
+            const pedidosUnicosIds = new Set(unitsDelDia.map(u => u.pedido.id));
+            const totalDia = [...pedidosUnicosIds].reduce((sum, pid) => {
+                const p = pedidosAdmin.find(x => x.id === pid);
+                return sum + (p ? Number(p.total) : 0);
+            }, 0);
+
             const acordeonBtn = document.createElement('div');
             acordeonBtn.className = 'acordeon-fecha';
-            acordeonBtn.innerHTML = `<span><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${fecha} (${entregasDelDia.length} entregas)</span> <strong>$${totalDia.toLocaleString('es-CO')} ▼</strong>`;
-            
+            acordeonBtn.innerHTML = `<span><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${fecha} (${unitsDelDia.length} tickets)</span> <strong>$${totalDia.toLocaleString('es-CO')} ▼</strong>`;
+
             const acordeonContent = document.createElement('div');
             acordeonContent.className = 'acordeon-contenido';
             acordeonContent.style.display = 'none';
 
-            [...entregasDelDia].reverse().forEach(pedido => {
-                acordeonContent.appendChild(crearDOMTicketOnline(pedido, false));
-            });
+            unitsDelDia.forEach(unit => acordeonContent.appendChild(renderUnit(unit)));
 
             acordeonBtn.addEventListener('click', () => {
                 const isVisible = acordeonContent.style.display === 'block';
@@ -2990,7 +3044,70 @@ function crearDOMTicketOnline(pedido, esDeHoy) {
 
     return frag;
 }
- 
+
+// Construye el DOM de un ticket individual para un único COMBO-ONLINE-N
+function _buildSingleComboTicketDiv(pedido, ticketCombo) {
+    const ticketDiv = document.createElement('div');
+    ticketDiv.className = 'venta-ticket venta-ticket-combo';
+    ticketDiv.dataset.tipo = 'combo-online';
+
+    const badgePrincipal = '<span class="ticket-badge ticket-badge-combo"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg> Venta Combo</span><span class="ticket-badge ticket-badge-online-combo"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Online</span>';
+    const metodoBadge = pedido.metodo_pago === 'contraentrega'
+        ? '<span class="ticket-badge ticket-badge-contraentrega"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Contra entrega</span>'
+        : '<span class="ticket-badge ticket-badge-online-pago"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Pago online</span>';
+
+    let itemsHtml = '<ul class="ticket-items-list">';
+    (ticketCombo.items || []).forEach(it => {
+        const sub = Number(it.subtotal).toLocaleString('es-CO');
+        itemsHtml += `<li class="ticket-item-row">
+            <span class="ticket-item-name">${it.qty}x ${it.name}</span>
+            <span class="ticket-item-sub">$${sub}</span>
+        </li>`;
+    });
+    itemsHtml += '</ul>';
+
+    const fecha = ticketCombo.date ? fechaDBaLocale(ticketCombo.date) : new Date(pedido.fecha).toLocaleString('es-CO');
+    const totalFmt = Number(ticketCombo.total).toLocaleString('es-CO');
+
+    ticketDiv.innerHTML = `
+        <div class="venta-ticket-header">
+            <div class="ticket-header-left">
+                <div class="ticket-badges-row">
+                    ${badgePrincipal}
+                    ${metodoBadge}
+                </div>
+                <strong class="ticket-numero">${ticketCombo.id}</strong>
+                <span class="fecha-venta">${fecha}</span>
+            </div>
+            <div class="ticket-header-right">
+                <strong class="ticket-total">$${totalFmt}</strong>
+                <button class="btn-eliminar-ticket" onclick="eliminarPedidoEntregado(${pedido.id}); event.stopPropagation();"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Eliminar</button>
+                <span class="ticket-toggle-arrow">Ver detalles ▼</span>
+            </div>
+        </div>
+        <div class="venta-ticket-details">
+            <div class="ticket-cliente-info">
+                <div><span class="ticket-info-label">👤 Cliente:</span> ${pedido.cliente_nombre}</div>
+                <div><span class="ticket-info-label">📧 Email:</span> ${pedido.cliente_email}</div>
+                <div><span class="ticket-info-label">📞 Teléfono:</span> ${pedido.cliente_tel}</div>
+                <div><span class="ticket-info-label">📍 Dirección:</span> ${pedido.direccion}</div>
+                ${pedido.notas ? `<div><span class="ticket-info-label">📝 Notas:</span> ${pedido.notas}</div>` : ''}
+            </div>
+            ${itemsHtml}
+        </div>
+    `;
+
+    ticketDiv.querySelector('.venta-ticket-header').addEventListener('click', () => {
+        const details = ticketDiv.querySelector('.venta-ticket-details');
+        const arrow   = ticketDiv.querySelector('.ticket-toggle-arrow');
+        const open    = details.style.display === 'block';
+        details.style.display = open ? 'none' : 'block';
+        if (arrow) arrow.textContent = open ? 'Ver detalles ▼' : 'Ocultar ▲';
+    });
+
+    return ticketDiv;
+}
+
 // ---------------------------------------------------------------
 // Toggle Ventas de Hoy — registrado en DOMContentLoaded (ver abajo)
 // ---------------------------------------------------------------
