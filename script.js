@@ -476,8 +476,10 @@ async function deleteSaleFromSupabase(ticketGlobalId) {
  * Reemplaza los localStorage 'ultimaFechaVenta' y 'contadorDiarioVentas'.
  */
 async function generarNumeroTicket() {
-    // ISO YYYY-MM-DD: formato consistente sin importar el idioma del navegador
-    const fechaActual = new Date().toISOString().split('T')[0];
+    // Fecha LOCAL YYYY-MM-DD: el contador se reinicia a las 00:00 hora local,
+    // no a las 00:00 UTC (que en Colombia sería las 7 PM).
+    const _n = new Date();
+    const fechaActual = `${_n.getFullYear()}-${String(_n.getMonth()+1).padStart(2,'0')}-${String(_n.getDate()).padStart(2,'0')}`;
 
     const { data, error } = await supabaseClient
         .from('contador_tickets')
@@ -521,12 +523,15 @@ async function generarNumeroTicket() {
  * independiente del contador general de productos.
  */
 async function generarNumeroCombo() {
-    const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+    // Usa fecha_limpia (DD/MM/YYYY local) para que el día cambie a las 00:00 locales,
+    // igual que generarNumeroTicket. El mismo formato que guarda crearTicketsComboOnline.
+    const _n = new Date();
+    const fechaHoy = `${String(_n.getDate()).padStart(2,'0')}/${String(_n.getMonth()+1).padStart(2,'0')}/${_n.getFullYear()}`;
     const { data } = await supabaseClient
         .from('ventas')
         .select('numero_ticket')
         .eq('user_id', currentUserId)
-        .gte('created_at', today + 'T00:00:00')
+        .eq('fecha_limpia', fechaHoy)
         .ilike('numero_ticket', 'COMBO-%');
 
     let maxNum = 0;
