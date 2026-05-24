@@ -2715,17 +2715,12 @@ async function crearTicketsComboOnline(pedidoId) {
         }
     }
 
-    // ── Ticket(s) de combos — comparten UN solo número del contador exclusivo de combos ──
-    // 1 combo → COMBO-ONLINE-N
-    // 2+ combos → COMBO-ONLINE-N-1, COMBO-ONLINE-N-2, ...
-    const numCombo = await generarNumeroCombo();
-    const multiCombo = comboItems.length > 1;
-
+    // ── Ticket(s) de combos — cada combo recibe su propio número del contador diario ──
+    // Ejemplo pedido mixto: Pedido #4 (productos), COMBO-ONLINE-5, COMBO-ONLINE-6 (combos)
     for (let idx = 0; idx < comboItems.length; idx++) {
         const item    = comboItems[idx];
-        const comboId = multiCombo
-            ? `COMBO-ONLINE-${numCombo}-${idx + 1}`
-            : `COMBO-ONLINE-${numCombo}`;
+        const numCombo = await generarNumeroTicket();
+        const comboId  = `COMBO-ONLINE-${numCombo}`;
 
         const combo     = combos.find(c =>
             c.id === item.combo_id ||
