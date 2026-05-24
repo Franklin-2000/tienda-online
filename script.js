@@ -4416,7 +4416,9 @@ function renderHistorialCombos() {
     };
     const _ahora = new Date();
     const hoy = `${String(_ahora.getDate()).padStart(2,'0')}/${String(_ahora.getMonth()+1).padStart(2,'0')}/${_ahora.getFullYear()}`;
-    const ventasCombo = sales.filter(s => s.id && String(s.id).startsWith('COMBO-'));
+    // Solo combos físicos del proyecto principal (COMBO-N, COMBO-OFF-*).
+    // Los COMBO-ONLINE-* pertenecen al historial de ventas online.
+    const ventasCombo = sales.filter(s => s.id && String(s.id).startsWith('COMBO-') && !String(s.id).startsWith('COMBO-ONLINE-'));
 
     // Sección "hoy"
     const listHoy = document.getElementById('listaCombosHoy');
