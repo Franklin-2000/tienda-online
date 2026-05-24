@@ -2244,6 +2244,63 @@ async function eliminarPedidoCancelado(pedidoId) {
     }
 }
 
+window.eliminarPedidoEntregado = async function(pedidoId) {
+    if (!await mostrarConfirm(`¿Eliminar el pedido entregado #${pedidoId}?\nLos productos volverán al inventario.`, 'danger')) return;
+
+    try {
+        // 1. Obtener items con product_id para reponer inventario de productos regulares
+        const { data: items, error: itemsErr } = await supabaseClient
+            .from('items_pedido')
+            .select('product_id, cantidad')
+            .eq('pedido_id', pedidoId)
+            .not('product_id', 'is', null);
+
+        if (itemsErr) throw itemsErr;
+
+        // 2. Reponer stock de cada producto regular
+        for (const item of (items || [])) {
+            const prod = inventory.find(p => String(p.id) === String(item.product_id));
+            const cantActual = prod ? prod.cantidad : 0;
+            await supabaseClient
+                .from('productos')
+                .update({ cantidad: cantActual + item.cantidad })
+                .eq('id', item.product_id);
+        }
+
+        // 3. Eliminar tickets COMBO-ONLINE asociados (el trigger fn_reponer_inventario
+        //    repone automáticamente el stock de los productos dentro del combo)
+        const comboSales = sales.filter(s =>
+            String(s.id).startsWith('COMBO-ONLINE-') && Number(s.globalId) === Number(pedidoId)
+        );
+        for (const cs of comboSales) {
+            const { error: delErr } = await supabaseClient
+                .from('ventas')
+                .delete()
+                .eq('id', cs.supabaseId);
+            if (delErr) console.error('[EliminarEntregado] Error borrando ticket combo:', delErr);
+        }
+        sales = sales.filter(s =>
+            !(String(s.id).startsWith('COMBO-ONLINE-') && Number(s.globalId) === Number(pedidoId))
+        );
+
+        // 4. Eliminar el pedido (items_pedido se borra en cascada)
+        await deletePedidoFromSupabase(pedidoId);
+
+        // 5. Actualizar estado local y re-renderizar
+        pedidosAdmin = pedidosAdmin.filter(p => p.id !== pedidoId);
+        await loadInventory();
+        renderResumenAdmin();
+        renderPedidosAdmin(filtroEstadoAdmin);
+        renderHistorialOnline();
+        renderHistorialCombos();
+
+        await mostrarAlerta(`Pedido #${pedidoId} eliminado y stock repuesto al inventario.`, 'success');
+    } catch (err) {
+        console.error('Error eliminando pedido entregado:', err);
+        await mostrarAlerta(`Error al eliminar el pedido: ${err.message || err}`, 'error');
+    }
+};
+
 async function eliminarTodosLosPedidosCancelados() {
     const cancelados = pedidosAdmin.filter(p => p.estado === 'cancelado');
     if (cancelados.length === 0) {
@@ -2788,6 +2845,7 @@ function _buildTicketOnlineDiv(pedido, esCombo, items) {
             </div>
             <div class="ticket-header-right">
                 <strong class="ticket-total">$${totalFmt}</strong>
+                <button class="btn-eliminar-ticket" onclick="eliminarPedidoEntregado(${pedido.id}); event.stopPropagation();"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Eliminar</button>
                 <span class="ticket-toggle-arrow">Ver detalles ▼</span>
             </div>
         </div>
@@ -4229,9 +4287,7 @@ function crearDOMTicketCombo(sale, esDeHoy) {
         ? '<span class="ticket-badge ticket-badge-offline"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Local</span>' : '';
     const badgeOnline  = esOnline
         ? '<span class="ticket-badge ticket-badge-online-combo"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Online</span>' : '';
-    const botonEliminarHtml = esDeHoy
-        ? `<button class="btn-eliminar-ticket" onclick="eliminarTicket(${sale.globalId}); event.stopPropagation();"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Eliminar</button>`
-        : '';
+    const botonEliminarHtml = `<button class="btn-eliminar-ticket" onclick="eliminarTicket(${sale.globalId}); event.stopPropagation();"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Eliminar</button>`;
     const totalFmt  = Number(sale.total).toLocaleString('es-CO');
     const fechaFmt  = fechaDBaLocale(sale.date || '');
     const horaStr   = fechaFmt ? (fechaFmt.split(',')[1] || fechaFmt).trim() : '';
