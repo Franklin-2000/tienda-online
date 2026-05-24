@@ -4631,9 +4631,7 @@ input[type="number"] {
 .ticket-numero {
     font-size: 1em;
     font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    word-break: break-word;
 }
 .ticket-total {
     font-size: 1.05em;
@@ -4790,7 +4788,7 @@ input[type="number"] {
 .ticket-item-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     padding: 5px 0;
     border-bottom: 1px solid #e0e0e0;
     font-size: 0.9em;
@@ -4798,9 +4796,8 @@ input[type="number"] {
 }
 .ticket-item-name {
     flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-word;
     padding-right: 8px;
 }
 .ticket-item-sub {
