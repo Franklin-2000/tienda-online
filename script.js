@@ -2554,35 +2554,43 @@ async function cambiarEstadoPedido(pedidoId, nuevoEstado, btnEl) {
 }
 
 // ---------------------------------------------------------------
-// Crear tickets COMBO-ONLINE si el trigger SQL no los generó
+// Tickets generados por sesión para evitar duplicados
+const _ticketsPedidosConfirmados = new Set();
+
+// ---------------------------------------------------------------
+// Crear tickets usando contador diario al confirmar pago
 // ---------------------------------------------------------------
 async function crearTicketsComboOnline(pedidoId) {
+    if (_ticketsPedidosConfirmados.has(pedidoId)) return;
+
     const { data: itemsPedido, error } = await supabaseClient
         .from('items_pedido')
-        .select('id, nombre, cantidad, precio, combo_id')
+        .select('id, nombre, cantidad, precio, subtotal, combo_id')
         .eq('pedido_id', pedidoId);
 
     if (error || !itemsPedido) return;
 
-    const comboItems = itemsPedido.filter(i =>
+    const comboItems   = itemsPedido.filter(i =>
         i.combo_id || (i.nombre && String(i.nombre).startsWith('🎁 Combo:'))
     );
+    const productItems = itemsPedido.filter(i =>
+        !i.combo_id && !(i.nombre && String(i.nombre).startsWith('🎁 Combo:'))
+    );
+
     if (comboItems.length === 0) return;
 
-    // Si el trigger SQL ya creó algún ticket para este pedido, no duplicar
-    if (sales.some(s => s.id && String(s.id).startsWith(`COMBO-ONLINE-${pedidoId}`))) return;
+    _ticketsPedidosConfirmados.add(pedidoId);
 
     if (!combos.length) await loadCombos();
 
-    // Usar el momento de confirmación como fecha real de la venta
     const ahora = new Date();
     const fechaLimpia = `${String(ahora.getDate()).padStart(2,'0')}/${String(ahora.getMonth()+1).padStart(2,'0')}/${ahora.getFullYear()}`;
 
+    // ── Ticket(s) de combos ─────────────────────────────────────
     for (let idx = 0; idx < comboItems.length; idx++) {
-        const item     = comboItems[idx];
-        const ticketId = comboItems.length === 1
-            ? `COMBO-ONLINE-${pedidoId}`
-            : `COMBO-ONLINE-${pedidoId}-${idx + 1}`;
+        const item   = comboItems[idx];
+        const numero = await generarNumeroTicket();
+        const numInt = parseInt(numero, 10);
 
         const combo     = combos.find(c =>
             c.id === item.combo_id ||
@@ -2599,8 +2607,8 @@ async function crearTicketsComboOnline(pedidoId) {
         }));
 
         const newSale = {
-            globalId:    Date.now() + Math.floor(Math.random() * 1000),
-            id:          ticketId,
+            globalId:    pedidoId,   // referencia al pedido para lookup posterior
+            id:          `COMBO-ONLINE-${numInt}`,
             total:       Number(item.precio) * item.cantidad,
             date:        ahora.toLocaleString(),
             fechaLimpia: fechaLimpia,
@@ -2613,6 +2621,39 @@ async function crearTicketsComboOnline(pedidoId) {
             sales.unshift(newSale);
         } catch (e) {
             console.error('[ComboOnline] Error guardando ticket COMBO-ONLINE:', e);
+        }
+    }
+
+    // ── Ticket de productos regulares (solo en pedido mixto) ────
+    if (productItems.length > 0) {
+        const numero = await generarNumeroTicket();
+        const numInt = parseInt(numero, 10);
+
+        const itemsVenta = productItems.map(i => ({
+            productId: i.product_id || '',
+            name:      i.nombre,
+            qty:       i.cantidad,
+            price:     Number(i.precio),
+            subtotal:  Number(i.subtotal)
+        }));
+
+        // ID interno: ONLINE-{pedidoId}-PROD-{numero} — excluido del historial físico
+        // y no empieza con COMBO- así que no aparece en historial combos
+        const newSale = {
+            globalId:    Date.now() + Math.floor(Math.random() * 1000) + 1,
+            id:          `ONLINE-${pedidoId}-PROD-${numInt}`,
+            total:       productItems.reduce((s, i) => s + Number(i.subtotal), 0),
+            date:        ahora.toLocaleString(),
+            fechaLimpia: fechaLimpia,
+            items:       itemsVenta
+        };
+
+        try {
+            const guardada     = await saveSale(newSale);
+            newSale.supabaseId = guardada.id;
+            sales.unshift(newSale);
+        } catch (e) {
+            console.error('[ComboOnline] Error guardando ticket ONLINE-PROD:', e);
         }
     }
 }
@@ -2658,7 +2699,7 @@ function renderHistorialOnline() {
         let fecha;
         if (esComboP) {
             // Para combos usar la fecha del ticket (momento de confirmación)
-            const t = sales.find(s => s.id && String(s.id).startsWith(`COMBO-ONLINE-${pedido.id}`));
+            const t = sales.find(s => String(s.id).startsWith('COMBO-ONLINE-') && Number(s.globalId) === Number(pedido.id));
             fecha = t?.fechaLimpia ? normFechaLimpia(t.fechaLimpia) : new Date(pedido.fecha).toLocaleDateString('es-CO');
         } else {
             fecha = new Date(pedido.fecha).toLocaleDateString('es-CO');
@@ -2737,12 +2778,17 @@ function _buildTicketOnlineDiv(pedido, esCombo, items) {
     ticketDiv.className = `venta-ticket ${esCombo ? 'venta-ticket-combo' : 'venta-ticket-online'}`;
     ticketDiv.dataset.tipo = esCombo ? 'combo-online' : 'online';
 
+    // Buscar ticket combo: globalId almacena el pedido.id como referencia
     const ticketReal = esCombo
-        ? sales.find(s => s.id && String(s.id).startsWith(`COMBO-ONLINE-${pedido.id}`))
+        ? sales.find(s => String(s.id).startsWith('COMBO-ONLINE-') && Number(s.globalId) === Number(pedido.id))
+        : null;
+    // Ticket de productos regulares en pedido mixto (ONLINE-{pedidoId}-PROD-{n})
+    const prodTicket = !esCombo
+        ? sales.find(s => s.id && String(s.id).startsWith(`ONLINE-${pedido.id}-PROD-`))
         : null;
     const nombreTicket = esCombo
-        ? (ticketReal ? ticketReal.id : `COMBO-ONLINE-${pedido.id}`)
-        : `Pedido #${pedido.id}`;
+        ? (ticketReal ? ticketReal.id : `COMBO-ONLINE-?`)
+        : (prodTicket ? `Pedido #${prodTicket.id.split('-PROD-')[1]}` : `Pedido #${pedido.id}`);
     const badgePrincipal = esCombo
         ? '<span class="ticket-badge ticket-badge-combo"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg> Venta Combo</span><span class="ticket-badge ticket-badge-online-combo"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Online</span>'
         : '<span class="ticket-badge ticket-badge-online"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Pedido Online</span>';
@@ -2758,8 +2804,9 @@ function _buildTicketOnlineDiv(pedido, esCombo, items) {
     itemsHtml += '</ul>';
 
     const totalSubset = items.reduce((s, i) => s + Number(i.subtotal), 0);
-    const fecha = (esCombo && ticketReal?.date)
-        ? fechaDBaLocale(ticketReal.date)
+    const _ticketRef = esCombo ? ticketReal : prodTicket;
+    const fecha = (_ticketRef?.date)
+        ? fechaDBaLocale(_ticketRef.date)
         : new Date(pedido.fecha).toLocaleString('es-CO');
     const totalFmt = totalSubset.toLocaleString('es-CO');
     const metodoBadge = pedido.metodo_pago === 'contraentrega'
