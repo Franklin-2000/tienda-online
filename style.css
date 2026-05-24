@@ -2547,14 +2547,27 @@ input[type="number"] {
 /* --- ESTILO GENERAL DE LA ETIQUETA MEJORADO --- */
 .pedido-estado {
     display: inline-block;
-    font-size: 0.85em; 
-    font-weight: 900; 
+    font-size: 0.85em;
+    font-weight: 900;
     padding: 5px 12px;
     border-radius: 50px;
-    text-transform: uppercase; 
+    text-transform: uppercase;
     letter-spacing: 0.5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
     border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.pedido-badge-mixto {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78em;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #0c566c 0%, #48a4aa 100%);
+    color: #fff;
+    letter-spacing: 0.4px;
 }
 
 /* --- COLORES VIBRANTES CON ALTO CONTRASTE --- */

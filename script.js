@@ -2375,6 +2375,12 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
         const etq = etqMap[pedido.estado] || { texto: pedido.estado, clase: '' };
         const fecha = new Date(pedido.fecha).toLocaleString('es-CO');
         const esContraEntrega = pedido.metodo_pago === 'contraentrega';
+
+        // Detectar pedido mixto (combos + productos regulares)
+        const _todosItems   = pedido.items_pedido || [];
+        const _itemsCombo   = _todosItems.filter(i => i.combo_id || (i.nombre && String(i.nombre).startsWith('🎁 Combo:')));
+        const _itemsProds   = _todosItems.filter(i => !i.combo_id && !(i.nombre && String(i.nombre).startsWith('🎁 Combo:')));
+        const _esMixto      = _itemsCombo.length > 0 && _itemsProds.length > 0;
  
         // Botones según el estado actual del pedido
         let botonesHTML = '';
@@ -2412,6 +2418,7 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
                 <div class="pedido-admin-id">
                     <strong>#${pedido.id}</strong>
                     <span class="pedido-estado ${etq.clase}">${etq.texto}</span>
+                    ${_esMixto ? '<span class="pedido-badge-mixto"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg> Mixto</span>' : ''}
                 </div>
                 <div class="pedido-admin-total">
                     $${Number(pedido.total).toLocaleString('es-CO')}
@@ -2437,7 +2444,22 @@ function renderPedidosAdmin(estadoFiltro = 'todos') {
                         <th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th>
                     </tr></thead>
                     <tbody>
-                        ${(pedido.items_pedido || []).map(i => `
+                        ${_esMixto ? `
+                            <tr><td colspan="4" style="font-size:0.75em;font-weight:800;color:#0c566c;padding:6px 4px 2px;letter-spacing:0.5px">COMBOS</td></tr>
+                            ${_itemsCombo.map(i => `<tr>
+                                <td>${i.nombre}</td>
+                                <td style="text-align:center">${i.cantidad}</td>
+                                <td style="text-align:right">$${Number(i.precio).toLocaleString('es-CO')}</td>
+                                <td style="text-align:right;font-weight:700">$${Number(i.subtotal).toLocaleString('es-CO')}</td>
+                            </tr>`).join('')}
+                            <tr><td colspan="4" style="font-size:0.75em;font-weight:800;color:#0c566c;padding:6px 4px 2px;letter-spacing:0.5px">PRODUCTOS</td></tr>
+                            ${_itemsProds.map(i => `<tr>
+                                <td>${i.nombre}</td>
+                                <td style="text-align:center">${i.cantidad}</td>
+                                <td style="text-align:right">$${Number(i.precio).toLocaleString('es-CO')}</td>
+                                <td style="text-align:right;font-weight:700">$${Number(i.subtotal).toLocaleString('es-CO')}</td>
+                            </tr>`).join('')}
+                        ` : _todosItems.map(i => `
                             <tr>
                                 <td>${i.nombre}</td>
                                 <td style="text-align:center">${i.cantidad}</td>
@@ -2709,18 +2731,12 @@ function renderHistorialOnline() {
 // TICKET VENTAS ONLINE — identificador visual claro
 // Clase CSS: venta-ticket-online | Badge: 🌐 Pedido Online
 // ──────────────────────────────────────────────────────
-function crearDOMTicketOnline(pedido, esDeHoy) {
+// Construye el DOM de un ticket individual para el historial online
+function _buildTicketOnlineDiv(pedido, esCombo, items) {
     const ticketDiv = document.createElement('div');
-
-    // Detectar si es un pedido de combo
-    const esCombo = (pedido.items_pedido || []).some(i =>
-        i.combo_id || (i.nombre && String(i.nombre).startsWith('🎁 Combo:'))
-    );
-
     ticketDiv.className = `venta-ticket ${esCombo ? 'venta-ticket-combo' : 'venta-ticket-online'}`;
     ticketDiv.dataset.tipo = esCombo ? 'combo-online' : 'online';
 
-    // Usar el ID real del ticket en sales para que coincida exactamente con historial de combos
     const ticketReal = esCombo
         ? sales.find(s => s.id && String(s.id).startsWith(`COMBO-ONLINE-${pedido.id}`))
         : null;
@@ -2732,7 +2748,7 @@ function crearDOMTicketOnline(pedido, esDeHoy) {
         : '<span class="ticket-badge ticket-badge-online"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Pedido Online</span>';
 
     let itemsHtml = '<ul class="ticket-items-list">';
-    (pedido.items_pedido || []).forEach(item => {
+    items.forEach(item => {
         const sub = Number(item.subtotal).toLocaleString('es-CO');
         itemsHtml += `<li class="ticket-item-row">
             <span class="ticket-item-name">${item.cantidad}x ${item.nombre}</span>
@@ -2741,11 +2757,11 @@ function crearDOMTicketOnline(pedido, esDeHoy) {
     });
     itemsHtml += '</ul>';
 
-    // Combos: mostrar fecha/hora de confirmación (ticket) en formato AM/PM; pedidos normales: fecha del pedido
+    const totalSubset = items.reduce((s, i) => s + Number(i.subtotal), 0);
     const fecha = (esCombo && ticketReal?.date)
         ? fechaDBaLocale(ticketReal.date)
         : new Date(pedido.fecha).toLocaleString('es-CO');
-    const totalFmt = Number(pedido.total).toLocaleString('es-CO');
+    const totalFmt = totalSubset.toLocaleString('es-CO');
     const metodoBadge = pedido.metodo_pago === 'contraentrega'
         ? '<span class="ticket-badge ticket-badge-contraentrega"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Contra entrega</span>'
         : '<span class="ticket-badge ticket-badge-online-pago"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Pago online</span>';
@@ -2779,13 +2795,31 @@ function crearDOMTicketOnline(pedido, esDeHoy) {
 
     ticketDiv.querySelector('.venta-ticket-header').addEventListener('click', () => {
         const details = ticketDiv.querySelector('.venta-ticket-details');
-        const arrow = ticketDiv.querySelector('.ticket-toggle-arrow');
-        const open = details.style.display === 'block';
+        const arrow   = ticketDiv.querySelector('.ticket-toggle-arrow');
+        const open    = details.style.display === 'block';
         details.style.display = open ? 'none' : 'block';
         if (arrow) arrow.textContent = open ? 'Ver detalles ▼' : 'Ocultar ▲';
     });
 
     return ticketDiv;
+}
+
+// Retorna un DocumentFragment con 1 ticket (pedido puro) o 2 tickets (pedido mixto)
+function crearDOMTicketOnline(pedido, esDeHoy) {
+    const todos         = pedido.items_pedido || [];
+    const itemsCombo    = todos.filter(i => i.combo_id || (i.nombre && String(i.nombre).startsWith('🎁 Combo:')));
+    const itemsProductos = todos.filter(i => !i.combo_id && !(i.nombre && String(i.nombre).startsWith('🎁 Combo:')));
+
+    const frag = document.createDocumentFragment();
+
+    if (itemsCombo.length > 0) {
+        frag.appendChild(_buildTicketOnlineDiv(pedido, true, itemsCombo));
+    }
+    if (itemsProductos.length > 0) {
+        frag.appendChild(_buildTicketOnlineDiv(pedido, false, itemsProductos));
+    }
+
+    return frag;
 }
  
 // ---------------------------------------------------------------
