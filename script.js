@@ -2618,15 +2618,27 @@ const _ticketsPedidosConfirmados = new Set();
 async function crearTicketsComboOnline(pedidoId) {
     if (_ticketsPedidosConfirmados.has(pedidoId)) return;
 
+    // Protección cross-sesión: si ya existen tickets COMBO-ONLINE para este pedido no crear más
+    const yaExiste = sales.some(s =>
+        String(s.id).startsWith('COMBO-ONLINE-') && Number(s.globalId) === Number(pedidoId)
+    );
+    if (yaExiste) {
+        _ticketsPedidosConfirmados.add(pedidoId);
+        return;
+    }
+
     const { data: itemsPedido, error } = await supabaseClient
         .from('items_pedido')
-        .select('id, nombre, cantidad, precio, subtotal, combo_id')
+        .select('id, nombre, cantidad, precio, subtotal, combo_id, product_id')
         .eq('pedido_id', pedidoId);
 
     if (error || !itemsPedido) return;
 
-    const comboItems = itemsPedido.filter(i =>
+    const comboItems   = itemsPedido.filter(i =>
         i.combo_id || (i.nombre && String(i.nombre).startsWith('Combo: '))
+    );
+    const productItems = itemsPedido.filter(i =>
+        !i.combo_id && !(i.nombre && String(i.nombre).startsWith('Combo: '))
     );
 
     if (comboItems.length === 0) return;
@@ -2638,16 +2650,48 @@ async function crearTicketsComboOnline(pedidoId) {
     const ahora = new Date();
     const fechaLimpia = `${String(ahora.getDate()).padStart(2,'0')}/${String(ahora.getMonth()+1).padStart(2,'0')}/${ahora.getFullYear()}`;
 
-    // ── Ticket(s) de combos — todos comparten UN solo número del contador diario ───
-    // Los productos del pedido usan el id del pedido directamente (Pedido #[pedido.id])
+    // ── Ticket productos regulares PRIMERO (solo pedido mixto) ─────────────
+    // Toma el número N del contador → se muestra como "Pedido #N" en historial
+    if (productItems.length > 0) {
+        const numProd = parseInt(await generarNumeroTicket(), 10);
+
+        const itemsVenta = productItems.map(i => ({
+            productId: i.product_id || '',
+            name:      i.nombre,
+            qty:       i.cantidad,
+            price:     Number(i.precio),
+            subtotal:  Number(i.subtotal)
+        }));
+
+        const newSale = {
+            globalId:    pedidoId,
+            id:          `ONLINE-${pedidoId}-PROD-${numProd}`,
+            total:       productItems.reduce((s, i) => s + Number(i.subtotal), 0),
+            date:        ahora.toLocaleString(),
+            fechaLimpia: fechaLimpia,
+            items:       itemsVenta
+        };
+
+        try {
+            const guardada     = await saveSale(newSale);
+            newSale.supabaseId = guardada.id;
+            sales.unshift(newSale);
+        } catch (e) {
+            console.error('[ComboOnline] Error guardando ticket ONLINE-PROD:', e);
+        }
+    }
+
+    // ── Ticket(s) de combos — comparten UN solo número (N+1) ──────────────
     // 1 combo → COMBO-ONLINE-N
     // 2+ combos → COMBO-ONLINE-N-1, COMBO-ONLINE-N-2, ...
-    const numCombo = parseInt(await generarNumeroTicket(), 10);
+    const numCombo   = parseInt(await generarNumeroTicket(), 10);
     const multiCombo = comboItems.length > 1;
 
     for (let idx = 0; idx < comboItems.length; idx++) {
-        const item = comboItems[idx];
-        const comboId = multiCombo ? `COMBO-ONLINE-${numCombo}-${idx + 1}` : `COMBO-ONLINE-${numCombo}`;
+        const item    = comboItems[idx];
+        const comboId = multiCombo
+            ? `COMBO-ONLINE-${numCombo}-${idx + 1}`
+            : `COMBO-ONLINE-${numCombo}`;
 
         const combo     = combos.find(c =>
             c.id === item.combo_id ||
@@ -2806,10 +2850,13 @@ function _buildTicketOnlineDiv(pedido, esCombo, items) {
     const ticketReal = esCombo
         ? sales.find(s => String(s.id).startsWith('COMBO-ONLINE-') && Number(s.globalId) === Number(pedido.id))
         : null;
-    // Los productos siempre muestran el id del pedido; los combos muestran el id del ticket
+    // Buscar ticket de productos (ONLINE-{pedidoId}-PROD-{N}) para mostrar el número del contador
+    const prodTicket = !esCombo
+        ? sales.find(s => s.id && String(s.id).startsWith(`ONLINE-${pedido.id}-PROD-`))
+        : null;
     const nombreTicket = esCombo
         ? (ticketReal ? ticketReal.id : `COMBO-ONLINE-?`)
-        : `Pedido #${pedido.id}`;
+        : (prodTicket ? `Pedido #${prodTicket.id.split('-PROD-')[1]}` : `Pedido #${pedido.id}`);
     const badgePrincipal = esCombo
         ? '<span class="ticket-badge ticket-badge-combo"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg> Venta Combo</span><span class="ticket-badge ticket-badge-online-combo"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Online</span>'
         : '<span class="ticket-badge ticket-badge-online"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Pedido Online</span>';
