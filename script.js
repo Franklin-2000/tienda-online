@@ -1546,6 +1546,9 @@ function renderProducts(productsToRender = null) {
         productosFiltrados = base.filter(p => p.categoria === categoriaActivaFiltro);
     }
 
+    // Ordenar de mayor a menor cantidad disponible (sin mutar el array original)
+    productosFiltrados = [...productosFiltrados].sort((a, b) => (b.cantidad || 0) - (a.cantidad || 0));
+
     contenedorProductos.innerHTML = ''; 
 
     if (productosFiltrados.length === 0) {
