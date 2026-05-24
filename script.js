@@ -2570,11 +2570,8 @@ async function crearTicketsComboOnline(pedidoId) {
 
     if (error || !itemsPedido) return;
 
-    const comboItems   = itemsPedido.filter(i =>
+    const comboItems = itemsPedido.filter(i =>
         i.combo_id || (i.nombre && String(i.nombre).startsWith('Combo: '))
-    );
-    const productItems = itemsPedido.filter(i =>
-        !i.combo_id && !(i.nombre && String(i.nombre).startsWith('Combo: '))
     );
 
     if (comboItems.length === 0) return;
@@ -2586,39 +2583,8 @@ async function crearTicketsComboOnline(pedidoId) {
     const ahora = new Date();
     const fechaLimpia = `${String(ahora.getDate()).padStart(2,'0')}/${String(ahora.getMonth()+1).padStart(2,'0')}/${ahora.getFullYear()}`;
 
-    // ── Ticket de productos regulares PRIMERO (pedido mixto) ───
-    // El ticket de productos toma el número N, los combos toman N+1
-    if (productItems.length > 0) {
-        const numero = await generarNumeroTicket();
-        const numInt = parseInt(numero, 10);
-
-        const itemsVenta = productItems.map(i => ({
-            productId: i.product_id || '',
-            name:      i.nombre,
-            qty:       i.cantidad,
-            price:     Number(i.precio),
-            subtotal:  Number(i.subtotal)
-        }));
-
-        const newSale = {
-            globalId:    Date.now() + Math.floor(Math.random() * 1000) + 1,
-            id:          `ONLINE-${pedidoId}-PROD-${numInt}`,
-            total:       productItems.reduce((s, i) => s + Number(i.subtotal), 0),
-            date:        ahora.toLocaleString(),
-            fechaLimpia: fechaLimpia,
-            items:       itemsVenta
-        };
-
-        try {
-            const guardada     = await saveSale(newSale);
-            newSale.supabaseId = guardada.id;
-            sales.unshift(newSale);
-        } catch (e) {
-            console.error('[ComboOnline] Error guardando ticket ONLINE-PROD:', e);
-        }
-    }
-
-    // ── Ticket(s) de combos — todos comparten UN solo número ───
+    // ── Ticket(s) de combos — todos comparten UN solo número del contador diario ───
+    // Los productos del pedido usan el id del pedido directamente (Pedido #[pedido.id])
     // 1 combo → COMBO-ONLINE-N
     // 2+ combos → COMBO-ONLINE-N-1, COMBO-ONLINE-N-2, ...
     const numCombo = parseInt(await generarNumeroTicket(), 10);
@@ -2785,13 +2751,10 @@ function _buildTicketOnlineDiv(pedido, esCombo, items) {
     const ticketReal = esCombo
         ? sales.find(s => String(s.id).startsWith('COMBO-ONLINE-') && Number(s.globalId) === Number(pedido.id))
         : null;
-    // Ticket de productos regulares en pedido mixto (ONLINE-{pedidoId}-PROD-{n})
-    const prodTicket = !esCombo
-        ? sales.find(s => s.id && String(s.id).startsWith(`ONLINE-${pedido.id}-PROD-`))
-        : null;
+    // Los productos siempre muestran el id del pedido; los combos muestran el id del ticket
     const nombreTicket = esCombo
         ? (ticketReal ? ticketReal.id : `COMBO-ONLINE-?`)
-        : (prodTicket ? `Pedido #${prodTicket.id.split('-PROD-')[1]}` : `Pedido #${pedido.id}`);
+        : `Pedido #${pedido.id}`;
     const badgePrincipal = esCombo
         ? '<span class="ticket-badge ticket-badge-combo"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg> Venta Combo</span><span class="ticket-badge ticket-badge-online-combo"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Online</span>'
         : '<span class="ticket-badge ticket-badge-online"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Pedido Online</span>';
@@ -2807,9 +2770,8 @@ function _buildTicketOnlineDiv(pedido, esCombo, items) {
     itemsHtml += '</ul>';
 
     const totalSubset = items.reduce((s, i) => s + Number(i.subtotal), 0);
-    const _ticketRef = esCombo ? ticketReal : prodTicket;
-    const fecha = (_ticketRef?.date)
-        ? fechaDBaLocale(_ticketRef.date)
+    const fecha = (ticketReal?.date)
+        ? fechaDBaLocale(ticketReal.date)
         : new Date(pedido.fecha).toLocaleString('es-CO');
     const totalFmt = totalSubset.toLocaleString('es-CO');
     const metodoBadge = pedido.metodo_pago === 'contraentrega'
