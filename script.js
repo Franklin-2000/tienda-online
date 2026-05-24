@@ -4293,7 +4293,7 @@ async function venderCombo(combo) {
             renderTarjetasCombos();
             mostrarAlerta(`Venta guardada localmente.\n${combo.nombre} — $${precioFmt}`, 'success');
         } else {
-            const numero  = await generarNumeroCombo();
+            const numero  = await generarNumeroTicket();
             newSale.id    = 'COMBO-' + numero;
             const guardada = await saveSale(newSale);
             newSale.supabaseId = guardada.id;
