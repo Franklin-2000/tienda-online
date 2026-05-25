@@ -1588,8 +1588,11 @@ function renderProducts(productsToRender = null) {
         cardDiv.dataset.id = product.id;
 
         const imgElement = nuevaTarjeta.querySelector(".producto-imagen");
-        imgElement.src = product.imagen || 'https://via.placeholder.com/150'; 
         imgElement.alt = `Imagen de ${product.nombre}`;
+        if (product.imagen) {
+            imgElement.src = product.imagen;
+            imgElement.onerror = () => { imgElement.removeAttribute('src'); };
+        }
         
         nuevaTarjeta.querySelector(".producto-nombre").textContent = product.nombre;
         
