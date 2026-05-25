@@ -327,14 +327,22 @@ let objetivoEscaneo = '';
 // ==========================================
 // FUNCIONES DE NUBE SUPABASE — INVENTARIO
 // ==========================================
-async function loadInventory() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) return; 
+async function loadInventory(userId = null) {
+    let uid = userId;
+    if (!uid) {
+        // Fallback: leer sesión local (no hace petición de red)
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) return;
+        uid = session.user.id;
+    }
+
+    // Mostrar caché inmediatamente mientras llega Supabase
+    await cargarInventarioDesdeCache();
 
     const { data, error } = await supabaseClient
         .from('productos')
         .select('*')
-        .eq('user_id', user.id); 
+        .eq('user_id', uid);
 
     if (error) {
         console.error("Error cargando inventario:", error);
@@ -343,6 +351,7 @@ async function loadInventory() {
         inventory = data;
         renderProducts();
         updateProductCount();
+        guardarInventarioCache(); // actualizar caché en segundo plano
     }
 }
 
@@ -787,8 +796,8 @@ async function checkAuthStatus(pushToHistory = true) {
         // ------------------------
 
         if (pushToHistory) try { history.replaceState({ screen: 'pantalla-inicio' }, '', '#pantalla-inicio'); } catch(e) {}
-        showScreen('pantalla-inicio', false); 
-        loadInventory(); 
+        showScreen('pantalla-inicio', false);
+        loadInventory(session.user.id);
         loadSales();
     } else {
         currentLoggedInUserEmail = null;
