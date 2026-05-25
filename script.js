@@ -2018,12 +2018,11 @@ async function exportInventoryToCSV() {
         ]);
     });
 
-    // Fila de total al pie
-    datos.push(['', '', '', '', 'VALOR TOTAL DEL INVENTARIO', totalInventoryValue]);
+    const totalRowIdx = datos.length;
+    datos.push(['VALOR TOTAL DEL INVENTARIO', '', '', '', '', totalInventoryValue]);
 
     const ws = XLSX.utils.aoa_to_sheet(datos);
 
-    // Anchos de columna (wch = caracteres)
     ws['!cols'] = [
         { wch: 20 },   // Código
         { wch: 42 },   // Nombre del Producto
@@ -2033,20 +2032,53 @@ async function exportInventoryToCSV() {
         { wch: 22 },   // Valor Total
     ];
 
-    // Formato de moneda en columnas Precio y Valor Total (D y F)
+    // Fusionar A:E en la fila del total para que el texto no se recorte
+    ws['!merges'] = [{ s: { r: totalRowIdx, c: 0 }, e: { r: totalRowIdx, c: 4 } }];
+
+    // Encabezados en negrita
+    for (let c = 0; c <= 5; c++) {
+        const cell = XLSX.utils.encode_cell({ r: 0, c });
+        if (ws[cell]) ws[cell].s = { font: { bold: true } };
+    }
+
+    // Formato numérico sin signo $ en columnas Precio y Valor Total
     const rango = XLSX.utils.decode_range(ws['!ref']);
-    for (let r = 1; r < rango.e.r; r++) {
+    for (let r = 1; r <= rango.e.r; r++) {
         const celdaPrecio = XLSX.utils.encode_cell({ r, c: 3 });
         const celdaValor  = XLSX.utils.encode_cell({ r, c: 5 });
-        if (ws[celdaPrecio]) ws[celdaPrecio].z = '"$"#,##0';
-        if (ws[celdaValor])  ws[celdaValor].z  = '"$"#,##0';
+        if (ws[celdaPrecio]) ws[celdaPrecio].z = '#,##0';
+        if (ws[celdaValor])  ws[celdaValor].z  = '#,##0';
     }
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
-    XLSX.writeFile(wb, `inventario_${fileDate}.xlsx`);
+    const writeOpts = { bookType: 'xlsx', type: 'array', cellStyles: true };
 
-    await mostrarAlerta('¡Inventario exportado exitosamente!', 'success');
+    if (window.showSaveFilePicker) {
+        try {
+            const fileHandle = await window.showSaveFilePicker({
+                suggestedName: `inventario_${fileDate}.xlsx`,
+                types: [{
+                    description: 'Excel Worksheet',
+                    accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
+                }]
+            });
+            const wbout = XLSX.write(wb, writeOpts);
+            const writable = await fileHandle.createWritable();
+            await writable.write(new Blob([wbout], { type: 'application/octet-stream' }));
+            await writable.close();
+            await mostrarAlerta('¡Inventario exportado correctamente!', 'success');
+        } catch (err) {
+            if (err.name === 'AbortError') {
+                await mostrarAlerta('Operación cancelada', 'info');
+            } else {
+                await mostrarAlerta('Error al exportar: ' + err.message, 'error');
+            }
+        }
+    } else {
+        XLSX.writeFile(wb, `inventario_${fileDate}.xlsx`, writeOpts);
+        await mostrarAlerta('¡Inventario exportado correctamente!', 'success');
+    }
 }
 
 btnExportarDatos.addEventListener("click", exportInventoryToCSV);
