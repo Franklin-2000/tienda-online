@@ -1984,38 +1984,107 @@ if (contenedorProductos) {
 }
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN (CSV)
+// LÓGICA DE EXPORTACIÓN (XLS — tabla HTML con anchos de columna fijos)
 // ==========================================
 async function exportInventoryToCSV() {
     if (inventory.length === 0) {
-        await mostrarAlerta("El inventario está vacío. No hay datos para exportar.", 'warn');
+        await mostrarAlerta('El inventario está vacío. No hay datos para exportar.', 'warn');
         return;
     }
 
-    let csvContent = "Codigo,Nombre Producto,Precio Unitario,Cantidad,Valor Total Producto\n";
-    let totalInventoryValue = 0;
-
-    inventory.forEach(product => {
-        const productTotal = product.precio * product.cantidad;
-        totalInventoryValue += productTotal;
-        const escapedProductName = `"${product.nombre.replace(/"/g, '""')}"`;
-        const codigoExp = product.codigoBarras ? product.codigoBarras : "N/A";
-
-        csvContent += `${codigoExp},${escapedProductName},${product.precio},${product.cantidad},${productTotal}\n`;
+    const fmt = n => Number(n).toLocaleString('es-CO', {
+        style: 'currency', currency: 'COP', minimumFractionDigits: 0
     });
 
-    csvContent += `\nVALOR TOTAL INVENTARIO,,,,${totalInventoryValue}\n`;
+    const ahora    = new Date();
+    const fechaStr = ahora.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const horaStr  = ahora.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+    const fileDate = ahora.toISOString().slice(0, 10);
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    let totalInventoryValue = 0;
+    let filas = '';
+
+    inventory.forEach((p, i) => {
+        const total     = p.precio * p.cantidad;
+        totalInventoryValue += total;
+        const bg        = i % 2 === 0 ? '#ffffff' : '#f0faf5';
+        const codigo    = p.codigoBarras || 'N/A';
+        const categoria = p.categoria    || 'Sin categoría';
+
+        filas += `
+        <tr style="background:${bg};">
+          <td style="padding:9px 14px;border:1px solid #d4e8dc;white-space:nowrap;">${codigo}</td>
+          <td style="padding:9px 14px;border:1px solid #d4e8dc;">${p.nombre}</td>
+          <td style="padding:9px 14px;border:1px solid #d4e8dc;white-space:nowrap;">${categoria}</td>
+          <td style="padding:9px 14px;border:1px solid #d4e8dc;text-align:right;white-space:nowrap;">${fmt(p.precio)}</td>
+          <td style="padding:9px 14px;border:1px solid #d4e8dc;text-align:center;white-space:nowrap;">${p.cantidad}</td>
+          <td style="padding:9px 14px;border:1px solid #d4e8dc;text-align:right;white-space:nowrap;">${fmt(total)}</td>
+        </tr>`;
+    });
+
+    const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:x="urn:schemas-microsoft-com:office:excel"
+  xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+  <meta charset="UTF-8">
+  <!--[if gte mso 9]><xml>
+    <x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
+      <x:Name>Inventario</x:Name>
+      <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
+    </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook>
+  </xml><![endif]-->
+</head>
+<body>
+  <p style="font-family:Calibri,Arial;font-size:20pt;font-weight:bold;color:#2da267;margin:0 0 4px;">
+    Inventario de Productos
+  </p>
+  <p style="font-family:Calibri,Arial;font-size:10pt;color:#666;margin:0 0 18px;">
+    Exportado el ${fechaStr} a las ${horaStr} &nbsp;|&nbsp; ${inventory.length} producto${inventory.length !== 1 ? 's' : ''}
+  </p>
+  <table style="border-collapse:collapse;font-family:Calibri,Arial;font-size:11pt;">
+    <colgroup>
+      <col style="width:160px;">
+      <col style="width:300px;">
+      <col style="width:190px;">
+      <col style="width:160px;">
+      <col style="width:120px;">
+      <col style="width:180px;">
+    </colgroup>
+    <thead>
+      <tr>
+        <th style="background:#2da267;color:#fff;padding:11px 14px;border:1px solid #22a05a;text-align:left;font-size:12pt;white-space:nowrap;">Código</th>
+        <th style="background:#2da267;color:#fff;padding:11px 14px;border:1px solid #22a05a;text-align:left;font-size:12pt;">Nombre del Producto</th>
+        <th style="background:#2da267;color:#fff;padding:11px 14px;border:1px solid #22a05a;text-align:left;font-size:12pt;white-space:nowrap;">Categoría</th>
+        <th style="background:#2da267;color:#fff;padding:11px 14px;border:1px solid #22a05a;text-align:right;font-size:12pt;white-space:nowrap;">Precio Unitario</th>
+        <th style="background:#2da267;color:#fff;padding:11px 14px;border:1px solid #22a05a;text-align:center;font-size:12pt;white-space:nowrap;">Cantidad</th>
+        <th style="background:#2da267;color:#fff;padding:11px 14px;border:1px solid #22a05a;text-align:right;font-size:12pt;white-space:nowrap;">Valor Total</th>
+      </tr>
+    </thead>
+    <tbody>${filas}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="5" style="padding:11px 14px;border:1px solid #22a05a;background:#2da267;color:#fff;font-weight:bold;font-size:12pt;text-align:right;">
+          VALOR TOTAL DEL INVENTARIO
+        </td>
+        <td style="padding:11px 14px;border:1px solid #22a05a;background:#2da267;color:#fff;font-weight:bold;font-size:12pt;text-align:right;white-space:nowrap;">
+          ${fmt(totalInventoryValue)}
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+</body>
+</html>`;
+
+    const blob = new Blob(['﻿' + html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'inventario.csv';
-
-    document.body.appendChild(link); 
+    link.download = `inventario_${fileDate}.xls`;
+    document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link); 
-    URL.revokeObjectURL(link.href); 
-    mostrarAlerta("¡Inventario exportado exitosamente a inventario.csv!", 'success');
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+    await mostrarAlerta('¡Inventario exportado exitosamente!', 'success');
 }
 
 btnExportarDatos.addEventListener("click", exportInventoryToCSV);
