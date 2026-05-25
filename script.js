@@ -2062,31 +2062,28 @@ async function exportInventoryToCSV() {
     XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
     const writeOpts = { bookType: 'xlsx', type: 'array', cellStyles: true };
 
-    // Generar el buffer ANTES de abrir el diálogo para no bloquear el render al guardar
-    const wbout = XLSX.write(wb, writeOpts);
+    const confirmar = await mostrarConfirm(
+        `¿Deseas exportar el inventario?\nSe descargará como "inventario_${fileDate}.xlsx".`,
+        'info'
+    );
 
-    if (window.showSaveFilePicker) {
-        try {
-            const fileHandle = await window.showSaveFilePicker({
-                suggestedName: `inventario_${fileDate}.xlsx`,
-                types: [{
-                    description: 'Excel Worksheet',
-                    accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
-                }]
-            });
-            const writable = await fileHandle.createWritable();
-            await writable.write(new Blob([wbout], { type: 'application/octet-stream' }));
-            await writable.close();
-        } catch (err) {
-            if (err.name === 'AbortError') {
-                await mostrarAlerta('Operación cancelada', 'info');
-            } else {
-                await mostrarAlerta('Error al exportar: ' + err.message, 'error');
-            }
-        }
-    } else {
-        XLSX.writeFile(wb, `inventario_${fileDate}.xlsx`, writeOpts);
+    if (!confirmar) {
+        await mostrarAlerta('Operación cancelada', 'info');
+        return;
+    }
+
+    try {
+        const wbout = XLSX.write(wb, writeOpts);
+        const blob   = new Blob([wbout], { type: 'application/octet-stream' });
+        const url    = URL.createObjectURL(blob);
+        const a      = document.createElement('a');
+        a.href       = url;
+        a.download   = `inventario_${fileDate}.xlsx`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
         await mostrarAlerta('¡Inventario exportado correctamente!', 'success');
+    } catch (err) {
+        await mostrarAlerta('Error al exportar: ' + (err.message || 'Intenta de nuevo.'), 'error');
     }
 }
 
