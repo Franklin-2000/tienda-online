@@ -1,8 +1,14 @@
 -- ================================================================
 -- SCRIPT COMPLETO — SUPABASE
 -- Versión: combos online + descuento inventario automático
+-- ✅ IDEMPOTENTE: se puede correr sobre una BD existente sin perder datos
+-- ✅ Triggers envueltos en DO...EXCEPTION WHEN duplicate_object
+-- ✅ Políticas RLS envueltas en DO...EXCEPTION WHEN duplicate_object
+-- ✅ Migraciones envueltas en DO...EXCEPTION WHEN OTHERS
+-- ✅ Tablas con CREATE TABLE IF NOT EXISTS
+-- ✅ Funciones con CREATE OR REPLACE
+-- ✅ Fix: descuento inventario pedidos mixtos usa SUM+GROUP BY
 -- ✅ es_admin() filtra por email real del admin
--- ✅ SEGURO: no borra datos ni historiales existentes
 -- ✅ Tickets físicos con prefijo V-
 -- ✅ Tickets online con prefijo ONLINE-
 -- ✅ Tickets combo online con prefijo COMBO-ONLINE-
@@ -16,11 +22,11 @@
 -- PASO 0: LIMPIAR TRIGGERS Y FUNCIONES ANTERIORES
 -- (Solo estructuras, NUNCA datos)
 -- ================================================================
-DROP TRIGGER IF EXISTS trg_descontar_inventario         ON items_venta;
-DROP TRIGGER IF EXISTS trg_reponer_inventario           ON items_venta;
-DROP TRIGGER IF EXISTS trg_descontar_inventario_pedido  ON pedidos;
-DROP TRIGGER IF EXISTS trg_descontar_inventario_fisico  ON items_venta;
-DROP TRIGGER IF EXISTS trg_reponer_inventario_fisico    ON items_venta;
+DO $$ BEGIN DROP TRIGGER IF EXISTS trg_descontar_inventario         ON items_venta;        EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN DROP TRIGGER IF EXISTS trg_reponer_inventario           ON items_venta;        EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN DROP TRIGGER IF EXISTS trg_descontar_inventario_pedido  ON pedidos;            EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN DROP TRIGGER IF EXISTS trg_descontar_inventario_fisico  ON items_venta;        EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN DROP TRIGGER IF EXISTS trg_reponer_inventario_fisico    ON items_venta;        EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
 DROP FUNCTION IF EXISTS fn_descontar_inventario()               CASCADE;
 DROP FUNCTION IF EXISTS fn_reponer_inventario()                 CASCADE;
@@ -42,25 +48,25 @@ DO $$ BEGIN
     DROP POLICY IF EXISTS "productos: insert propio"         ON productos;
     DROP POLICY IF EXISTS "productos: update propio"         ON productos;
     DROP POLICY IF EXISTS "productos: delete propio"         ON productos;
-EXCEPTION WHEN undefined_table THEN NULL; END $$;
+EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
 DO $$ BEGIN
     DROP POLICY IF EXISTS "ventas: select propio" ON ventas;
     DROP POLICY IF EXISTS "ventas: insert propio" ON ventas;
     DROP POLICY IF EXISTS "ventas: delete propio" ON ventas;
-EXCEPTION WHEN undefined_table THEN NULL; END $$;
+EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
 DO $$ BEGIN
     DROP POLICY IF EXISTS "items_venta: select propio" ON items_venta;
     DROP POLICY IF EXISTS "items_venta: insert propio" ON items_venta;
     DROP POLICY IF EXISTS "items_venta: delete propio" ON items_venta;
-EXCEPTION WHEN undefined_table THEN NULL; END $$;
+EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
 DO $$ BEGIN
     DROP POLICY IF EXISTS "contador_tickets: select propio" ON contador_tickets;
     DROP POLICY IF EXISTS "contador_tickets: insert propio" ON contador_tickets;
     DROP POLICY IF EXISTS "contador_tickets: update propio" ON contador_tickets;
-EXCEPTION WHEN undefined_table THEN NULL; END $$;
+EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
 DO $$ BEGIN
     DROP POLICY IF EXISTS "pedidos: cliente select"    ON pedidos;
@@ -69,14 +75,14 @@ DO $$ BEGIN
     DROP POLICY IF EXISTS "pedidos: admin select todo" ON pedidos;
     DROP POLICY IF EXISTS "pedidos: admin update todo" ON pedidos;
     DROP POLICY IF EXISTS "pedidos: admin delete todo" ON pedidos;
-EXCEPTION WHEN undefined_table THEN NULL; END $$;
+EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
 DO $$ BEGIN
     DROP POLICY IF EXISTS "items_pedido: cliente select"    ON items_pedido;
     DROP POLICY IF EXISTS "items_pedido: cliente insert"    ON items_pedido;
     DROP POLICY IF EXISTS "items_pedido: admin select todo" ON items_pedido;
     DROP POLICY IF EXISTS "items_pedido: admin delete todo" ON items_pedido;
-EXCEPTION WHEN undefined_table THEN NULL; END $$;
+EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
 DO $$ BEGIN
     DROP POLICY IF EXISTS "combos: select propio"  ON combos;
@@ -84,28 +90,28 @@ DO $$ BEGIN
     DROP POLICY IF EXISTS "combos: update propio"  ON combos;
     DROP POLICY IF EXISTS "combos: delete propio"  ON combos;
     DROP POLICY IF EXISTS "combos: select tienda"  ON combos;
-EXCEPTION WHEN undefined_table THEN NULL; END $$;
+EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
 DO $$ BEGIN
     DROP POLICY IF EXISTS "combo_productos: select propio" ON combo_productos;
     DROP POLICY IF EXISTS "combo_productos: insert propio" ON combo_productos;
     DROP POLICY IF EXISTS "combo_productos: delete propio" ON combo_productos;
     DROP POLICY IF EXISTS "combo_productos: select tienda" ON combo_productos;
-EXCEPTION WHEN undefined_table THEN NULL; END $$;
+EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
 DO $$ BEGIN
     DROP POLICY IF EXISTS "usuarios_admin: select propio" ON usuarios_admin;
     DROP POLICY IF EXISTS "usuarios_admin: insert propio" ON usuarios_admin;
     DROP POLICY IF EXISTS "usuarios_admin: update propio" ON usuarios_admin;
     DROP POLICY IF EXISTS "usuarios_admin: admin select"  ON usuarios_admin;
-EXCEPTION WHEN undefined_table THEN NULL; END $$;
+EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
 DO $$ BEGIN
     DROP POLICY IF EXISTS "clientes_tienda: select propio" ON clientes_tienda;
     DROP POLICY IF EXISTS "clientes_tienda: insert propio" ON clientes_tienda;
     DROP POLICY IF EXISTS "clientes_tienda: update propio" ON clientes_tienda;
     DROP POLICY IF EXISTS "clientes_tienda: admin select"  ON clientes_tienda;
-EXCEPTION WHEN undefined_table THEN NULL; END $$;
+EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
 
 -- ================================================================
@@ -258,9 +264,11 @@ CREATE INDEX IF NOT EXISTS idx_items_pedido_combo_id   ON items_pedido (combo_id
 -- ================================================================
 ALTER TABLE productos ADD COLUMN IF NOT EXISTS categoria TEXT;
 
-ALTER TABLE productos DROP CONSTRAINT IF EXISTS productos_categoria_check;
-ALTER TABLE productos ADD CONSTRAINT productos_categoria_check
-    CHECK (categoria IN ('Perecederos','Abarrotes','Bebidas','Congelados','Hogar','Higiene','Otras'));
+DO $$ BEGIN
+    ALTER TABLE productos DROP CONSTRAINT IF EXISTS productos_categoria_check;
+    ALTER TABLE productos ADD CONSTRAINT productos_categoria_check
+        CHECK (categoria IN ('Perecederos','Abarrotes','Bebidas','Congelados','Hogar','Higiene','Otras'));
+EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
 CREATE INDEX IF NOT EXISTS idx_productos_categoria ON productos (categoria);
 
@@ -408,9 +416,11 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER trg_descontar_inventario_fisico
-AFTER INSERT ON items_venta
-FOR EACH ROW EXECUTE FUNCTION fn_descontar_inventario_fisico();
+DO $$ BEGIN
+    CREATE TRIGGER trg_descontar_inventario_fisico
+    AFTER INSERT ON items_venta
+    FOR EACH ROW EXECUTE FUNCTION fn_descontar_inventario_fisico();
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 
 -- ================================================================
@@ -440,9 +450,11 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER trg_reponer_inventario_fisico
-AFTER DELETE ON items_venta
-FOR EACH ROW EXECUTE FUNCTION fn_reponer_inventario_fisico();
+DO $$ BEGIN
+    CREATE TRIGGER trg_reponer_inventario_fisico
+    AFTER DELETE ON items_venta
+    FOR EACH ROW EXECUTE FUNCTION fn_reponer_inventario_fisico();
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 
 -- ================================================================
@@ -477,12 +489,20 @@ BEGIN
     END IF;
 
     -- ── 1. Verificar stock: productos regulares ──────────────────
-    SELECT p.nombre, p.cantidad, ip.cantidad
+    -- Usa SUM para manejar el caso en que el mismo producto aparece
+    -- en varios items_pedido del mismo pedido (pedidos mixtos).
+    SELECT p.nombre, p.cantidad, agg.total_requerido
     INTO v_prod_nombre, v_prod_disponible, v_prod_requerido
-    FROM items_pedido ip
-    JOIN productos p ON p.id = ip.product_id
-    WHERE ip.pedido_id = NEW.id
-      AND p.cantidad < ip.cantidad
+    FROM (
+        SELECT ip.product_id AS prod_id,
+               SUM(ip.cantidad) AS total_requerido
+        FROM items_pedido ip
+        WHERE ip.pedido_id = NEW.id
+          AND ip.product_id IS NOT NULL
+        GROUP BY ip.product_id
+    ) agg
+    JOIN productos p ON p.id = agg.prod_id
+    WHERE p.cantidad < agg.total_requerido
     LIMIT 1;
 
     IF FOUND THEN
@@ -490,14 +510,23 @@ BEGIN
     END IF;
 
     -- ── 2. Verificar stock: productos dentro de combos ───────────
-    SELECT p.nombre, p.cantidad, (cp.cantidad * ip.cantidad)
+    -- Suma el total requerido por producto considerando todos los combos del pedido.
+    SELECT p.nombre, p.cantidad, agg.total_requerido
     INTO v_prod_nombre, v_prod_disponible, v_prod_requerido
-    FROM items_pedido ip
-    JOIN combo_productos cp ON cp.combo_id = ip.combo_id
-    JOIN productos p ON p.id = NULLIF(cp.product_id, '')::BIGINT
-    WHERE ip.pedido_id = NEW.id
-      AND ip.combo_id IS NOT NULL
-      AND p.cantidad < (cp.cantidad * ip.cantidad)
+    FROM (
+        SELECT cp.product_id::BIGINT AS prod_id,
+               SUM(cp.cantidad * ip.cantidad) AS total_requerido
+        FROM items_pedido ip
+        JOIN combo_productos cp ON cp.combo_id = ip.combo_id
+        WHERE ip.pedido_id = NEW.id
+          AND ip.combo_id IS NOT NULL
+          AND cp.product_id IS NOT NULL
+          AND cp.product_id != ''
+          AND cp.product_id ~ '^\d+$'
+        GROUP BY cp.product_id
+    ) agg
+    JOIN productos p ON p.id = agg.prod_id
+    WHERE p.cantidad < agg.total_requerido
     LIMIT 1;
 
     IF FOUND THEN
@@ -505,24 +534,40 @@ BEGIN
     END IF;
 
     -- ── 3. Descontar inventario: productos regulares ─────────────
+    -- GROUP BY evita el problema de UPDATE...FROM con múltiples filas
+    -- para el mismo producto (ocurre en pedidos mixtos).
     UPDATE productos p
-    SET cantidad   = p.cantidad - ip.cantidad,
+    SET cantidad   = p.cantidad - agg.total_a_descontar,
         updated_at = NOW()
-    FROM items_pedido ip
-    WHERE ip.pedido_id = NEW.id
-      AND ip.product_id = p.id;
+    FROM (
+        SELECT ip.product_id AS prod_id,
+               SUM(ip.cantidad) AS total_a_descontar
+        FROM items_pedido ip
+        WHERE ip.pedido_id = NEW.id
+          AND ip.product_id IS NOT NULL
+        GROUP BY ip.product_id
+    ) agg
+    WHERE p.id = agg.prod_id;
 
     -- ── 4. Descontar inventario: productos dentro de combos ───────
+    -- GROUP BY evita que el mismo producto sea actualizado solo una vez
+    -- cuando aparece en múltiples combos del mismo pedido mixto.
     UPDATE productos p
-    SET cantidad   = p.cantidad - (cp.cantidad * ip.cantidad),
+    SET cantidad   = p.cantidad - agg.total_a_descontar,
         updated_at = NOW()
-    FROM items_pedido ip
-    JOIN combo_productos cp ON cp.combo_id = ip.combo_id
-    WHERE ip.pedido_id  = NEW.id
-      AND ip.combo_id   IS NOT NULL
-      AND cp.product_id IS NOT NULL
-      AND cp.product_id != ''
-      AND p.id = cp.product_id::BIGINT;
+    FROM (
+        SELECT cp.product_id::BIGINT AS prod_id,
+               SUM(cp.cantidad * ip.cantidad) AS total_a_descontar
+        FROM items_pedido ip
+        JOIN combo_productos cp ON cp.combo_id = ip.combo_id
+        WHERE ip.pedido_id  = NEW.id
+          AND ip.combo_id   IS NOT NULL
+          AND cp.product_id IS NOT NULL
+          AND cp.product_id != ''
+          AND cp.product_id ~ '^\d+$'
+        GROUP BY cp.product_id
+    ) agg
+    WHERE p.id = agg.prod_id;
 
     -- Sellar fecha de confirmación en el pedido
     NEW.fecha_confirmacion := NOW();
@@ -619,9 +664,11 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER trg_descontar_inventario_pedido
-BEFORE UPDATE ON pedidos
-FOR EACH ROW EXECUTE FUNCTION fn_descontar_inventario_pedido();
+DO $$ BEGIN
+    CREATE TRIGGER trg_descontar_inventario_pedido
+    BEFORE UPDATE ON pedidos
+    FOR EACH ROW EXECUTE FUNCTION fn_descontar_inventario_pedido();
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 
 -- ================================================================
@@ -656,22 +703,26 @@ GRANT EXECUTE ON FUNCTION cambiar_estado_pedido(BIGINT, TEXT, TIMESTAMPTZ) TO au
 -- ================================================================
 ALTER TABLE productos ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "productos: select propio"
+DO $$ BEGIN CREATE POLICY "productos: select propio"
     ON productos FOR SELECT USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "productos: insert propio"
+DO $$ BEGIN CREATE POLICY "productos: insert propio"
     ON productos FOR INSERT WITH CHECK (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "productos: update propio"
+DO $$ BEGIN CREATE POLICY "productos: update propio"
     ON productos FOR UPDATE USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "productos: delete propio"
+DO $$ BEGIN CREATE POLICY "productos: delete propio"
     ON productos FOR DELETE USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
--- Clientes autenticados ven productos con stock del admin
-CREATE POLICY "productos: select tienda publica"
+DO $$ BEGIN CREATE POLICY "productos: select tienda publica"
     ON productos FOR SELECT
     USING (auth.role() = 'authenticated' AND cantidad > 0);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 
 -- ================================================================
@@ -679,25 +730,31 @@ CREATE POLICY "productos: select tienda publica"
 -- ================================================================
 ALTER TABLE ventas ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "ventas: select propio"
+DO $$ BEGIN CREATE POLICY "ventas: select propio"
     ON ventas FOR SELECT USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "ventas: insert propio"
+DO $$ BEGIN CREATE POLICY "ventas: insert propio"
     ON ventas FOR INSERT WITH CHECK (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "ventas: delete propio"
+DO $$ BEGIN CREATE POLICY "ventas: delete propio"
     ON ventas FOR DELETE USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 ALTER TABLE items_venta ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "items_venta: select propio"
+DO $$ BEGIN CREATE POLICY "items_venta: select propio"
     ON items_venta FOR SELECT USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "items_venta: insert propio"
+DO $$ BEGIN CREATE POLICY "items_venta: insert propio"
     ON items_venta FOR INSERT WITH CHECK (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "items_venta: delete propio"
+DO $$ BEGIN CREATE POLICY "items_venta: delete propio"
     ON items_venta FOR DELETE USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 
 -- ================================================================
@@ -705,14 +762,17 @@ CREATE POLICY "items_venta: delete propio"
 -- ================================================================
 ALTER TABLE contador_tickets ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "contador_tickets: select propio"
+DO $$ BEGIN CREATE POLICY "contador_tickets: select propio"
     ON contador_tickets FOR SELECT USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "contador_tickets: insert propio"
+DO $$ BEGIN CREATE POLICY "contador_tickets: insert propio"
     ON contador_tickets FOR INSERT WITH CHECK (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "contador_tickets: update propio"
+DO $$ BEGIN CREATE POLICY "contador_tickets: update propio"
     ON contador_tickets FOR UPDATE USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 
 -- ================================================================
@@ -720,27 +780,30 @@ CREATE POLICY "contador_tickets: update propio"
 -- ================================================================
 ALTER TABLE pedidos ENABLE ROW LEVEL SECURITY;
 
--- El cliente ve y crea sus propios pedidos
-CREATE POLICY "pedidos: cliente select"
+DO $$ BEGIN CREATE POLICY "pedidos: cliente select"
     ON pedidos FOR SELECT USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "pedidos: cliente insert"
+DO $$ BEGIN CREATE POLICY "pedidos: cliente insert"
     ON pedidos FOR INSERT WITH CHECK (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
--- El cliente solo puede cancelar pedidos pendientes propios
-CREATE POLICY "pedidos: cliente cancelar"
+DO $$ BEGIN CREATE POLICY "pedidos: cliente cancelar"
     ON pedidos FOR UPDATE
     USING (auth.uid() = user_id AND estado = 'pendiente');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
--- El admin ve y gestiona todos los pedidos
-CREATE POLICY "pedidos: admin select todo"
+DO $$ BEGIN CREATE POLICY "pedidos: admin select todo"
     ON pedidos FOR SELECT USING (es_admin());
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "pedidos: admin update todo"
+DO $$ BEGIN CREATE POLICY "pedidos: admin update todo"
     ON pedidos FOR UPDATE USING (es_admin());
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "pedidos: admin delete todo"
+DO $$ BEGIN CREATE POLICY "pedidos: admin delete todo"
     ON pedidos FOR DELETE USING (es_admin());
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 
 -- ================================================================
@@ -748,27 +811,29 @@ CREATE POLICY "pedidos: admin delete todo"
 -- ================================================================
 ALTER TABLE items_pedido ENABLE ROW LEVEL SECURITY;
 
--- El cliente puede ver y crear ítems de sus propios pedidos
-CREATE POLICY "items_pedido: cliente select"
+DO $$ BEGIN CREATE POLICY "items_pedido: cliente select"
     ON items_pedido FOR SELECT
     USING (EXISTS (
         SELECT 1 FROM pedidos p
         WHERE p.id = items_pedido.pedido_id AND p.user_id = auth.uid()
     ));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "items_pedido: cliente insert"
+DO $$ BEGIN CREATE POLICY "items_pedido: cliente insert"
     ON items_pedido FOR INSERT
     WITH CHECK (EXISTS (
         SELECT 1 FROM pedidos p
         WHERE p.id = items_pedido.pedido_id AND p.user_id = auth.uid()
     ));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
--- El admin ve y elimina ítems de cualquier pedido
-CREATE POLICY "items_pedido: admin select todo"
+DO $$ BEGIN CREATE POLICY "items_pedido: admin select todo"
     ON items_pedido FOR SELECT USING (es_admin());
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "items_pedido: admin delete todo"
+DO $$ BEGIN CREATE POLICY "items_pedido: admin delete todo"
     ON items_pedido FOR DELETE USING (es_admin());
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 
 -- ================================================================
@@ -778,22 +843,26 @@ CREATE POLICY "items_pedido: admin delete todo"
 -- ================================================================
 ALTER TABLE combos ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "combos: select propio"
+DO $$ BEGIN CREATE POLICY "combos: select propio"
     ON combos FOR SELECT USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "combos: insert propio"
+DO $$ BEGIN CREATE POLICY "combos: insert propio"
     ON combos FOR INSERT WITH CHECK (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "combos: update propio"
+DO $$ BEGIN CREATE POLICY "combos: update propio"
     ON combos FOR UPDATE USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "combos: delete propio"
+DO $$ BEGIN CREATE POLICY "combos: delete propio"
     ON combos FOR DELETE USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
--- Cualquier autenticado puede leer combos; el JS ya filtra por adminUserId
-CREATE POLICY "combos: select tienda"
+DO $$ BEGIN CREATE POLICY "combos: select tienda"
     ON combos FOR SELECT
     USING (auth.role() = 'authenticated');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 
 -- ================================================================
@@ -801,19 +870,22 @@ CREATE POLICY "combos: select tienda"
 -- ================================================================
 ALTER TABLE combo_productos ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "combo_productos: select propio"
+DO $$ BEGIN CREATE POLICY "combo_productos: select propio"
     ON combo_productos FOR SELECT USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "combo_productos: insert propio"
+DO $$ BEGIN CREATE POLICY "combo_productos: insert propio"
     ON combo_productos FOR INSERT WITH CHECK (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "combo_productos: delete propio"
+DO $$ BEGIN CREATE POLICY "combo_productos: delete propio"
     ON combo_productos FOR DELETE USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
--- Cualquier autenticado puede leer combo_productos; el JS ya filtra por adminUserId
-CREATE POLICY "combo_productos: select tienda"
+DO $$ BEGIN CREATE POLICY "combo_productos: select tienda"
     ON combo_productos FOR SELECT
     USING (auth.role() = 'authenticated');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 
 -- ================================================================
@@ -821,17 +893,21 @@ CREATE POLICY "combo_productos: select tienda"
 -- ================================================================
 ALTER TABLE usuarios_admin ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "usuarios_admin: select propio"
+DO $$ BEGIN CREATE POLICY "usuarios_admin: select propio"
     ON usuarios_admin FOR SELECT USING (auth.uid() = id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "usuarios_admin: insert propio"
+DO $$ BEGIN CREATE POLICY "usuarios_admin: insert propio"
     ON usuarios_admin FOR INSERT WITH CHECK (auth.uid() = id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "usuarios_admin: update propio"
+DO $$ BEGIN CREATE POLICY "usuarios_admin: update propio"
     ON usuarios_admin FOR UPDATE USING (auth.uid() = id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "usuarios_admin: admin select"
+DO $$ BEGIN CREATE POLICY "usuarios_admin: admin select"
     ON usuarios_admin FOR SELECT USING (es_admin());
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 
 -- ================================================================
@@ -839,17 +915,21 @@ CREATE POLICY "usuarios_admin: admin select"
 -- ================================================================
 ALTER TABLE clientes_tienda ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "clientes_tienda: select propio"
+DO $$ BEGIN CREATE POLICY "clientes_tienda: select propio"
     ON clientes_tienda FOR SELECT USING (auth.uid() = id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "clientes_tienda: insert propio"
+DO $$ BEGIN CREATE POLICY "clientes_tienda: insert propio"
     ON clientes_tienda FOR INSERT WITH CHECK (auth.uid() = id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "clientes_tienda: update propio"
+DO $$ BEGIN CREATE POLICY "clientes_tienda: update propio"
     ON clientes_tienda FOR UPDATE USING (auth.uid() = id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "clientes_tienda: admin select"
+DO $$ BEGIN CREATE POLICY "clientes_tienda: admin select"
     ON clientes_tienda FOR SELECT USING (es_admin());
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 
 -- ================================================================
@@ -867,23 +947,26 @@ EXCEPTION WHEN OTHERS THEN
     RAISE NOTICE 'Políticas de storage no existían, continuando...';
 END $$;
 
-CREATE POLICY "storage productos: upload propio"
+DO $$ BEGIN CREATE POLICY "storage productos: upload propio"
     ON storage.objects FOR INSERT
     WITH CHECK (
         bucket_id = 'productos'
         AND auth.uid()::text = (storage.foldername(name))[1]
     );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "storage productos: delete propio"
+DO $$ BEGIN CREATE POLICY "storage productos: delete propio"
     ON storage.objects FOR DELETE
     USING (
         bucket_id = 'productos'
         AND auth.uid()::text = (storage.foldername(name))[1]
     );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "storage productos: lectura publica"
+DO $$ BEGIN CREATE POLICY "storage productos: lectura publica"
     ON storage.objects FOR SELECT
     USING (bucket_id = 'productos');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 
 -- ================================================================
