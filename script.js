@@ -2062,6 +2062,9 @@ async function exportInventoryToCSV() {
     XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
     const writeOpts = { bookType: 'xlsx', type: 'array', cellStyles: true };
 
+    // Generar el buffer ANTES de abrir el diálogo para no bloquear el render al guardar
+    const wbout = XLSX.write(wb, writeOpts);
+
     if (window.showSaveFilePicker) {
         try {
             const fileHandle = await window.showSaveFilePicker({
@@ -2071,7 +2074,6 @@ async function exportInventoryToCSV() {
                     accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
                 }]
             });
-            const wbout = XLSX.write(wb, writeOpts);
             const writable = await fileHandle.createWritable();
             await writable.write(new Blob([wbout], { type: 'application/octet-stream' }));
             await writable.close();
