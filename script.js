@@ -2077,7 +2077,6 @@ async function exportInventoryToCSV() {
             const writable = await fileHandle.createWritable();
             await writable.write(new Blob([wbout], { type: 'application/octet-stream' }));
             await writable.close();
-            await mostrarAlerta('¡Inventario exportado correctamente!', 'success');
         } catch (err) {
             if (err.name === 'AbortError') {
                 await mostrarAlerta('Operación cancelada', 'info');
