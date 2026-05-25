@@ -2090,6 +2090,124 @@ async function exportInventoryToCSV() {
 btnExportarDatos.addEventListener("click", exportInventoryToCSV);
 
 // ==========================================
+// LÓGICA DE IMPORTACIÓN (.xlsx via SheetJS)
+// ==========================================
+const btnImportarDatos   = document.querySelector('#btnImportarDatos');
+const inputImportarDatos = document.querySelector('#inputImportarDatos');
+
+btnImportarDatos.addEventListener('click', () => inputImportarDatos.click());
+
+inputImportarDatos.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    inputImportarDatos.value = '';
+
+    if (typeof XLSX === 'undefined') {
+        await mostrarAlerta('La librería de importación no está disponible.\nVerifica tu conexión a internet e intenta de nuevo.', 'error');
+        return;
+    }
+
+    // Normaliza encabezados: sin tildes, sin espacios, minúsculas
+    const norm = s => String(s).toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/\s+/g, '');
+
+    const HEADER_MAP = {
+        'nombre': 'nombre', 'nombredelproducto': 'nombre', 'producto': 'nombre',
+        'precio': 'precio', 'preciounitario': 'precio',
+        'cantidad': 'cantidad', 'stock': 'cantidad', 'cantidaddisponible': 'cantidad',
+        'codigo': 'codigoBarras', 'codigodebarras': 'codigoBarras',
+        'codigobarras': 'codigoBarras', 'barcode': 'codigoBarras',
+        'categoria': 'categoria', 'category': 'categoria',
+    };
+
+    const CATEGORIAS_VALIDAS = ['Perecederos','Abarrotes','Bebidas','Congelados','Hogar','Higiene','Otras'];
+
+    try {
+        const buffer = await file.arrayBuffer();
+        const wb     = XLSX.read(buffer, { type: 'array' });
+        const ws     = wb.Sheets[wb.SheetNames[0]];
+        const rows   = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+        if (!rows.length) {
+            await mostrarAlerta('El archivo está vacío o no tiene datos en la primera hoja.', 'warn');
+            return;
+        }
+
+        // Mapear encabezados de la primera fila al nombre interno del campo
+        const rawHeaders = Object.keys(rows[0]);
+        const headerMap  = {};
+        rawHeaders.forEach(h => {
+            const campo = HEADER_MAP[norm(h)];
+            if (campo) headerMap[h] = campo;
+        });
+
+        const errores  = [];
+        const validos  = [];
+
+        rows.forEach((row, i) => {
+            const p = {};
+            Object.entries(headerMap).forEach(([col, campo]) => {
+                p[campo] = row[col];
+            });
+
+            const fila = i + 2; // +2 porque fila 1 = encabezados
+            if (!p.nombre || !String(p.nombre).trim()) {
+                errores.push(`Fila ${fila}: falta el nombre del producto.`);
+                return;
+            }
+            const precio = parseFloat(String(p.precio).replace(/[^0-9.,-]/g, '').replace(',', '.'));
+            if (isNaN(precio) || precio <= 0) {
+                errores.push(`Fila ${fila}: precio inválido ("${p.precio}").`);
+                return;
+            }
+            const cantidad = parseInt(p.cantidad) || 0;
+            const catRaw   = String(p.categoria || '').trim();
+            const categoria = CATEGORIAS_VALIDAS.find(c =>
+                norm(c) === norm(catRaw)
+            ) || null;
+
+            validos.push({
+                nombre:        String(p.nombre).trim(),
+                precio,
+                cantidad:      Math.max(0, cantidad),
+                categoria,
+                codigoBarras:  String(p.codigoBarras || '').trim() || null,
+                user_id:       currentUserId,
+            });
+        });
+
+        if (!validos.length) {
+            const msg = errores.length
+                ? `No se encontraron productos válidos.\n\nErrores:\n${errores.slice(0,10).join('\n')}`
+                : 'No se encontraron filas con datos válidos.';
+            await mostrarAlerta(msg, 'error');
+            return;
+        }
+
+        // Insertar en lotes de 50
+        const LOTE = 50;
+        let insertados = 0;
+        for (let i = 0; i < validos.length; i += LOTE) {
+            const lote = validos.slice(i, i + LOTE);
+            const { error } = await supabaseClient.from('productos').insert(lote);
+            if (error) throw error;
+            insertados += lote.length;
+        }
+
+        await loadInventory();
+
+        let resumen = `✓ ${insertados} producto${insertados !== 1 ? 's' : ''} importado${insertados !== 1 ? 's' : ''} correctamente.`;
+        if (errores.length) resumen += `\n\n${errores.length} fila${errores.length !== 1 ? 's' : ''} omitida${errores.length !== 1 ? 's' : ''} por errores:\n${errores.slice(0,10).join('\n')}`;
+        await mostrarAlerta(resumen, insertados > 0 ? 'success' : 'warn');
+
+    } catch (err) {
+        console.error('[Importar]', err);
+        await mostrarAlerta(`Error al importar el archivo:\n${err.message || err}`, 'error');
+    }
+});
+
+// ==========================================
 // INTEGRACIÓN DE INICIO DE SESIÓN CON SUPABASE
 // ==========================================
 async function handleLoginWithGoogle() {

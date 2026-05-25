@@ -150,7 +150,11 @@
 
   <div id="pantalla-INVENTARIO">
     <h1>Añadir y Gestionar Mercancía</h1>
-    <button id="btnExportarDatos" class="btn-exportar btn-historial-esquina btn-historial-esquina-position">Exportar Datos</button>
+    <div class="btns-esquina-inventario">
+      <button id="btnExportarDatos" class="btn-exportar"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Exportar Datos</button>
+      <button id="btnImportarDatos" class="btn-importar"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Importar Datos</button>
+      <input type="file" id="inputImportarDatos" accept=".xlsx" style="display:none;">
+    </div>
     <div class="inventory-header">
         <div class="inventory-actions-group">
             <div class="formulario-producto-nuevo">
@@ -718,6 +722,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <script defer src="script.js"></script>
 
