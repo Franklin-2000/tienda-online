@@ -1984,7 +1984,7 @@ if (contenedorProductos) {
 }
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN (XLS — tabla HTML con anchos de columna fijos)
+// LÓGICA DE EXPORTACIÓN (.xlsx real via SheetJS)
 // ==========================================
 async function exportInventoryToCSV() {
     if (inventory.length === 0) {
@@ -1992,98 +1992,60 @@ async function exportInventoryToCSV() {
         return;
     }
 
-    const fmt = n => Number(n).toLocaleString('es-CO', {
-        style: 'currency', currency: 'COP', minimumFractionDigits: 0
-    });
+    if (typeof XLSX === 'undefined') {
+        await mostrarAlerta('La librería de exportación no está disponible.\nVerifica tu conexión a internet e intenta de nuevo.', 'error');
+        return;
+    }
 
-    const ahora    = new Date();
-    const fechaStr = ahora.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const horaStr  = ahora.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
-    const fileDate = ahora.toISOString().slice(0, 10);
-
+    const fileDate = new Date().toISOString().slice(0, 10);
     let totalInventoryValue = 0;
-    let filas = '';
 
-    inventory.forEach((p, i) => {
-        const total     = p.precio * p.cantidad;
+    // Fila de encabezados
+    const datos = [
+        ['Código', 'Nombre del Producto', 'Categoría', 'Precio Unitario', 'Cantidad', 'Valor Total']
+    ];
+
+    inventory.forEach(p => {
+        const total = Number(p.precio) * Number(p.cantidad);
         totalInventoryValue += total;
-        const bg        = i % 2 === 0 ? '#ffffff' : '#f0faf5';
-        const codigo    = p.codigoBarras || 'N/A';
-        const categoria = p.categoria    || 'Sin categoría';
-
-        filas += `
-        <tr style="background:${bg};">
-          <td style="padding:9px 14px;border:1px solid #d4e8dc;white-space:nowrap;">${codigo}</td>
-          <td style="padding:9px 14px;border:1px solid #d4e8dc;">${p.nombre}</td>
-          <td style="padding:9px 14px;border:1px solid #d4e8dc;white-space:nowrap;">${categoria}</td>
-          <td style="padding:9px 14px;border:1px solid #d4e8dc;text-align:right;white-space:nowrap;">${fmt(p.precio)}</td>
-          <td style="padding:9px 14px;border:1px solid #d4e8dc;text-align:center;white-space:nowrap;">${p.cantidad}</td>
-          <td style="padding:9px 14px;border:1px solid #d4e8dc;text-align:right;white-space:nowrap;">${fmt(total)}</td>
-        </tr>`;
+        datos.push([
+            p.codigoBarras || 'N/A',
+            p.nombre,
+            p.categoria    || 'Sin categoría',
+            Number(p.precio),
+            Number(p.cantidad),
+            total
+        ]);
     });
 
-    const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
-  xmlns:x="urn:schemas-microsoft-com:office:excel"
-  xmlns="http://www.w3.org/TR/REC-html40">
-<head>
-  <meta charset="UTF-8">
-  <!--[if gte mso 9]><xml>
-    <x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
-      <x:Name>Inventario</x:Name>
-      <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
-    </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook>
-  </xml><![endif]-->
-</head>
-<body>
-  <p style="font-family:Calibri,Arial;font-size:20pt;font-weight:bold;color:#2da267;margin:0 0 4px;">
-    Inventario de Productos
-  </p>
-  <p style="font-family:Calibri,Arial;font-size:10pt;color:#666;margin:0 0 18px;">
-    Exportado el ${fechaStr} a las ${horaStr} &nbsp;|&nbsp; ${inventory.length} producto${inventory.length !== 1 ? 's' : ''}
-  </p>
-  <table style="border-collapse:collapse;font-family:Calibri,Arial;font-size:11pt;">
-    <colgroup>
-      <col style="width:160px;">
-      <col style="width:300px;">
-      <col style="width:190px;">
-      <col style="width:160px;">
-      <col style="width:120px;">
-      <col style="width:180px;">
-    </colgroup>
-    <thead>
-      <tr>
-        <th style="background:#2da267;color:#fff;padding:11px 14px;border:1px solid #22a05a;text-align:left;font-size:12pt;white-space:nowrap;">Código</th>
-        <th style="background:#2da267;color:#fff;padding:11px 14px;border:1px solid #22a05a;text-align:left;font-size:12pt;">Nombre del Producto</th>
-        <th style="background:#2da267;color:#fff;padding:11px 14px;border:1px solid #22a05a;text-align:left;font-size:12pt;white-space:nowrap;">Categoría</th>
-        <th style="background:#2da267;color:#fff;padding:11px 14px;border:1px solid #22a05a;text-align:right;font-size:12pt;white-space:nowrap;">Precio Unitario</th>
-        <th style="background:#2da267;color:#fff;padding:11px 14px;border:1px solid #22a05a;text-align:center;font-size:12pt;white-space:nowrap;">Cantidad</th>
-        <th style="background:#2da267;color:#fff;padding:11px 14px;border:1px solid #22a05a;text-align:right;font-size:12pt;white-space:nowrap;">Valor Total</th>
-      </tr>
-    </thead>
-    <tbody>${filas}
-    </tbody>
-    <tfoot>
-      <tr>
-        <td colspan="5" style="padding:11px 14px;border:1px solid #22a05a;background:#2da267;color:#fff;font-weight:bold;font-size:12pt;text-align:right;">
-          VALOR TOTAL DEL INVENTARIO
-        </td>
-        <td style="padding:11px 14px;border:1px solid #22a05a;background:#2da267;color:#fff;font-weight:bold;font-size:12pt;text-align:right;white-space:nowrap;">
-          ${fmt(totalInventoryValue)}
-        </td>
-      </tr>
-    </tfoot>
-  </table>
-</body>
-</html>`;
+    // Fila de total al pie
+    datos.push(['', '', '', '', 'VALOR TOTAL DEL INVENTARIO', totalInventoryValue]);
 
-    const blob = new Blob(['﻿' + html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `inventario_${fileDate}.xls`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
+    const ws = XLSX.utils.aoa_to_sheet(datos);
+
+    // Anchos de columna (wch = caracteres)
+    ws['!cols'] = [
+        { wch: 20 },   // Código
+        { wch: 42 },   // Nombre del Producto
+        { wch: 22 },   // Categoría
+        { wch: 18 },   // Precio Unitario
+        { wch: 12 },   // Cantidad
+        { wch: 22 },   // Valor Total
+    ];
+
+    // Formato de moneda en columnas Precio y Valor Total (D y F)
+    const rango = XLSX.utils.decode_range(ws['!ref']);
+    for (let r = 1; r < rango.e.r; r++) {
+        const celdaPrecio = XLSX.utils.encode_cell({ r, c: 3 });
+        const celdaValor  = XLSX.utils.encode_cell({ r, c: 5 });
+        if (ws[celdaPrecio]) ws[celdaPrecio].z = '"$"#,##0';
+        if (ws[celdaValor])  ws[celdaValor].z  = '"$"#,##0';
+    }
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
+    XLSX.writeFile(wb, `inventario_${fileDate}.xlsx`);
+
     await mostrarAlerta('¡Inventario exportado exitosamente!', 'success');
 }
 
