@@ -1667,12 +1667,8 @@ function handleImageSelection(event) {
     }
 }
 
-async function compressImageFile(file, maxWidth = 1200, maxHeight = 1200, quality = 0.75) {
+async function compressImageFile(file, maxWidth = 600, maxHeight = 600, quality = 0.80) {
     if (!file.type.startsWith('image/')) return file;
-
-    if (file.size <= MAX_IMAGE_SIZE_BYTES) {
-        return file;
-    }
 
     const imageBitmap = await createImageBitmap(file);
     const width = imageBitmap.width;
