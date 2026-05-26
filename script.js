@@ -1380,7 +1380,7 @@ if (btnRegistrarVenta) {
 // Shift → disparar Registrar Venta desde teclado (solo en pantalla ventas físicas)
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Shift' && !e.repeat &&
-        document.getElementById('pantalla-ventas')?.style.display !== 'none' &&
+        pantallaVentasFisicas?.style.display !== 'none' &&
         btnRegistrarVenta && !btnRegistrarVenta.disabled) {
         btnRegistrarVenta.click();
     }
@@ -1760,21 +1760,24 @@ function resetFormAndMode() {
     btnLimpiarFormulario.textContent = 'Limpiar';
 }
 
+let _guardandoProducto = false;
 async function handleSaveProduct() {
-    if (btnGuardarProducto.disabled) return;
+    if (_guardandoProducto || btnGuardarProducto.disabled) return;
+    _guardandoProducto = true;
     const codigo = inputCodigoBarras.value.trim();
     const nombre = inputNombreProducto.value.trim();
     const precio = parseInt(inputPrecioProducto.value); 
     const cantidad = parseInt(inputCantidadProducto.value);
     const categoria = inputCategoriaProducto ? inputCategoriaProducto.value : '';
   
-    if (!nombre) { await mostrarAlerta("Por favor, ingresa el nombre del producto.", 'warn'); return; }
-    if (isNaN(precio) || precio <= 0) { await mostrarAlerta("Por favor, ingresa un precio válido.", 'warn'); return; }
-    if (isNaN(cantidad) || cantidad <= 0 || !Number.isInteger(cantidad)) { await mostrarAlerta("Por favor, ingresa una cantidad válida.", 'warn'); return; }
-    if (!categoria) { await mostrarAlerta("Por favor, selecciona una categoría para el producto.", 'warn'); return; }
+    if (!nombre) { _guardandoProducto = false; await mostrarAlerta("Por favor, ingresa el nombre del producto.", 'warn'); return; }
+    if (isNaN(precio) || precio <= 0) { _guardandoProducto = false; await mostrarAlerta("Por favor, ingresa un precio válido.", 'warn'); return; }
+    if (isNaN(cantidad) || cantidad <= 0 || !Number.isInteger(cantidad)) { _guardandoProducto = false; await mostrarAlerta("Por favor, ingresa una cantidad válida.", 'warn'); return; }
+    if (!categoria) { _guardandoProducto = false; await mostrarAlerta("Por favor, selecciona una categoría para el producto.", 'warn'); return; }
 
     const { data: { user } } = await supabaseClient.auth.getUser();
     if (!user) {
+        _guardandoProducto = false;
         await mostrarAlerta("Debes iniciar sesión para guardar productos.", 'warn');
         showScreen('pantalla-login');
         return;
@@ -1844,6 +1847,7 @@ async function handleSaveProduct() {
         const msg = error?.message || error?.details || JSON.stringify(error);
         await mostrarAlerta(`Error al guardar el producto:\n${msg}`, 'error');
     } finally {
+        _guardandoProducto = false;
         btnGuardarProducto.textContent = textoOriginalBoton;
         btnGuardarProducto.disabled = false;
     }
