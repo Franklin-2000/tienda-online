@@ -3576,16 +3576,13 @@ function renderEstadisticas(periodo) {
         }
     };
 
-    const COLORS_GRAD = [
-        '#00B5A0', '#1A8FFF', '#7C3AED',
-        '#F97316', '#EC4899', '#16A34A',
-        '#EAB308', '#4F46E5'
-    ];
-
     function destroyChart(ref) { try { if (ref) ref.destroy(); } catch(e){} }
     function getCtx(id) { return document.getElementById(id)?.getContext('2d'); }
 
     const _claro = document.body.classList.contains('modo-miopia');
+    const COLORS_GRAD = _claro
+        ? ['#00B5A0', '#1A8FFF', '#7C3AED', '#F97316', '#EC4899', '#16A34A', '#EAB308', '#4F46E5']
+        : ['rgba(122,228,214,0.75)', 'rgba(100,180,255,0.75)', 'rgba(180,140,255,0.75)', 'rgba(255,160,80,0.75)', 'rgba(255,100,150,0.75)', 'rgba(80,220,160,0.75)', 'rgba(255,210,70,0.75)', 'rgba(120,160,255,0.75)'];
     const _lineColorF  = _claro ? '#006B5E' : '#00B5A0';
     const _gradTopF    = _claro ? 'rgba(0,107,94,0.28)'  : 'rgba(0,181,160,0.35)';
     const _gradBotF    = _claro ? 'rgba(0,107,94,0.02)'  : 'rgba(0,181,160,0.02)';
@@ -3680,9 +3677,11 @@ function renderEstadisticas(periodo) {
                 label: 'Ingresos $',
                 data: tendenciaData,
                 backgroundColor: tendenciaData.map(v => v === maxVal
-                    ? '#00B5A0' : 'rgba(0,181,160,0.45)'),
+                    ? (_claro ? '#00B5A0' : 'rgba(122,228,214,0.85)')
+                    : (_claro ? 'rgba(0,181,160,0.45)' : 'rgba(122,228,214,0.22)')),
                 borderColor: tendenciaData.map(v => v === maxVal
-                    ? '#00B5A0' : 'rgba(0,181,160,0.4)'),
+                    ? (_claro ? '#00B5A0' : '#7ae4d6')
+                    : (_claro ? 'rgba(0,181,160,0.4)' : 'rgba(122,228,214,0.15)')),
                 borderWidth: 1.5,
                 borderRadius: 4
             }]
@@ -3941,15 +3940,13 @@ function renderEstadisticasOnline(periodo) {
             y: { min: 0, ticks: { color: _tc(), font: { size: 13 }, callback: v => v>=1000?'$'+Math.round(v/1000)+'k':'$'+v }, grid: { color: _gc() } }
         }
     };
-    const COLORS_GRAD = [
-        '#1A8FFF', '#00B5A0', '#7C3AED',
-        '#F97316', '#EC4899', '#16A34A',
-        '#EAB308', '#4F46E5'
-    ];
     function destroyC(ref) { try { if (ref) ref.destroy(); } catch(e){} }
     function getCtxO(id) { return document.getElementById(id)?.getContext('2d'); }
 
     const _claroO = document.body.classList.contains('modo-miopia');
+    const COLORS_GRAD = _claroO
+        ? ['#1A8FFF', '#00B5A0', '#7C3AED', '#F97316', '#EC4899', '#16A34A', '#EAB308', '#4F46E5']
+        : ['rgba(100,180,255,0.75)', 'rgba(122,228,214,0.75)', 'rgba(180,140,255,0.75)', 'rgba(255,160,80,0.75)', 'rgba(255,100,150,0.75)', 'rgba(80,220,160,0.75)', 'rgba(255,210,70,0.75)', 'rgba(120,160,255,0.75)'];
     const _lineColorO = _claroO ? '#0055B3' : '#1A8FFF';
     const _gradTopO   = _claroO ? 'rgba(0,85,179,0.25)'   : 'rgba(26,143,255,0.35)';
     const _gradBotO   = _claroO ? 'rgba(0,85,179,0.02)'   : 'rgba(26,143,255,0.02)';
@@ -3999,8 +3996,12 @@ function renderEstadisticasOnline(periodo) {
     if (cx4) chartOnlineIngresos = new Chart(cx4, {
         type: 'bar',
         data: { labels: tendenciaLabels, datasets: [{ label: 'Ingresos $', data: tendenciaData,
-            backgroundColor: tendenciaData.map(v => v===maxVal ? '#1A8FFF' : 'rgba(26,143,255,0.45)'),
-            borderColor:     tendenciaData.map(v => v===maxVal ? '#1A8FFF' : 'rgba(26,143,255,0.4)'),
+            backgroundColor: tendenciaData.map(v => v===maxVal
+                ? (_claroO ? '#1A8FFF' : 'rgba(100,180,255,0.85)')
+                : (_claroO ? 'rgba(26,143,255,0.45)' : 'rgba(100,180,255,0.22)')),
+            borderColor: tendenciaData.map(v => v===maxVal
+                ? (_claroO ? '#1A8FFF' : '#64b4ff')
+                : (_claroO ? 'rgba(26,143,255,0.4)' : 'rgba(100,180,255,0.15)')),
             borderWidth: 1.5, borderRadius: 4 }]
         },
         options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, legend: { display: false } } }
