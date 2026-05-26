@@ -3585,6 +3585,11 @@ function renderEstadisticas(periodo) {
     function destroyChart(ref) { try { if (ref) ref.destroy(); } catch(e){} }
     function getCtx(id) { return document.getElementById(id)?.getContext('2d'); }
 
+    const _claro = document.body.classList.contains('modo-miopia');
+    const _lineColorF  = _claro ? '#006B5E' : '#00B5A0';
+    const _gradTopF    = _claro ? 'rgba(0,107,94,0.28)'  : 'rgba(0,181,160,0.35)';
+    const _gradBotF    = _claro ? 'rgba(0,107,94,0.02)'  : 'rgba(0,181,160,0.02)';
+
     // Gráfico 1: Tendencia (área)
     destroyChart(chartTendencia);
     const ctx1 = getCtx('chartTendencia');
@@ -3595,19 +3600,19 @@ function renderEstadisticas(periodo) {
             datasets: [{
                 label: 'Ingresos',
                 data: tendenciaData,
-                borderColor: '#00B5A0',
+                borderColor: _lineColorF,
                 backgroundColor: (ctx) => {
                     const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 210);
-                    gradient.addColorStop(0, 'rgba(0,181,160,0.35)');
-                    gradient.addColorStop(1, 'rgba(0,181,160,0.02)');
+                    gradient.addColorStop(0, _gradTopF);
+                    gradient.addColorStop(1, _gradBotF);
                     return gradient;
                 },
-                pointBackgroundColor: '#00B5A0',
+                pointBackgroundColor: _lineColorF,
                 pointRadius: 3,
                 pointHoverRadius: 6,
                 fill: true,
                 tension: 0.35,
-                borderWidth: 2
+                borderWidth: _claro ? 2.5 : 2
             }]
         },
         options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, legend: { display: false } } }
@@ -3944,15 +3949,20 @@ function renderEstadisticasOnline(periodo) {
     function destroyC(ref) { try { if (ref) ref.destroy(); } catch(e){} }
     function getCtxO(id) { return document.getElementById(id)?.getContext('2d'); }
 
+    const _claroO = document.body.classList.contains('modo-miopia');
+    const _lineColorO = _claroO ? '#0055B3' : '#1A8FFF';
+    const _gradTopO   = _claroO ? 'rgba(0,85,179,0.25)'   : 'rgba(26,143,255,0.35)';
+    const _gradBotO   = _claroO ? 'rgba(0,85,179,0.02)'   : 'rgba(26,143,255,0.02)';
+
     // Gráfico 1: Tendencia
     destroyC(chartOnlineTendencia);
     const cx1 = getCtxO('chartOnlineTendencia');
     if (cx1) chartOnlineTendencia = new Chart(cx1, {
         type: 'line',
         data: { labels: tendenciaLabels, datasets: [{ label: 'Ingresos online', data: tendenciaData,
-            borderColor: '#1A8FFF',
-            backgroundColor: ctx => { const g = ctx.chart.ctx.createLinearGradient(0,0,0,210); g.addColorStop(0,'rgba(26,143,255,0.35)'); g.addColorStop(1,'rgba(26,143,255,0.02)'); return g; },
-            pointBackgroundColor: '#1A8FFF', pointRadius: 3, pointHoverRadius: 6, fill: true, tension: 0.35, borderWidth: 2 }]
+            borderColor: _lineColorO,
+            backgroundColor: ctx => { const g = ctx.chart.ctx.createLinearGradient(0,0,0,210); g.addColorStop(0,_gradTopO); g.addColorStop(1,_gradBotO); return g; },
+            pointBackgroundColor: _lineColorO, pointRadius: 3, pointHoverRadius: 6, fill: true, tension: 0.35, borderWidth: _claroO ? 2.5 : 2 }]
         },
         options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, legend: { display: false } } }
     });
