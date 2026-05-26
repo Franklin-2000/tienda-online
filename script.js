@@ -1377,6 +1377,15 @@ if (btnRegistrarVenta) {
     });
 }
 
+// Shift → disparar Registrar Venta desde teclado (solo en pantalla ventas físicas)
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Shift' && !e.repeat &&
+        document.getElementById('pantalla-ventas')?.style.display !== 'none' &&
+        btnRegistrarVenta && !btnRegistrarVenta.disabled) {
+        btnRegistrarVenta.click();
+    }
+});
+
 // Lógica botón Historial Ventas Físicas → nueva pantalla
 btnVerHistorial.addEventListener('click', (e) => {
     e.preventDefault();
