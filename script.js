@@ -2466,6 +2466,12 @@ async function eliminarPedidoCancelado(pedidoId) {
 window.eliminarPedidoEntregado = async function(pedidoId) {
     if (!await mostrarConfirm(`¿Eliminar el pedido entregado #${pedidoId}?\nLos productos volverán al inventario.`, 'danger')) return;
 
+    // Quitar del DOM de inmediato para feedback visual instantáneo
+    const pedidoRespaldo = pedidosAdmin.find(p => p.id === pedidoId);
+    pedidosAdmin = pedidosAdmin.filter(p => p.id !== pedidoId);
+    renderHistorialOnline();
+    renderHistorialCombos();
+
     try {
         // 1. Obtener items con product_id para reponer inventario de productos regulares
         const { data: items, error: itemsErr } = await supabaseClient
@@ -2486,8 +2492,7 @@ window.eliminarPedidoEntregado = async function(pedidoId) {
                 .eq('id', item.product_id);
         }
 
-        // 3. Eliminar tickets COMBO-ONLINE asociados (el trigger fn_reponer_inventario
-        //    repone automáticamente el stock de los productos dentro del combo)
+        // 3. Eliminar tickets COMBO-ONLINE asociados
         const comboSales = sales.filter(s =>
             String(s.id).startsWith('COMBO-ONLINE-') && Number(s.globalId) === Number(pedidoId)
         );
@@ -2505,16 +2510,20 @@ window.eliminarPedidoEntregado = async function(pedidoId) {
         // 4. Eliminar el pedido (items_pedido se borra en cascada)
         await deletePedidoFromSupabase(pedidoId);
 
-        // 5. Actualizar estado local y re-renderizar
-        pedidosAdmin = pedidosAdmin.filter(p => p.id !== pedidoId);
+        // 5. Sincronizar inventario real desde Supabase
         await loadInventory();
         renderResumenAdmin();
         renderPedidosAdmin(filtroEstadoAdmin);
-        renderHistorialOnline();
-        renderHistorialCombos();
 
         await mostrarAlerta(`Pedido #${pedidoId} eliminado y stock repuesto al inventario.`, 'success');
     } catch (err) {
+        // Restaurar el pedido en la UI si algo falló
+        if (pedidoRespaldo) {
+            pedidosAdmin.push(pedidoRespaldo);
+            pedidosAdmin.sort((a, b) => b.id - a.id);
+        }
+        renderHistorialOnline();
+        renderHistorialCombos();
         console.error('Error eliminando pedido entregado:', err);
         await mostrarAlerta(`Error al eliminar el pedido: ${err.message || err}`, 'error');
     }
