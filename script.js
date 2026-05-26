@@ -3577,9 +3577,9 @@ function renderEstadisticas(periodo) {
     };
 
     const COLORS_GRAD = [
-        'rgba(122,228,214,0.75)', 'rgba(100,180,255,0.75)', 'rgba(180,140,255,0.75)',
-        'rgba(255,160,80,0.75)',  'rgba(255,100,150,0.75)', 'rgba(80,220,160,0.75)',
-        'rgba(255,210,70,0.75)',  'rgba(120,160,255,0.75)'
+        '#00B5A0', '#1A8FFF', '#7C3AED',
+        '#F97316', '#EC4899', '#16A34A',
+        '#EAB308', '#4F46E5'
     ];
 
     function destroyChart(ref) { try { if (ref) ref.destroy(); } catch(e){} }
@@ -3595,14 +3595,14 @@ function renderEstadisticas(periodo) {
             datasets: [{
                 label: 'Ingresos',
                 data: tendenciaData,
-                borderColor: '#7ae4d6',
+                borderColor: '#00B5A0',
                 backgroundColor: (ctx) => {
                     const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 210);
-                    gradient.addColorStop(0, 'rgba(122,228,214,0.18)');
-                    gradient.addColorStop(1, 'rgba(122,228,214,0.01)');
+                    gradient.addColorStop(0, 'rgba(0,181,160,0.35)');
+                    gradient.addColorStop(1, 'rgba(0,181,160,0.02)');
                     return gradient;
                 },
-                pointBackgroundColor: '#7ae4d6',
+                pointBackgroundColor: '#00B5A0',
                 pointRadius: 3,
                 pointHoverRadius: 6,
                 fill: true,
@@ -3675,9 +3675,9 @@ function renderEstadisticas(periodo) {
                 label: 'Ingresos $',
                 data: tendenciaData,
                 backgroundColor: tendenciaData.map(v => v === maxVal
-                    ? 'rgba(122,228,214,0.85)' : 'rgba(122,228,214,0.22)'),
+                    ? '#00B5A0' : 'rgba(0,181,160,0.45)'),
                 borderColor: tendenciaData.map(v => v === maxVal
-                    ? '#7ae4d6' : 'rgba(122,228,214,0.15)'),
+                    ? '#00B5A0' : 'rgba(0,181,160,0.4)'),
                 borderWidth: 1.5,
                 borderRadius: 4
             }]
@@ -3937,9 +3937,9 @@ function renderEstadisticasOnline(periodo) {
         }
     };
     const COLORS_GRAD = [
-        'rgba(100,180,255,0.75)', 'rgba(122,228,214,0.75)', 'rgba(180,140,255,0.75)',
-        'rgba(255,160,80,0.75)',  'rgba(255,100,150,0.75)', 'rgba(80,220,160,0.75)',
-        'rgba(255,210,70,0.75)',  'rgba(120,160,255,0.75)'
+        '#1A8FFF', '#00B5A0', '#7C3AED',
+        '#F97316', '#EC4899', '#16A34A',
+        '#EAB308', '#4F46E5'
     ];
     function destroyC(ref) { try { if (ref) ref.destroy(); } catch(e){} }
     function getCtxO(id) { return document.getElementById(id)?.getContext('2d'); }
@@ -3950,9 +3950,9 @@ function renderEstadisticasOnline(periodo) {
     if (cx1) chartOnlineTendencia = new Chart(cx1, {
         type: 'line',
         data: { labels: tendenciaLabels, datasets: [{ label: 'Ingresos online', data: tendenciaData,
-            borderColor: '#64b4ff',
-            backgroundColor: ctx => { const g = ctx.chart.ctx.createLinearGradient(0,0,0,210); g.addColorStop(0,'rgba(100,180,255,0.18)'); g.addColorStop(1,'rgba(100,180,255,0.01)'); return g; },
-            pointBackgroundColor: '#64b4ff', pointRadius: 3, pointHoverRadius: 6, fill: true, tension: 0.35, borderWidth: 2 }]
+            borderColor: '#1A8FFF',
+            backgroundColor: ctx => { const g = ctx.chart.ctx.createLinearGradient(0,0,0,210); g.addColorStop(0,'rgba(26,143,255,0.35)'); g.addColorStop(1,'rgba(26,143,255,0.02)'); return g; },
+            pointBackgroundColor: '#1A8FFF', pointRadius: 3, pointHoverRadius: 6, fill: true, tension: 0.35, borderWidth: 2 }]
         },
         options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, legend: { display: false } } }
     });
@@ -3989,8 +3989,8 @@ function renderEstadisticasOnline(periodo) {
     if (cx4) chartOnlineIngresos = new Chart(cx4, {
         type: 'bar',
         data: { labels: tendenciaLabels, datasets: [{ label: 'Ingresos $', data: tendenciaData,
-            backgroundColor: tendenciaData.map(v => v===maxVal ? 'rgba(100,180,255,0.85)' : 'rgba(100,180,255,0.22)'),
-            borderColor:     tendenciaData.map(v => v===maxVal ? '#64b4ff' : 'rgba(100,180,255,0.15)'),
+            backgroundColor: tendenciaData.map(v => v===maxVal ? '#1A8FFF' : 'rgba(26,143,255,0.45)'),
+            borderColor:     tendenciaData.map(v => v===maxVal ? '#1A8FFF' : 'rgba(26,143,255,0.4)'),
             borderWidth: 1.5, borderRadius: 4 }]
         },
         options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, legend: { display: false } } }
