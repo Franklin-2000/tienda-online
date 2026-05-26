@@ -1380,7 +1380,7 @@ if (btnRegistrarVenta) {
 // Shift → disparar Registrar Venta desde teclado (solo en pantalla ventas físicas)
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Shift' && !e.repeat &&
-        pantallaVentasFisicas?.style.display !== 'none' &&
+        pantallaVentasFisicas?.classList.contains('activa') &&
         btnRegistrarVenta && !btnRegistrarVenta.disabled) {
         btnRegistrarVenta.click();
     }
@@ -1664,6 +1664,7 @@ function handleImageSelection(event) {
             previewProductoImagen.style.display = "block";
             previewProductoImagen.style.removeProperty('display'); // dejar que CSS tome control
             previewProductoImagen.style.display = "block"; // forzar visible
+            inputCodigoBarras.focus();
         };
         reader.onerror = function() {
             mostrarAlerta("No se pudo leer el archivo de imagen. Intenta con otro.", 'error');
@@ -1885,21 +1886,21 @@ btnGuardarProducto.addEventListener("click", handleSaveProduct);
 
 // ATAJOS DE TECLADO (ENTER)
 inputCodigoBarras.addEventListener("keydown", function(event) {
-    if (event.key === "Enter" && pantallaInventario.style.display !== 'none') {
+    if (event.key === "Enter" && pantallaInventario.classList.contains('activa')) {
         event.preventDefault(); 
         inputNombreProducto.focus(); 
     }
 });
 
 inputNombreProducto.addEventListener("keydown", function(event) {
-    if (event.key === "Enter" && pantallaInventario.style.display !== 'none') {
+    if (event.key === "Enter" && pantallaInventario.classList.contains('activa')) {
         event.preventDefault(); 
         inputPrecioProducto.focus(); 
     }
 });
 
 inputPrecioProducto.addEventListener("keydown", function(event) {
-    if (event.key === "Enter" && pantallaInventario.style.display !== 'none') {
+    if (event.key === "Enter" && pantallaInventario.classList.contains('activa')) {
         event.preventDefault();
         if (inputCategoriaProducto) inputCategoriaProducto.focus();
         else inputCantidadProducto.focus();
@@ -1908,7 +1909,7 @@ inputPrecioProducto.addEventListener("keydown", function(event) {
 
 if (inputCategoriaProducto) {
     inputCategoriaProducto.addEventListener("keydown", function(event) {
-        if (event.key === "Enter" && pantallaInventario.style.display !== 'none') {
+        if (event.key === "Enter" && pantallaInventario.classList.contains('activa')) {
             event.preventDefault();
             inputCantidadProducto.focus();
         }
@@ -1916,7 +1917,7 @@ if (inputCategoriaProducto) {
 }
 
 inputCantidadProducto.addEventListener("keydown", function(event) {
-    if (event.key === "Enter" && pantallaInventario.style.display !== 'none') {
+    if (event.key === "Enter" && pantallaInventario.classList.contains('activa')) {
         event.preventDefault();
         if (!btnGuardarProducto.disabled) btnGuardarProducto.click();
     }
