@@ -5097,6 +5097,22 @@ body.modo-miopia .stats-tabla-titulo {
   border-bottom-color: #c0d4de;
 }
 
+/* ── Barras de porcentaje en modo claro ── */
+body.modo-miopia .stats-pct-track {
+  background: rgba(0,0,0,0.10);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
+}
+body.modo-miopia .stats-pct-fill {
+  background: linear-gradient(90deg, #006B5E, #00B5A0);
+  box-shadow: none;
+}
+body.modo-miopia .stats-pct-num {
+  color: #006B5E;
+}
+body.modo-miopia .stats-tabla tbody td:nth-child(4) {
+  color: #006B5E;
+}
+
 /* ── Botones de período (selector de rango fechas) ── */
 body.modo-miopia .btn-period,
 body.modo-miopia .btn-period-online {

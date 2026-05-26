@@ -3678,10 +3678,10 @@ function renderEstadisticas(periodo) {
                 data: tendenciaData,
                 backgroundColor: tendenciaData.map(v => v === maxVal
                     ? (_claro ? '#00B5A0' : 'rgba(122,228,214,0.85)')
-                    : (_claro ? 'rgba(0,181,160,0.45)' : 'rgba(122,228,214,0.22)')),
+                    : (_claro ? 'rgba(0,150,130,0.72)' : 'rgba(122,228,214,0.22)')),
                 borderColor: tendenciaData.map(v => v === maxVal
-                    ? (_claro ? '#00B5A0' : '#7ae4d6')
-                    : (_claro ? 'rgba(0,181,160,0.4)' : 'rgba(122,228,214,0.15)')),
+                    ? (_claro ? '#006B5E' : '#7ae4d6')
+                    : (_claro ? 'rgba(0,120,104,0.80)' : 'rgba(122,228,214,0.15)')),
                 borderWidth: 1.5,
                 borderRadius: 4
             }]
@@ -3998,10 +3998,10 @@ function renderEstadisticasOnline(periodo) {
         data: { labels: tendenciaLabels, datasets: [{ label: 'Ingresos $', data: tendenciaData,
             backgroundColor: tendenciaData.map(v => v===maxVal
                 ? (_claroO ? '#1A8FFF' : 'rgba(100,180,255,0.85)')
-                : (_claroO ? 'rgba(26,143,255,0.45)' : 'rgba(100,180,255,0.22)')),
+                : (_claroO ? 'rgba(0,110,210,0.72)' : 'rgba(100,180,255,0.22)')),
             borderColor: tendenciaData.map(v => v===maxVal
-                ? (_claroO ? '#1A8FFF' : '#64b4ff')
-                : (_claroO ? 'rgba(26,143,255,0.4)' : 'rgba(100,180,255,0.15)')),
+                ? (_claroO ? '#0055B3' : '#64b4ff')
+                : (_claroO ? 'rgba(0,90,180,0.80)' : 'rgba(100,180,255,0.15)')),
             borderWidth: 1.5, borderRadius: 4 }]
         },
         options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, legend: { display: false } } }
