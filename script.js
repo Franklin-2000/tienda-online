@@ -1992,93 +1992,80 @@ if (contenedorProductos) {
 }
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN (.xlsx real via SheetJS)
+// LÓGICA DE EXPORTACIÓN (.xlsx via ExcelJS — soporta negrita y estilos)
 // ==========================================
 async function exportInventoryToCSV() {
     if (inventory.length === 0) {
         await mostrarAlerta('El inventario está vacío. No hay datos para exportar.', 'warn');
         return;
     }
-
-    if (typeof XLSX === 'undefined') {
+    if (typeof ExcelJS === 'undefined') {
         await mostrarAlerta('La librería de exportación no está disponible.\nVerifica tu conexión a internet e intenta de nuevo.', 'error');
         return;
     }
 
     const fileDate = new Date().toISOString().slice(0, 10);
-    let totalInventoryValue = 0;
-
-    // Fila de encabezados
-    const datos = [
-        ['Código', 'Nombre del Producto', 'Categoría', 'Precio Unitario', 'Cantidad', 'Valor Total']
-    ];
-
-    inventory.forEach(p => {
-        const total = Number(p.precio) * Number(p.cantidad);
-        totalInventoryValue += total;
-        datos.push([
-            p.codigoBarras || 'N/A',
-            p.nombre,
-            p.categoria    || 'Sin categoría',
-            Number(p.precio),
-            Number(p.cantidad),
-            total
-        ]);
-    });
-
-    const totalRowIdx = datos.length;
-    datos.push(['VALOR TOTAL DEL INVENTARIO', '', '', '', '', totalInventoryValue]);
-
-    const ws = XLSX.utils.aoa_to_sheet(datos);
-
-    ws['!cols'] = [
-        { wch: 20 },   // Código
-        { wch: 42 },   // Nombre del Producto
-        { wch: 22 },   // Categoría
-        { wch: 18 },   // Precio Unitario
-        { wch: 12 },   // Cantidad
-        { wch: 22 },   // Valor Total
-    ];
-
-    // Fusionar A:E en la fila del total para que el texto no se recorte
-    ws['!merges'] = [{ s: { r: totalRowIdx, c: 0 }, e: { r: totalRowIdx, c: 4 } }];
-
-    // Encabezados en negrita
-    for (let c = 0; c <= 5; c++) {
-        const cell = XLSX.utils.encode_cell({ r: 0, c });
-        if (ws[cell]) ws[cell].s = { font: { bold: true } };
-    }
-
-    // Formato numérico sin signo $ en columnas Precio y Valor Total
-    const rango = XLSX.utils.decode_range(ws['!ref']);
-    for (let r = 1; r <= rango.e.r; r++) {
-        const celdaPrecio = XLSX.utils.encode_cell({ r, c: 3 });
-        const celdaValor  = XLSX.utils.encode_cell({ r, c: 5 });
-        if (ws[celdaPrecio]) ws[celdaPrecio].z = '#,##0';
-        if (ws[celdaValor])  ws[celdaValor].z  = '#,##0';
-    }
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
-    const writeOpts = { bookType: 'xlsx', type: 'array', cellStyles: true };
 
     const confirmar = await mostrarConfirm(
         `¿Deseas exportar el inventario?\nSe descargará como "inventario_${fileDate}.xlsx".`,
         'info'
     );
-
     if (!confirmar) {
         await mostrarAlerta('Operación cancelada', 'info');
         return;
     }
 
     try {
-        const wbout = XLSX.write(wb, writeOpts);
-        const blob   = new Blob([wbout], { type: 'application/octet-stream' });
+        const wb = new ExcelJS.Workbook();
+        const ws = wb.addWorksheet('Inventario');
+
+        ws.columns = [
+            { header: 'Código',              key: 'codigo',    width: 22 },
+            { header: 'Nombre del Producto', key: 'nombre',    width: 44 },
+            { header: 'Categoría',           key: 'categoria', width: 22 },
+            { header: 'Precio Unitario',     key: 'precio',    width: 18 },
+            { header: 'Cantidad',            key: 'cantidad',  width: 12 },
+            { header: 'Valor Total',         key: 'valor',     width: 22 },
+        ];
+
+        // Encabezados en negrita
+        ws.getRow(1).font = { bold: true };
+
+        let totalInventoryValue = 0;
+        inventory.forEach(p => {
+            const total = Number(p.precio) * Number(p.cantidad);
+            totalInventoryValue += total;
+            ws.addRow({
+                codigo:    p.codigoBarras || 'N/A',
+                nombre:    p.nombre,
+                categoria: p.categoria || 'Sin categoría',
+                precio:    Number(p.precio),
+                cantidad:  Number(p.cantidad),
+                valor:     total,
+            });
+        });
+
+        // Formato numérico sin $ en Precio y Valor Total (filas de datos)
+        ws.getColumn('precio').numFmt = '#,##0';
+        ws.getColumn('valor').numFmt  = '#,##0';
+
+        // Fila de total fusionando A:E
+        const totalRowNum = ws.rowCount + 1;
+        const totalRow = ws.addRow({
+            codigo: 'VALOR TOTAL DEL INVENTARIO',
+            nombre: '', categoria: '', precio: '', cantidad: '',
+            valor: totalInventoryValue,
+        });
+        totalRow.font = { bold: true };
+        totalRow.getCell('valor').numFmt = '#,##0';
+        ws.mergeCells(`A${totalRowNum}:E${totalRowNum}`);
+
+        const buffer = await wb.xlsx.writeBuffer();
+        const blob   = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const url    = URL.createObjectURL(blob);
         const a      = document.createElement('a');
-        a.href       = url;
-        a.download   = `inventario_${fileDate}.xlsx`;
+        a.href     = url;
+        a.download = `inventario_${fileDate}.xlsx`;
         a.click();
         setTimeout(() => URL.revokeObjectURL(url), 10000);
         await mostrarAlerta('¡Inventario exportado correctamente!', 'success');
