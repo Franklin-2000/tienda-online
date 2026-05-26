@@ -1761,7 +1761,8 @@ function resetFormAndMode() {
 }
 
 async function handleSaveProduct() {
-    const codigo = inputCodigoBarras.value.trim(); 
+    if (btnGuardarProducto.disabled) return;
+    const codigo = inputCodigoBarras.value.trim();
     const nombre = inputNombreProducto.value.trim();
     const precio = parseInt(inputPrecioProducto.value); 
     const cantidad = parseInt(inputCantidadProducto.value);
@@ -1895,15 +1896,25 @@ inputNombreProducto.addEventListener("keydown", function(event) {
 
 inputPrecioProducto.addEventListener("keydown", function(event) {
     if (event.key === "Enter" && pantallaInventario.style.display !== 'none') {
-        event.preventDefault(); 
-        inputCantidadProducto.focus(); 
+        event.preventDefault();
+        if (inputCategoriaProducto) inputCategoriaProducto.focus();
+        else inputCantidadProducto.focus();
     }
 });
+
+if (inputCategoriaProducto) {
+    inputCategoriaProducto.addEventListener("keydown", function(event) {
+        if (event.key === "Enter" && pantallaInventario.style.display !== 'none') {
+            event.preventDefault();
+            inputCantidadProducto.focus();
+        }
+    });
+}
 
 inputCantidadProducto.addEventListener("keydown", function(event) {
     if (event.key === "Enter" && pantallaInventario.style.display !== 'none') {
         event.preventDefault();
-        btnGuardarProducto.click(); 
+        if (!btnGuardarProducto.disabled) btnGuardarProducto.click();
     }
 });
 
