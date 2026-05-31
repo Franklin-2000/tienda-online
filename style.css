@@ -5298,6 +5298,12 @@ body.modo-miopia #pantalla-historial-combos * {
   color: #2d2d2d !important;
 }
 
+/* ── Excepción: cabecera de tabla POS siempre en blanco ── */
+body.modo-miopia .pos-ticket-header,
+body.modo-miopia .pos-ticket-header * {
+  color: #fff !important;
+}
+
 /* ── Excepción: botones dentro de pantallas recuperan su color CSS original ── */
 /* Especificidad (1,1,2) > regla global (1,1,1) → gana entre !important del mismo origen */
 body.modo-miopia #pantalla-INVENTARIO button,
@@ -5458,10 +5464,7 @@ body.modo-miopia .ticket-toggle-arrow {
    POS PANEL — Ventas Físicas rediseño estilo software de punto de venta
    ================================================================ */
 
-#pantalla-ventas-fisicas {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+#pantalla-ventas-fisicas.activa {
   padding-bottom: 40px;
 }
 
