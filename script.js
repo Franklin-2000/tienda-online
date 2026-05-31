@@ -949,28 +949,17 @@ function seleccionarProductoVenta(productId) {
     // Mostrar panel de cantidad con botón eliminar
     const panelCantidad = document.getElementById('panelCantidadVenta');
     const infoEl = document.getElementById('productoSeleccionadoInfo');
-    if (panelCantidad) panelCantidad.style.display = 'block';
+    if (panelCantidad) panelCantidad.style.display = 'flex';
     if (infoEl) {
+        const imgSrc = product.imagen || '';
         infoEl.innerHTML = `
-            <div class="producto-sel-card">
-                <img src="${product.imagen || 'https://via.placeholder.com/50'}" alt="${product.nombre}">
-                <div class="producto-sel-izq">
-                    <strong class="producto-sel-nombre">${product.nombre}</strong>
-                    <button class="btn-eliminar-seleccion" id="btnEliminarSeleccion">✕ Eliminar</button>
-                </div>
-                <div class="producto-sel-stats">
-                    <div class="producto-sel-stat">
-                        <span class="stat-lbl">v.unit</span>
-                        <span class="stat-val">$${Number(product.precio).toLocaleString('es-CO')}</span>
-                    </div>
-                    <div class="producto-sel-stat">
-                        <span class="stat-lbl">stock.disp</span>
-                        <span class="stat-val">${product.cantidad}</span>
-                    </div>
-                </div>
+            ${imgSrc ? `<img src="${imgSrc}" alt="${product.nombre}" class="pos-sel-img" onerror="this.style.display='none'">` : ''}
+            <div style="display:flex;flex-direction:column;min-width:0;flex:1">
+                <strong class="pos-sel-nombre">${product.nombre}</strong>
+                <span class="pos-sel-detalles">$${Number(product.precio).toLocaleString('es-CO')} &nbsp;·&nbsp; ${product.cantidad} disponibles</span>
             </div>
+            <button class="pos-sel-cancel" id="btnEliminarSeleccion">✕ Quitar</button>
         `;
-        // Evento del botón eliminar
         document.getElementById('btnEliminarSeleccion').addEventListener('click', () => {
             limpiarProductoSeleccionado();
         });
@@ -1125,9 +1114,9 @@ function updateSalesDropdown(searchTerm = '') {
 function updateCartUI() {
     listaCarrito.innerHTML = '';
     let total = 0;
-    
+
     if (currentCart.length === 0) {
-        listaCarrito.innerHTML = '<p style="color: #666; margin: 0; text-align: center;">No hay productos agregados.</p>';
+        listaCarrito.innerHTML = '<p class="pos-empty-msg">No hay productos agregados al ticket.</p>';
         totalCarritoPreview.textContent = '0';
         return;
     }
@@ -1135,23 +1124,22 @@ function updateCartUI() {
     currentCart.forEach((item, index) => {
         const subtotal = item.qty * item.price;
         total += subtotal;
-        
-        const div = document.createElement('div');
-        div.className = 'carrito-item';
-        div.style.alignItems = 'center';
-        div.style.fontSize = '0.9em';
-        
-        div.innerHTML = `
-            <span style="flex: 2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.name}">${item.name}</span>
-            <span style="flex: 1; text-align: center;">${item.qty}</span>
-            <span style="flex: 1; text-align: right;">$${item.price}</span>
-            <span style="flex: 1; text-align: right; font-weight: bold; color: #0c566c;">$${subtotal}</span>
-            <button class="carrito-item-remover" onclick="removeFromCart(${index})" title="Eliminar" style="width: 25px; margin-left: 10px;">✖</button>
+
+        const row = document.createElement('div');
+        row.className = 'pos-ticket-row' + (index === currentCart.length - 1 ? ' pos-row-nuevo' : '');
+
+        row.innerHTML = `
+            <span class="ptc-cod" title="${item.code || ''}">${item.code || '—'}</span>
+            <span class="ptc-desc" title="${item.name}">${item.name}</span>
+            <span class="ptc-unit">$${Number(item.price).toLocaleString('es-CO')}</span>
+            <span class="ptc-qty">${item.qty}</span>
+            <span class="ptc-total">$${Number(subtotal).toLocaleString('es-CO')}</span>
+            <button class="pos-remover ptc-del" onclick="removeFromCart(${index})" title="Eliminar">✕</button>
         `;
-        listaCarrito.appendChild(div);
+        listaCarrito.appendChild(row);
     });
-    
-    totalCarritoPreview.textContent = total;
+
+    totalCarritoPreview.textContent = Number(total).toLocaleString('es-CO');
 }
 
 window.removeFromCart = function(index) {
@@ -1200,8 +1188,9 @@ if (btnAgregarAlCarrito) {
             cartItem.qty += qty;
         } else {
             currentCart.push({
-                id: product.id, 
+                id: product.id,
                 name: product.nombre,
+                code: product.codigoBarras || '—',
                 price: product.precio,
                 qty: qty
             });
@@ -1295,7 +1284,7 @@ if (btnRegistrarVenta) {
         }
 
         btnRegistrarVenta.disabled = true;
-        btnRegistrarVenta.textContent = "Registrando...";
+        btnRegistrarVenta.innerHTML = "Registrando...";
 
         try {
             const saleDateObj = new Date();
@@ -1372,7 +1361,7 @@ if (btnRegistrarVenta) {
             await mostrarAlerta("Hubo un error al registrar la venta. Por favor intenta de nuevo.", 'error');
         } finally {
             btnRegistrarVenta.disabled = false;
-            btnRegistrarVenta.textContent = "Registrar Venta";
+            btnRegistrarVenta.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Registrar Venta`;
         }
     });
 }

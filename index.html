@@ -224,59 +224,67 @@
     <h1>Registro de Ventas Físicas</h1>
     <button id="btnVerHistorial" class="btn-historial-esquina btn-historial-esquina-position"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Historial</button>
 
-    <!-- NUEVO CONTENEDOR FLEXIBLE Y RESPONSIVE -->
-    <div class="contenedor-ventas-independientes"> 
-      
-        <!-- TARJETA 1: PUNTO DE VENTA -->
-        <div class="tarjeta-venta-independiente formulario-venta-flex">
-            <h2>Punto de Venta</h2>
-            <div class="panel-venta-seccion panel-venta-seccion-transparent">
-                <label for="inputBuscarProductVenta">Buscar Producto (Nombre o Código):</label>
-                <div class="flex-gap-5">
-                    <input type="text" id="inputBuscarProductVenta" placeholder="Ej: arroz o 123456" class="input-buscar-producto-venta">
-                    <button id="btnEscanearVenta" class="btn-escanear" title="Escanear Código"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="8" x2="7" y2="16"/><line x1="10" y1="8" x2="10" y2="16"/><line x1="13" y1="8" x2="13" y2="16"/><line x1="16" y1="8" x2="16" y2="16"/></svg></button>
-                </div>
-                <!-- Cantidad -->
-                <div id="panelCantidadVenta" class="panel-cantidad-venta" style="display:none;">
-                  <div class="producto-seleccionado-info" id="productoSeleccionadoInfo"></div>
-                  <label for="inputCantidadVenta">Cantidad a vender:</label>
-                  <input type="number" id="inputCantidadVenta" placeholder="Ej: 1" min="1" step="1">
-                  <button class="btn-buscar btn-agregar-al-carrito" id="btnAgregarAlCarrito">+ Añadir a la Lista</button>
-                </div>
-                <!-- Select oculto para compatibilidad con el JS existente -->
-                <select id="selectProductoVenta" style="display:none;">
-                    <option value="">-- Selecciona un producto --</option>
-                </select>
-            </div>
+    <!-- PANEL POS UNIFICADO -->
+    <div class="pos-panel">
+
+      <!-- ZONA DE ENTRADA: búsqueda + producto seleccionado -->
+      <div class="pos-entry-zone">
+        <div class="pos-search-row">
+          <svg class="pos-search-icon" xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="inputBuscarProductVenta" placeholder="Buscar producto por nombre o código de barras..." class="input-buscar-producto-venta pos-search-input">
+          <button id="btnEscanearVenta" class="btn-escanear" title="Escanear Código"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="8" x2="7" y2="16"/><line x1="10" y1="8" x2="10" y2="16"/><line x1="13" y1="8" x2="13" y2="16"/><line x1="16" y1="8" x2="16" y2="16"/></svg></button>
         </div>
 
-        <!-- TARJETA 2: LISTA ACTUAL -->
-        <div class="tarjeta-venta-independiente formulario-venta-flex-1-5">
-            <h2>Lista Actual</h2>
-            <div class="panel-venta-seccion panel-venta-seccion-transparent-column">
-                <div class="header-carrito">
-                    <span class="span-producto">Producto</span>
-                    <span class="span-cantidad">Cant.</span>
-                    <span class="span-precio">V. Unit</span>
-                    <span class="span-precio">V. Total</span>
-                    <span class="span-eliminar"></span>
-                </div>
-                <div id="listaCarrito" class="carrito-container carrito-container-styles">
-                    <p class="no-productos-agregados">No hay productos agregados.</p>
-                </div>
-                <div class="total-venta-preview total-venta-preview-styles">
-                    <strong>Total de la Compra:</strong>
-                    <span class="monto">$<span id="totalCarritoPreview">0</span></span>
-                </div>
-                <div class="botones-accion-venta botones-accion-venta-margin">
-                    <button class="btn-borrar-producto btn-limpiar-venta" id="btnLimpiarVenta">Limpiar Venta</button>
-                    <button class="btn-añadir btn-registrar-venta" id="btnRegistrarVenta">Registrar Venta</button>
-                </div>
-            </div>
+        <div id="panelCantidadVenta" class="pos-product-panel" style="display:none;">
+          <div id="productoSeleccionadoInfo" class="pos-sel-info-wrap"></div>
+          <div class="pos-qty-row">
+            <label for="inputCantidadVenta">Cantidad:</label>
+            <input type="number" id="inputCantidadVenta" placeholder="1" min="1" step="1" class="pos-qty-input">
+            <button class="btn-añadir btn-agregar-al-carrito" id="btnAgregarAlCarrito">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Añadir al ticket
+            </button>
+          </div>
         </div>
 
-    </div> <!-- FIN DEL CONTENEDOR FLEXIBLE -->
+        <!-- Select oculto para compatibilidad con JS -->
+        <select id="selectProductoVenta" style="display:none;">
+          <option value="">-- Selecciona un producto --</option>
+        </select>
+      </div>
 
+      <!-- TICKET: cabecera + filas de productos -->
+      <div class="pos-ticket">
+        <div class="pos-ticket-header">
+          <span class="ptc ptc-cod">Código</span>
+          <span class="ptc ptc-desc">Descripción</span>
+          <span class="ptc ptc-unit">V. Unit</span>
+          <span class="ptc ptc-qty">Cant.</span>
+          <span class="ptc ptc-total">Importe</span>
+          <span class="ptc ptc-del"></span>
+        </div>
+        <div id="listaCarrito" class="pos-ticket-body">
+          <p class="pos-empty-msg">No hay productos agregados al ticket.</p>
+        </div>
+      </div>
+
+      <!-- FOOTER: limpiar · total · registrar -->
+      <div class="pos-footer-bar">
+        <button class="btn-borrar-producto btn-limpiar-venta" id="btnLimpiarVenta">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          Limpiar
+        </button>
+        <div class="pos-total-display">
+          <span class="pos-total-label">Total de la Compra</span>
+          <span class="pos-total-amount">$<span id="totalCarritoPreview">0</span></span>
+        </div>
+        <button class="btn-añadir btn-registrar-venta" id="btnRegistrarVenta">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Registrar Venta
+        </button>
+      </div>
+
+    </div><!-- fin pos-panel -->
   </div>
 
   <!-- NUEVA PÁGINA: Historial Ventas Físicas -->
