@@ -5574,17 +5574,35 @@ body.modo-miopia .ticket-toggle-arrow {
 
 .pos-sel-cancel {
   background: none;
-  border: 1px solid #cc4444;
-  color: #cc4444;
-  border-radius: 6px;
-  padding: 4px 10px;
+  border: 2px solid #cc0000;
+  color: #cc0000;
+  border-radius: 8px;
+  padding: 8px 16px;
   cursor: pointer;
-  font-size: 0.82em;
-  font-weight: 700;
-  transition: background 0.15s, color 0.15s;
+  font-size: 0.95em;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
   flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(204,0,0,0.15);
 }
-.pos-sel-cancel:hover { background: #cc4444; color: #fff; }
+.pos-sel-cancel:hover {
+  background: #cc0000;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(204,0,0,0.35);
+}
+
+/* Modo oscuro: el rojo aún más visible */
+body.modo-oscuro .pos-sel-cancel {
+  border-color: #ff4444;
+  color: #ff4444;
+  box-shadow: 0 0 0 1px rgba(255,68,68,0.25);
+}
+body.modo-oscuro .pos-sel-cancel:hover {
+  background: #ff4444;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(255,68,68,0.4);
+}
 
 .pos-qty-row {
   display: flex;
