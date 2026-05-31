@@ -5464,7 +5464,16 @@ body.modo-miopia .ticket-toggle-arrow {
    POS PANEL — Ventas Físicas rediseño estilo software de punto de venta
    ================================================================ */
 
+/* Blindaje: ocultar SIEMPRE que no tenga .activa, sin importar otras reglas */
+#pantalla-ventas-fisicas:not(.activa) {
+  display: none !important;
+}
+
+/* Cuando está activa: flex column para centrar el panel dentro */
 #pantalla-ventas-fisicas.activa {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
   padding-bottom: 40px;
 }
 
@@ -5477,7 +5486,7 @@ body.modo-miopia .ticket-toggle-arrow {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  margin-top: 8px;
+  margin: 8px auto 0;
 }
 
 /* ── Zona de entrada ── */
