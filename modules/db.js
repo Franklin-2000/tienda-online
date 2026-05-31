@@ -30,9 +30,22 @@ export async function loadInventory(userId = null) {
     }
 }
 
+async function _compressImage(file, maxW = 600, maxH = 600, quality = 0.80) {
+    if (!file.type.startsWith('image/')) return file;
+    const bmp = await createImageBitmap(file);
+    const ratio = Math.min(maxW / bmp.width, maxH / bmp.height, 1);
+    const w = Math.round(bmp.width * ratio), h = Math.round(bmp.height * ratio);
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(bmp, 0, 0, w, h);
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', quality));
+    if (!blob) return file;
+    const compressed = new File([blob], file.name.replace(/\.[^/.]+$/, '.jpg'), { type: 'image/jpeg' });
+    return compressed.size < file.size ? compressed : file;
+}
+
 export async function subirImagenSupabase(archivo) {
-    const { compressImageFile } = await import('./inventario.js');
-    const archivoParaSubir = await compressImageFile(archivo);
+    const archivoParaSubir = await _compressImage(archivo);
     const extension  = archivoParaSubir.name.split('.').pop();
     const nombreUnico = `img_${Date.now()}.${extension}`;
     const rutaArchivo = `${state.currentUserId}/${nombreUnico}`;

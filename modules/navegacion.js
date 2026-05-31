@@ -69,7 +69,7 @@ export function showScreen(screenId, pushToHistory = true) {
             if (state.onLoadInventory) state.onLoadInventory();
             break;
 
-        case 'pantalla-ventas-fisicas':
+        case 'pantalla-ventas-fisicas': {
             show(document.getElementById('pantalla-ventas-fisicas'));
             state.categoriaActivaVenta = 'todas';
             state.productoSeleccionadoVentaId = null;
@@ -79,6 +79,7 @@ export function showScreen(screenId, pushToHistory = true) {
             if (panelCant) panelCant.style.display = 'none';
             if (state.onUpdateSalesDropdown) state.onUpdateSalesDropdown();
             break;
+        }
 
         case 'pantalla-ventas-online':
             show(document.getElementById('pantalla-ventas-online'));

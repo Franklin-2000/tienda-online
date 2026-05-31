@@ -5606,12 +5606,12 @@ body.modo-miopia .ticket-toggle-arrow {
 }
 
 /* Modo oscuro: el rojo aún más visible */
-body.modo-oscuro .pos-sel-cancel {
+body:not(.modo-miopia) .pos-sel-cancel {
   border-color: #ff4444;
   color: #ff4444;
   box-shadow: 0 0 0 1px rgba(255,68,68,0.25);
 }
-body.modo-oscuro .pos-sel-cancel:hover {
+body:not(.modo-miopia) .pos-sel-cancel:hover {
   background: #ff4444;
   color: #fff;
   box-shadow: 0 2px 8px rgba(255,68,68,0.4);
@@ -5799,24 +5799,24 @@ body.modo-oscuro .pos-sel-cancel:hover {
 }
 
 /* Modo oscuro: adaptaciones POS */
-body.modo-oscuro .pos-panel { background: rgba(22,34,50,0.98); }
-body.modo-oscuro .pos-entry-zone { background: #101d2e; border-bottom-color: #1e3a50; }
-body.modo-oscuro .pos-search-input { background: #1a2b3c; border-color: #2a4a60; color: #e0eaf0; }
-body.modo-oscuro .pos-search-input:focus { border-color: #4db8d4; }
-body.modo-oscuro .pos-product-panel { background: linear-gradient(135deg,#102030,#112820); border-color: #1e4a5a; }
-body.modo-oscuro .pos-sel-nombre { color: #7dd8e8; }
-body.modo-oscuro .pos-sel-detalles { color: #6a9aaa; }
-body.modo-oscuro .pos-qty-row label { color: #7dd8e8; }
-body.modo-oscuro .pos-qty-input { background: #1a2b3c; border-color: #4db8d4; color: #7dd8e8; }
-body.modo-oscuro .pos-ticket-header { background: #0a3a4c; }
-body.modo-oscuro .pos-ticket-body { background: #0d1e2e; }
-body.modo-oscuro .pos-ticket-row { border-bottom-color: #1a3040; }
-body.modo-oscuro .pos-ticket-row:nth-child(even) { background: #111f2e; }
-body.modo-oscuro .pos-ticket-row:hover { background: #1a3048; }
-body.modo-oscuro .pos-ticket-row .ptc-desc { color: #d0e8f0; }
-body.modo-oscuro .pos-ticket-row .ptc-qty { color: #d0e8f0; }
-body.modo-oscuro .pos-footer-bar { background: #0d1e2e; border-top-color: #1e3a50; }
-body.modo-oscuro .pos-total-label { color: #6a9aaa; }
+body:not(.modo-miopia) .pos-panel { background: rgba(22,34,50,0.98); }
+body:not(.modo-miopia) .pos-entry-zone { background: #101d2e; border-bottom-color: #1e3a50; }
+body:not(.modo-miopia) .pos-search-input { background: #1a2b3c; border-color: #2a4a60; color: #e0eaf0; }
+body:not(.modo-miopia) .pos-search-input:focus { border-color: #4db8d4; }
+body:not(.modo-miopia) .pos-product-panel { background: linear-gradient(135deg,#102030,#112820); border-color: #1e4a5a; }
+body:not(.modo-miopia) .pos-sel-nombre { color: #7dd8e8; }
+body:not(.modo-miopia) .pos-sel-detalles { color: #6a9aaa; }
+body:not(.modo-miopia) .pos-qty-row label { color: #7dd8e8; }
+body:not(.modo-miopia) .pos-qty-input { background: #1a2b3c; border-color: #4db8d4; color: #7dd8e8; }
+body:not(.modo-miopia) .pos-ticket-header { background: #0a3a4c; }
+body:not(.modo-miopia) .pos-ticket-body { background: #0d1e2e; }
+body:not(.modo-miopia) .pos-ticket-row { border-bottom-color: #1a3040; }
+body:not(.modo-miopia) .pos-ticket-row:nth-child(even) { background: #111f2e; }
+body:not(.modo-miopia) .pos-ticket-row:hover { background: #1a3048; }
+body:not(.modo-miopia) .pos-ticket-row .ptc-desc { color: #d0e8f0; }
+body:not(.modo-miopia) .pos-ticket-row .ptc-qty { color: #d0e8f0; }
+body:not(.modo-miopia) .pos-footer-bar { background: #0d1e2e; border-top-color: #1e3a50; }
+body:not(.modo-miopia) .pos-total-label { color: #6a9aaa; }
 
 /* Responsivo POS */
 @media (max-width: 900px) {

@@ -90,7 +90,7 @@ function initToggleModo() {
 
     if (btnToggle) {
         btnToggle.addEventListener('click', () => {
-            document.body.classList.toggle('modo-oscuro');
+            // Modo oscuro = default (sin clase). Modo claro = clase 'modo-miopia'.
             document.body.classList.toggle('modo-miopia');
             actualizarBotonModo();
             actualizarColoresCharts();
@@ -99,8 +99,8 @@ function initToggleModo() {
         // Restaurar modo guardado
         try {
             const saved = localStorage.getItem('softven_modo');
-            if (saved === 'claro') { document.body.classList.add('modo-miopia'); document.body.classList.remove('modo-oscuro'); }
-            else { document.body.classList.remove('modo-miopia'); document.body.classList.add('modo-oscuro'); }
+            if (saved === 'claro') document.body.classList.add('modo-miopia');
+            else                   document.body.classList.remove('modo-miopia');
         } catch(e) {}
         actualizarBotonModo();
     }

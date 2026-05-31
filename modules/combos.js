@@ -144,9 +144,6 @@ async function handleGuardarCombo() {
     const precio = precioInput > 0 ? precioInput : precioSuma;
 
     if (state.modoOffline) {
-        if (state.offlineDB) {
-            const { idbPut } = await import('./offline.js');
-        }
         const comboLocal = { id: 'OFFLINE_COMBO_' + Date.now(), nombre, descripcion, precio, precio_suma: precioSuma, stock, combo_productos: state.productosEnComboActual.map(p => ({ nombre: p.nombre, precio: p.precio, imagen: p.imagen, cantidad: p.cantidad || 1 })) };
         state.combos.unshift(comboLocal);
         limpiarFormCombo(); renderTarjetasCombos();
@@ -164,7 +161,6 @@ async function handleGuardarCombo() {
     }
 
     try {
-        await saveSale ? null : null; // ensure import is used
         const { saveCombo } = await import('./db.js');
         await saveCombo({ nombre, descripcion, precio, precioSuma, stock, productos: state.productosEnComboActual });
         mostrarAlerta('Combo guardado correctamente.', 'success'); limpiarFormCombo();
