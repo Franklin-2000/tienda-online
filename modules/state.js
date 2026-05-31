@@ -51,7 +51,9 @@ export const state = {
     // ── Callbacks entre módulos (se asignan en main.js) ────
     // Permiten que un módulo llame a funciones de otro sin importarlo directamente,
     // evitando dependencias circulares.
-    onInventoryLoaded:    null,  // inventario.js → renderProducts + updateSalesDropdown
-    onSalesLoaded:        null,  // ventas-fisicas.js → renderSalesHistory
-    onCombosLoaded:       null,  // combos.js → renderTarjetasCombos
+    onInventoryLoaded:        null,  // inventario.js → renderProducts + updateSalesDropdown
+    onSalesLoaded:            null,  // ventas-fisicas.js → renderSalesHistory
+    onCombosLoaded:           null,  // combos.js → renderTarjetasCombos
+    onGuardarProductoOffline: null,  // offline.js → guardarProductoOffline
+    onGuardarVentaOffline:    null,  // offline.js → guardarVentaOffline
 };

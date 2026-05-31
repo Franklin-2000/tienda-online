@@ -263,7 +263,8 @@ export async function initOffline() {
     window.addEventListener('offline', manejarCaidaInternet);
     window.addEventListener('online',  manejarRecuperacionInternet);
 
-    // Registrar callbacks para ventas-fisicas.js
-    state.onGuardarInventarioCache = guardarInventarioCache;
-    state.onGuardarVentaOffline    = guardarVentaOffline;
+    // Registrar callbacks para ventas-fisicas.js e inventario.js
+    state.onGuardarInventarioCache    = guardarInventarioCache;
+    state.onGuardarVentaOffline       = guardarVentaOffline;
+    state.onGuardarProductoOffline    = guardarProductoOffline;
 }

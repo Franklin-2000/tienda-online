@@ -165,6 +165,26 @@ async function handleSaveProduct() {
     if (isNaN(cantidad) || cantidad <= 0)                { _guardandoProducto = false; await mostrarAlerta('Ingresa una cantidad válida.', 'warn');        return; }
     if (!categoria)                                      { _guardandoProducto = false; await mostrarAlerta('Selecciona una categoría.', 'warn');           return; }
 
+    // ── MODO OFFLINE ────────────────────────────────────────────
+    if (state.modoOffline && state.onGuardarProductoOffline) {
+        let urlImagen = '';
+        if (state.archivoImagenFisico) {
+            urlImagen = await new Promise(res => {
+                const reader = new FileReader();
+                reader.onload = e => res(e.target.result);
+                reader.readAsDataURL(state.archivoImagenFisico);
+            });
+        } else if (state.editingProductId !== null) {
+            const prod = state.inventory.find(p => p.id.toString() === state.editingProductId.toString());
+            urlImagen = prod?.imagen || '';
+        }
+        await state.onGuardarProductoOffline({ codigoBarras: codigo, nombre, precio, cantidad, imagen: urlImagen, categoria });
+        resetFormAndMode();
+        _guardandoProducto = false;
+        await mostrarAlerta(`Producto "${nombre}" guardado localmente.\nSe subirá a Supabase al sincronizar.`, 'success');
+        return;
+    }
+
     const { data: { user } } = await supabaseClient.auth.getUser();
     if (!user) { _guardandoProducto = false; await mostrarAlerta('Debes iniciar sesión.', 'warn'); showScreen('pantalla-login'); return; }
 

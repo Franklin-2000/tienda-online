@@ -7,11 +7,11 @@ import { state } from './modules/state.js';
 import { checkAuthStatus, initAuth } from './modules/auth.js';
 import { showScreen } from './modules/navegacion.js';
 import { initInventario, renderProducts, updateProductCount } from './modules/inventario.js';
-import { initVentasFisicas, updateSalesDropdown, renderSalesHistory } from './modules/ventas-fisicas.js';
+import { initVentasFisicas, updateSalesDropdown } from './modules/ventas-fisicas.js';
 import { initVentasOnline, renderResumenAdmin, renderPedidosAdmin } from './modules/ventas-online.js';
 import { initCombos, renderTarjetasCombos, renderHistorialCombos } from './modules/combos.js';
 import { initEstadisticas, initEstadisticasOnline, actualizarColoresCharts } from './modules/estadisticas.js';
-import { initOffline, guardarInventarioCache, cargarInventarioDesdeCache } from './modules/offline.js';
+import { initOffline } from './modules/offline.js';
 import { loadInventory, loadSales, loadCombos, cargarPedidosAdmin } from './modules/db.js';
 
 // ── Conectar callbacks entre módulos (evita dependencias circulares) ─
@@ -114,8 +114,11 @@ function initBtnActualizar() {
         btn.classList.add('girando'); btn.disabled = true;
         try {
             await Promise.all([loadInventory(), loadSales(), loadCombos(), cargarPedidosAdmin()]);
-            renderTarjetasCombos(); renderHistorialCombos();
-            renderResumenAdmin(); renderPedidosAdmin(state.filtroEstadoAdmin);
+            renderTarjetasCombos();
+            renderHistorialCombos();
+            renderResumenAdmin();
+            renderPedidosAdmin(state.filtroEstadoAdmin);
+            if (state.onRenderSalesHistory) state.onRenderSalesHistory();
         } catch(e) { console.error('Error actualizando datos:', e); }
         showScreen('pantalla-inicio', false);
         btn.classList.remove('girando'); btn.disabled = false;
