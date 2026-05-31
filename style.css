@@ -5298,9 +5298,10 @@ body.modo-miopia #pantalla-historial-combos * {
   color: #2d2d2d !important;
 }
 
-/* ── Excepción: cabecera de tabla POS siempre en blanco ── */
-body.modo-miopia .pos-ticket-header,
-body.modo-miopia .pos-ticket-header * {
+/* ── Excepción: cabecera de tabla POS siempre en blanco ──
+   Especificidad (1,2,1) > regla maestra (1,1,1) → gana el blanco */
+body.modo-miopia #pantalla-ventas-fisicas .pos-ticket-header,
+body.modo-miopia #pantalla-ventas-fisicas .pos-ticket-header * {
   color: #fff !important;
 }
 
