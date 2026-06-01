@@ -5841,3 +5841,5 @@ body:not(.modo-miopia) .pos-total-label { color: #6a9aaa; }
   .pos-qty-row { width: 100%; }
   .btn-agregar-al-carrito { flex: 1; justify-content: center; }
 }
+/* Iconos SVG inline en texto */
+.icon-inline { vertical-align: middle; }
