@@ -474,8 +474,4 @@ export function initInventario() {
     state.onResetForm    = resetFormAndMode;
     state.onClearSearch  = clearSearch;
     state.onLoadInventory = loadInventory;
-
-    // Exponer para modo offline
-    window.renderProducts    = renderProducts;
-    window.updateProductCount = updateProductCount;
 }

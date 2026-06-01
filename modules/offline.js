@@ -76,8 +76,8 @@ export async function cargarInventarioDesdeCache() {
     const cached = await idbGetAll('inventario_cache');
     if (cached.length > 0) {
         state.inventory = cached;
-        if (window.renderProducts)     window.renderProducts();
-        if (window.updateProductCount) window.updateProductCount();
+        if (state.onRenderProducts)      state.onRenderProducts();
+        if (state.onUpdateProductCount)  state.onUpdateProductCount();
         if (state.onUpdateSalesDropdown) state.onUpdateSalesDropdown();
     }
 }
@@ -96,8 +96,8 @@ export async function guardarProductoOffline(datosProducto) {
     const productoLocal = { ...datosProducto, id: fakeId };
     state.inventory.unshift(productoLocal);
     await guardarInventarioCache();
-    if (window.renderProducts)     window.renderProducts();
-    if (window.updateProductCount) window.updateProductCount();
+    if (state.onRenderProducts)      state.onRenderProducts();
+    if (state.onUpdateProductCount)  state.onUpdateProductCount();
     if (state.onUpdateSalesDropdown) state.onUpdateSalesDropdown();
     await actualizarUIOffline();
     return productoLocal;

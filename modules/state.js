@@ -56,4 +56,6 @@ export const state = {
     onCombosLoaded:           null,  // combos.js → renderTarjetasCombos
     onGuardarProductoOffline: null,  // offline.js → guardarProductoOffline
     onGuardarVentaOffline:    null,  // offline.js → guardarVentaOffline
+    onRenderProducts:         null,  // inventario.js → renderProducts
+    onUpdateProductCount:     null,  // inventario.js → updateProductCount
 };
