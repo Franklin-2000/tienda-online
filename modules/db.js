@@ -213,10 +213,15 @@ export async function deleteComboFromSupabase(comboId) {
 // ── PEDIDOS ONLINE ───────────────────────────────────────────
 export async function cargarPedidosAdmin() {
     if (!state.currentUserId) return;
+    // No filtra por user_id — el admin ve TODOS los pedidos
+    // gracias a la política RLS "pedidos: admin select todo" (es_admin())
     const { data, error } = await supabaseClient
         .from('pedidos')
-        .select(`*, items_pedido(id, producto_id, combo_id, nombre, cantidad, precio, subtotal)`)
-        .eq('admin_user_id', state.currentUserId)
+        .select(`
+            id, estado, total, metodo_pago, fecha, fecha_confirmacion,
+            cliente_nombre, cliente_email, cliente_tel, direccion, notas,
+            items_pedido(id, producto_id, combo_id, nombre, cantidad, precio, subtotal)
+        `)
         .order('id', { ascending: false });
 
     if (error) { console.error('Error cargando pedidos:', error); return; }

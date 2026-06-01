@@ -9,6 +9,11 @@ import { showScreen } from './navegacion.js';
 
 const btnBorrarTodasVentasCanceladas = document.getElementById('btnBorrarTodasVentasCanceladas');
 
+// Escapa caracteres HTML para prevenir XSS en campos ingresados por clientes
+function escHtml(str) {
+    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 // ── Tickets anti-duplicado ────────────────────────────────────
 const _ticketsPedidosConfirmados = new Set();
 
@@ -83,17 +88,17 @@ export function renderPedidosAdmin(estadoFiltro = 'todos') {
                 <div class="pedido-admin-total">$${Number(pedido.total).toLocaleString('es-CO')}<small>${pedido.metodo_pago === 'contraentrega' ? ' Contra entrega' : ' Pago online'}</small></div>
             </div>
             <div class="pedido-admin-cliente">
-                <div><strong>${pedido.cliente_nombre}</strong></div>
-                <div>${pedido.cliente_email}</div>
-                <div>${pedido.cliente_tel}</div>
-                <div>${pedido.direccion}</div>
-                ${pedido.notas ? `<div><em>${pedido.notas}</em></div>` : ''}
+                <div><strong>${escHtml(pedido.cliente_nombre)}</strong></div>
+                <div>${escHtml(pedido.cliente_email)}</div>
+                <div>${escHtml(pedido.cliente_tel)}</div>
+                <div>${escHtml(pedido.direccion)}</div>
+                ${pedido.notas ? `<div><em>${escHtml(pedido.notas)}</em></div>` : ''}
                 <div class="pedido-admin-fecha">${fecha}</div>
             </div>
             <div class="pedido-admin-items">
                 <table class="tabla-items-pedido">
                     <thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr></thead>
-                    <tbody>${todos.map(i => `<tr><td>${i.nombre}</td><td style="text-align:center">${i.cantidad}</td><td style="text-align:right">$${Number(i.precio).toLocaleString('es-CO')}</td><td style="text-align:right;font-weight:700">$${Number(i.subtotal).toLocaleString('es-CO')}</td></tr>`).join('')}</tbody>
+                    <tbody>${todos.map(i => `<tr><td>${escHtml(i.nombre)}</td><td style="text-align:center">${i.cantidad}</td><td style="text-align:right">$${Number(i.precio).toLocaleString('es-CO')}</td><td style="text-align:right;font-weight:700">$${Number(i.subtotal).toLocaleString('es-CO')}</td></tr>`).join('')}</tbody>
                 </table>
             </div>
             ${botonesHTML ? `<div class="pedido-admin-acciones">${botonesHTML}</div>` : ''}`;
@@ -254,8 +259,8 @@ function _buildTicketOnlineCard(pedido) {
             </div>
         </div>
         <div class="venta-ticket-details">
-            <p><strong>${pedido.cliente_nombre}</strong> · ${pedido.cliente_email}</p>
-            <ul class="ticket-items-list">${(pedido.items_pedido||[]).map(i => `<li class="ticket-item-row"><span class="ticket-item-name">${i.cantidad}x ${i.nombre}</span><span class="ticket-item-sub">$${Number(i.subtotal).toLocaleString('es-CO')}</span></li>`).join('')}</ul>
+            <p><strong>${escHtml(pedido.cliente_nombre)}</strong> · ${escHtml(pedido.cliente_email)}</p>
+            <ul class="ticket-items-list">${(pedido.items_pedido||[]).map(i => `<li class="ticket-item-row"><span class="ticket-item-name">${i.cantidad}x ${escHtml(i.nombre)}</span><span class="ticket-item-sub">$${Number(i.subtotal).toLocaleString('es-CO')}</span></li>`).join('')}</ul>
         </div>`;
     div.querySelector('.venta-ticket-header').addEventListener('click', () => {
         const det = div.querySelector('.venta-ticket-details'), arr = div.querySelector('.ticket-toggle-arrow');

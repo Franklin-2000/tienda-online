@@ -978,6 +978,108 @@ GRANT EXECUTE ON FUNCTION cambiar_estado_pedido(BIGINT, TEXT, TIMESTAMPTZ) TO au
 
 
 -- ================================================================
+-- PASO 24: PARCHES DE SEGURIDAD RLS
+-- Corrige vulnerabilidades detectadas en auditoría.
+-- Cada parche elimina la política vulnerable y la reemplaza.
+-- ================================================================
+
+-- ── Parche 1 (CRÍTICO): solo el admin real puede insertar en usuarios_admin ──
+-- Sin esto cualquier usuario autenticado puede auto-registrarse como admin.
+DO $$ BEGIN DROP POLICY IF EXISTS "usuarios_admin: insert propio" ON usuarios_admin; EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN
+    CREATE POLICY "usuarios_admin: insert propio"
+        ON usuarios_admin FOR INSERT
+        WITH CHECK (auth.uid() = id AND es_admin());
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- ── Parche 2 (ALTO): el cliente solo puede pasar su pedido a 'cancelado' ──
+-- Sin WITH CHECK el cliente podía poner estado = 'entregado' o 'despachado'.
+DO $$ BEGIN DROP POLICY IF EXISTS "pedidos: cliente cancelar" ON pedidos; EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN
+    CREATE POLICY "pedidos: cliente cancelar"
+        ON pedidos FOR UPDATE
+        USING     (auth.uid() = user_id AND estado = 'pendiente')
+        WITH CHECK (auth.uid() = user_id AND estado = 'cancelado');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- ── Parche 3 (MEDIO): productos públicos filtrados solo al admin de esta tienda ──
+-- Sin esto un usuario autenticado ve productos de cualquier otra tienda/admin.
+DO $$ BEGIN DROP POLICY IF EXISTS "productos: select tienda publica" ON productos; EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN
+    CREATE POLICY "productos: select tienda publica"
+        ON productos FOR SELECT
+        USING (
+            auth.role() = 'authenticated'
+            AND cantidad > 0
+            AND user_id = get_admin_user_id()
+        );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- ── Parche 4 (MEDIO): combos de tienda filtrados solo al admin de esta tienda ──
+DO $$ BEGIN DROP POLICY IF EXISTS "combos: select tienda" ON combos; EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN
+    CREATE POLICY "combos: select tienda"
+        ON combos FOR SELECT
+        USING (
+            auth.role() = 'authenticated'
+            AND user_id = get_admin_user_id()
+        );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- ── Parche 5 (MEDIO): combo_productos de tienda filtrados solo al admin de esta tienda ──
+DO $$ BEGIN DROP POLICY IF EXISTS "combo_productos: select tienda" ON combo_productos; EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN
+    CREATE POLICY "combo_productos: select tienda"
+        ON combo_productos FOR SELECT
+        USING (
+            auth.role() = 'authenticated'
+            AND user_id = get_admin_user_id()
+        );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- ── Parche 6 (BAJO): productos UPDATE no puede cambiar user_id ──
+DO $$ BEGIN DROP POLICY IF EXISTS "productos: update propio" ON productos; EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN
+    CREATE POLICY "productos: update propio"
+        ON productos FOR UPDATE
+        USING     (auth.uid() = user_id)
+        WITH CHECK (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- ── Parche 7 (BAJO): combos UPDATE no puede cambiar user_id ──
+DO $$ BEGIN DROP POLICY IF EXISTS "combos: update propio" ON combos; EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN
+    CREATE POLICY "combos: update propio"
+        ON combos FOR UPDATE
+        USING     (auth.uid() = user_id)
+        WITH CHECK (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- ── Parche 8 (BAJO): clientes_tienda UPDATE no puede cambiar id ni campos auditados ──
+DO $$ BEGIN DROP POLICY IF EXISTS "clientes_tienda: update propio" ON clientes_tienda; EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN
+    CREATE POLICY "clientes_tienda: update propio"
+        ON clientes_tienda FOR UPDATE
+        USING     (auth.uid() = id)
+        WITH CHECK (auth.uid() = id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- ── Parche 9 (BAJO): items_pedido solo se insertan en pedidos 'pendiente' ──
+-- Sin esto el cliente podía agregar ítems a pedidos ya confirmados o entregados.
+DO $$ BEGIN DROP POLICY IF EXISTS "items_pedido: cliente insert" ON items_pedido; EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN
+    CREATE POLICY "items_pedido: cliente insert"
+        ON items_pedido FOR INSERT
+        WITH CHECK (EXISTS (
+            SELECT 1 FROM pedidos p
+            WHERE p.id      = items_pedido.pedido_id
+              AND p.user_id = auth.uid()
+              AND p.estado  = 'pendiente'
+        ));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+
+-- ================================================================
 -- FIN DEL SCRIPT
 --
 -- FLUJO COMPLETO DE UNA VENTA ONLINE CON COMBO:
