@@ -1,0 +1,974 @@
+﻿/* ============================================================
+   MODO MIOPÍA — Tema Día
+   Se activa con: body.modo-miopia
+   ============================================================ */
+
+/* ── Botón toggle en sidebar ── */
+.sidebar-modo-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: transparent;
+  color: #a8f0e8;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+.sidebar-modo-toggle:hover { color: #fff; transform: translateX(4px); }
+
+/* ── Base ── */
+body.modo-miopia {
+  background-color: #f0f4f8;
+}
+
+/* ── Sidebar ── */
+body.modo-miopia #sidebar-menu {
+  background: #ffffff;
+  border-right: 1px solid #d8e3ea;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.07);
+}
+/* Perfil de usuario: se mantiene con fondo oscuro tal como está */
+body.modo-miopia .sidebar-user-profile {
+  background: linear-gradient(180deg, #0d3347 0%, #163d52 100%);
+  border-radius: 0 0 12px 12px;
+  margin-bottom: 4px;
+}
+body.modo-miopia .sidebar-section-title {
+  color: #5a7a8a;
+  border-bottom-color: #d8e3ea;
+}
+body.modo-miopia .sidebar-boton { color: #1a3a4a; }
+body.modo-miopia .sidebar-boton:hover { color: #0c566c; }
+body.modo-miopia .sidebar-boton.sidebar-activo {
+  color: #0c566c;
+  background: rgba(12,86,108,0.08);
+}
+body.modo-miopia .sidebar-modo-toggle { color: #1a3a4a; }
+body.modo-miopia .sidebar-modo-toggle:hover { color: #0c566c; }
+
+/* ── Pantallas: quitar fondo oscuro ── */
+body.modo-miopia #pantalla-inicio,
+body.modo-miopia #pantalla-menu-ventas,
+body.modo-miopia #pantalla-INVENTARIO,
+body.modo-miopia #pantalla-ventas-fisicas,
+body.modo-miopia #pantalla-historial-fisicas,
+body.modo-miopia #pantalla-ventas-online,
+body.modo-miopia #pantalla-historial-online,
+body.modo-miopia #pantalla-combos,
+body.modo-miopia #pantalla-historial-combos {
+  background-image: none !important;
+  background-color: #f0f4f8 !important;
+}
+body.modo-miopia #pantalla-estadisticas,
+body.modo-miopia #pantalla-estadisticas-online {
+  background: #f0f4f8 !important;
+}
+
+/* ── Títulos blancos → oscuro ── */
+body.modo-miopia .titulo-ventas-hoy-independiente {
+  color: #1a3a4a;
+  text-shadow: none;
+}
+body.modo-miopia .chart-title { color: #1a3a4a; }
+body.modo-miopia .stats-kpi-section-title { color: #1a3a4a; }
+
+/* ── KPI cards ── */
+body.modo-miopia .stats-kpi-card {
+  background: #ffffff;
+  border: 1px solid #d8e3ea;
+}
+body.modo-miopia .stats-kpi-primary { background: rgba(12,86,108,0.04); }
+body.modo-miopia .kpi-label { color: #5a7a8a; }
+body.modo-miopia .kpi-value { color: #1a1a2e; }
+body.modo-miopia .stats-kpi-primary .kpi-value { color: #0c566c; }
+
+/* ── Tablas de estadísticas ── */
+body.modo-miopia .stats-tabla thead th {
+  color: #1a3a4a;
+  background: #e0ecf2;
+  border-bottom-color: #c0d4de;
+}
+body.modo-miopia .stats-tabla tbody td {
+  color: #1a1a2e;
+  border-bottom-color: #e8eff4;
+}
+body.modo-miopia .stats-tabla tbody tr:nth-child(even) {
+  background: rgba(12,86,108,0.025);
+}
+body.modo-miopia .stats-tabla tbody tr:hover {
+  background: rgba(12,86,108,0.06) !important;
+}
+body.modo-miopia .stats-tabla-empty { color: #5a7a8a; }
+
+/* ── Tarjeta producto (inventario) ── */
+body.modo-miopia .tarjeta-producto {
+  background-color: #ffffff;
+  border-color: #d8e3ea;
+}
+
+/* ── Sección combos ── */
+body.modo-miopia .tarjeta-combo {
+  background: #ffffff;
+  border: 1.5px solid #d8e3ea;
+}
+body.modo-miopia .combo-card-nombre { color: #1a1a2e; }
+body.modo-miopia .combo-card-desc   { color: #5a7a8a; }
+body.modo-miopia .combo-card-precio { color: #0c566c; }
+body.modo-miopia .combo-form-card {
+  background: #ffffff;
+  border: 1px solid #d8e3ea;
+}
+body.modo-miopia .combo-form-card h2 { color: #1a3a4a; }
+body.modo-miopia .combo-label { color: #5a7a8a; }
+body.modo-miopia .combo-input {
+  background: #ffffff;
+  color: #1a1a2e;
+  border-color: rgba(12,86,108,0.3);
+}
+body.modo-miopia .combo-input:focus {
+  border-color: #0c566c;
+  background: #f0f8fc;
+}
+body.modo-miopia .combo-input::placeholder { color: #9ab0bb; }
+body.modo-miopia .combo-autocomplete {
+  background: #ffffff;
+  border-color: #d8e3ea;
+}
+body.modo-miopia .combo-auto-item:hover { background: rgba(12,86,108,0.07); }
+body.modo-miopia .combo-auto-item-nombre { color: #1a1a2e; }
+body.modo-miopia .combo-auto-item-precio { color: #0c566c; }
+body.modo-miopia .combo-chip {
+  background: #e4f1f7;
+  border-color: rgba(12,86,108,0.18);
+}
+body.modo-miopia #pantalla-combos .combo-chip-nombre { color: #1a1a2e; }
+body.modo-miopia #pantalla-combos .combo-chip-qty-label { color: #5a7a8a; }
+body.modo-miopia #pantalla-combos .combo-chip-precio { color: #0c566c; }
+
+/* ── Botón toggle ventas hoy ── */
+body.modo-miopia .btn-toggle-ventas-hoy {
+  background: rgba(12,86,108,0.1);
+  border-color: rgba(12,86,108,0.25);
+  color: #0c566c;
+}
+
+/* ── Títulos principales h1 (Pacifico, blanco en modo oscuro) ── */
+body.modo-miopia #pantalla-inicio h1,
+body.modo-miopia #pantalla-INVENTARIO h1,
+body.modo-miopia #pantalla-ventas-fisicas h1,
+body.modo-miopia #pantalla-historial-fisicas h1,
+body.modo-miopia #pantalla-ventas-online h1,
+body.modo-miopia #pantalla-historial-online h1,
+body.modo-miopia #pantalla-estadisticas h1,
+body.modo-miopia #pantalla-estadisticas-online h1,
+body.modo-miopia #pantalla-combos h1,
+body.modo-miopia #pantalla-historial-combos h1 {
+  color: #2d2d2d !important;
+  text-shadow: none !important;
+  font-family: 'Inter', sans-serif !important;
+  font-style: normal !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em;
+}
+
+/* ── Subtítulos h2 con color claro por pantalla ── */
+body.modo-miopia #pantalla-INVENTARIO h2,
+body.modo-miopia #pantalla-combos h2 {
+  color: #2d2d2d !important;
+  text-shadow: none !important;
+}
+body.modo-miopia #inventory-products-title { color: #2d2d2d !important; text-shadow: none !important; }
+body.modo-miopia #combos-list-title        { color: #2d2d2d !important; text-shadow: none !important; }
+body.modo-miopia #online-pedidos-title     { color: #2d2d2d !important; text-shadow: none !important; }
+body.modo-miopia .combos-title             { color: #2d2d2d !important; text-shadow: none !important; }
+
+/* ── Header de estadísticas (banner oscuro con gradiente) ── */
+body.modo-miopia .stats-header {
+  background: #f0f4f8 !important;
+  border-bottom-color: #d8e3ea !important;
+}
+
+/* ── Cards de gráficas y sección de tabla ── */
+body.modo-miopia .stats-chart-card {
+  background: #ffffff !important;
+  border-color: #d8e3ea !important;
+}
+body.modo-miopia .stats-tabla-section {
+  background: #ffffff !important;
+  border-color: #d8e3ea !important;
+}
+body.modo-miopia .chart-badge {
+  color: #1a3a4a;
+  background: rgba(12,86,108,0.08);
+  border-color: rgba(12,86,108,0.2);
+}
+
+/* ── Títulos y subtítulos de estadísticas ── */
+body.modo-miopia .stats-title {
+  color: #2d2d2d !important;
+  text-shadow: none !important;
+  font-family: 'Inter', sans-serif !important;
+  font-style: normal !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+}
+body.modo-miopia .stats-subtitle { color: #5a7a8a; }
+body.modo-miopia .stats-tabla-titulo {
+  color: #1a3a4a;
+  background: #e8eff4;
+  border-bottom-color: #c0d4de;
+}
+
+/* ── Barras de porcentaje en modo claro ── */
+body.modo-miopia .stats-pct-track {
+  background: rgba(0,0,0,0.10);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
+}
+body.modo-miopia .stats-pct-fill {
+  background: linear-gradient(90deg, #006B5E, #00B5A0);
+  box-shadow: none;
+}
+body.modo-miopia .stats-pct-num {
+  color: #006B5E;
+}
+body.modo-miopia .stats-tabla tbody td:nth-child(4) {
+  color: #006B5E;
+}
+
+/* ── Botones de período (selector de rango fechas) ── */
+body.modo-miopia .btn-period,
+body.modo-miopia .btn-period-online {
+  color: #1a3a4a;
+  border-color: rgba(12,86,108,0.2);
+  background: rgba(12,86,108,0.05);
+}
+body.modo-miopia .btn-period:hover,
+body.modo-miopia .btn-period-online:hover {
+  color: #0c566c;
+  background: rgba(12,86,108,0.1);
+  border-color: rgba(12,86,108,0.4);
+}
+body.modo-miopia .btn-period.activo,
+body.modo-miopia .btn-period-online.activo {
+  color: #0c566c;
+  background: rgba(12,86,108,0.12);
+  border-color: #0c566c;
+}
+
+/* ── KPI trend badge ── */
+body.modo-miopia .kpi-trend { color: #5a7a8a; background: rgba(12,86,108,0.06); }
+body.modo-miopia .kpi-trend.positivo { color: #27ae60; background: rgba(39,174,96,0.1); }
+body.modo-miopia .kpi-trend.negativo { color: #dc3545; background: rgba(220,53,69,0.1); }
+
+/* ── Tarjetas resumen (summary card: contador de productos/combos) ── */
+body.modo-miopia .inventory-summary-card {
+  background: #ffffff !important;
+  border: 1px solid #d8e3ea !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07) !important;
+  backdrop-filter: none !important;
+}
+body.modo-miopia .inventory-summary-card h2 {
+  color: #2d2d2d !important;
+  text-shadow: none !important;
+}
+body.modo-miopia .summary-count {
+  color: #2d2d2d !important;
+  text-shadow: none !important;
+}
+
+/* ── Formularios de agregar producto/combo ── */
+body.modo-miopia .tarjeta-input-producto {
+  background: #ffffff;
+  border-color: #d8e3ea;
+}
+body.modo-miopia .tarjeta-input-producto label {
+  color: #2d2d2d !important;
+  text-shadow: none !important;
+}
+body.modo-miopia .tarjeta-input-producto h2 {
+  color: #2d2d2d !important;
+  text-shadow: none !important;
+}
+body.modo-miopia .search-section h2 {
+  color: #2d2d2d !important;
+  text-shadow: none !important;
+}
+body.modo-miopia .search-section {
+  background: #ffffff;
+  border-color: #d8e3ea;
+}
+body.modo-miopia .tarjeta-input-producto input[type="text"],
+body.modo-miopia .tarjeta-input-producto input[type="number"] {
+  background: #ffffff;
+  color: #1a1a2e;
+  border-color: rgba(12,86,108,0.25);
+}
+body.modo-miopia .export-section {
+  background: #ffffff;
+  border-color: #d8e3ea;
+}
+
+body.modo-miopia .btn-exportar,
+body.modo-miopia .btn-importar {
+  background-color: #1e7e34;
+}
+
+/* ── Historial online: secciones por página ── */
+body.modo-miopia .seccion-historial-online-page {
+  background: #ffffff;
+  border: 1px solid #d8e3ea;
+  backdrop-filter: none;
+}
+body.modo-miopia .seccion-historial-online-page h3 {
+  color: #2d2d2d !important;
+  text-shadow: none !important;
+  border-bottom-color: #d8e3ea;
+}
+
+/* ── Switch offline en sidebar blanco ── */
+body.modo-miopia .offline-switch-label { color: #1a3a4a; }
+
+/* ── Botones de categoría en inventario: texto + iconos negro sobre blanco; hover/activo con teal ── */
+/* .btn-categoria-filtro * → (1,2,1) supera la regla global button * (1,1,2) */
+body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro,
+body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro * {
+  color: #2d2d2d !important;
+}
+body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro {
+  background: #ffffff !important;
+  border-color: #000000 !important;
+}
+body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro:hover,
+body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro:hover *,
+body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro.activo,
+body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro.activo * {
+  color: #ffffff !important;
+}
+body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro:hover,
+body.modo-miopia #pantalla-INVENTARIO .btn-categoria-filtro.activo {
+  background: #0c566c !important;
+  border-color: #0c566c !important;
+}
+
+/* ── Botones historial inline y esquina ── */
+body.modo-miopia .btn-historial-inline { color: #1a3a4a; }
+body.modo-miopia .btn-historial-inline:hover { color: #0c566c; }
+/* Especificidad (1,2,1) supera la regla global de botones blancos (1,1,2) */
+body.modo-miopia #pantalla-ventas-fisicas .btn-historial-esquina,
+body.modo-miopia #pantalla-ventas-fisicas .btn-historial-esquina *,
+body.modo-miopia #pantalla-ventas-online .btn-historial-esquina,
+body.modo-miopia #pantalla-ventas-online .btn-historial-esquina *,
+body.modo-miopia #pantalla-combos .btn-historial-esquina,
+body.modo-miopia #pantalla-combos .btn-historial-esquina * { color: #1a1a2e !important; }
+body.modo-miopia #pantalla-ventas-fisicas .btn-historial-esquina:hover,
+body.modo-miopia #pantalla-ventas-online .btn-historial-esquina:hover,
+body.modo-miopia #pantalla-combos .btn-historial-esquina:hover { color: #0c566c !important; }
+
+/* ── Tickets de venta en historial ── */
+body.modo-miopia .venta-ticket {
+  background: #ffffff;
+  border-color: #d8e3ea;
+}
+body.modo-miopia .venta-ticket-header { background-color: #f0f4f8 !important; }
+body.modo-miopia .venta-ticket-header strong { color: #1a3a4a; }
+body.modo-miopia .ticket-numero { color: #1a1a2e; }
+body.modo-miopia .ticket-total { color: #0c566c; }
+body.modo-miopia .fecha-venta { color: #5a7a8a; }
+body.modo-miopia .venta-ticket-details {
+  background-color: #ffffff;
+  color: #1a1a2e;
+  border-top-color: #e8eff4;
+}
+body.modo-miopia .venta-ticket-details li { border-bottom-color: #e8eff4; }
+
+/* ── Panel de ventas físicas (carrito) ── */
+body.modo-miopia .panel-venta-seccion { background: rgba(255,255,255,0.95); }
+body.modo-miopia .panel-venta-seccion-transparent { background: rgba(255,255,255,0.95); }
+body.modo-miopia .panel-venta-seccion-transparent-column { background: rgba(255,255,255,0.95); }
+body.modo-miopia .carrito-item { color: #1a1a2e; border-bottom-color: #e8eff4; }
+body.modo-miopia .total-venta-preview { color: #1a1a2e; }
+body.modo-miopia .producto-seleccionado-info { color: #1a1a2e; }
+
+/* ── Input búsqueda en pantalla ventas ── */
+body.modo-miopia .input-buscar-producto-venta {
+  background: #ffffff;
+  color: #1a1a2e;
+  border-color: rgba(12,86,108,0.25);
+}
+
+/* ── Barra de filtros de categorías ── */
+body.modo-miopia .categorias-filtro-bar {
+  background: rgba(12,86,108,0.04);
+  border-color: rgba(12,86,108,0.1);
+}
+
+/* ════════════════════════════════════════════════════════════
+   REGLA MAESTRA: todo texto de contenido → negro oscuro
+   El sidebar (#sidebar-menu) queda fuera: no es descendiente
+   de ningún #pantalla-* por lo que esta regla no lo afecta.
+   ════════════════════════════════════════════════════════════ */
+body.modo-miopia #pantalla-inicio *,
+body.modo-miopia #pantalla-INVENTARIO *,
+body.modo-miopia #pantalla-ventas-fisicas *,
+body.modo-miopia #pantalla-historial-fisicas *,
+body.modo-miopia #pantalla-ventas-online *,
+body.modo-miopia #pantalla-historial-online *,
+body.modo-miopia #pantalla-estadisticas *,
+body.modo-miopia #pantalla-estadisticas-online *,
+body.modo-miopia #pantalla-combos *,
+body.modo-miopia #pantalla-historial-combos * {
+  color: #2d2d2d !important;
+}
+
+/* ── Excepción: cabecera de tabla POS siempre en blanco ──
+   Especificidad (1,2,1) > regla maestra (1,1,1) → gana el blanco */
+body.modo-miopia #pantalla-ventas-fisicas .pos-ticket-header,
+body.modo-miopia #pantalla-ventas-fisicas .pos-ticket-header * {
+  color: #fff !important;
+}
+
+/* ── Excepción: botones dentro de pantallas recuperan su color CSS original ── */
+/* Especificidad (1,1,2) > regla global (1,1,1) → gana entre !important del mismo origen */
+body.modo-miopia #pantalla-INVENTARIO button,
+body.modo-miopia #pantalla-ventas-fisicas button,
+body.modo-miopia #pantalla-historial-fisicas button,
+body.modo-miopia #pantalla-ventas-online button,
+body.modo-miopia #pantalla-historial-online button,
+body.modo-miopia #pantalla-estadisticas button,
+body.modo-miopia #pantalla-estadisticas-online button,
+body.modo-miopia #pantalla-combos button,
+body.modo-miopia #pantalla-historial-combos button,
+body.modo-miopia #pantalla-INVENTARIO button *,
+body.modo-miopia #pantalla-ventas-fisicas button *,
+body.modo-miopia #pantalla-historial-fisicas button *,
+body.modo-miopia #pantalla-ventas-online button *,
+body.modo-miopia #pantalla-historial-online button *,
+body.modo-miopia #pantalla-estadisticas button *,
+body.modo-miopia #pantalla-estadisticas-online button *,
+body.modo-miopia #pantalla-combos button *,
+body.modo-miopia #pantalla-historial-combos button * {
+  color: #ffffff !important;
+}
+
+/* ── Sidebar: botones con colores legibles sobre fondo blanco ── */
+/* Sin !important competidor de "revert" → estos !important ganan sobre las bases sin !important */
+body.modo-miopia .sidebar-refresh-btn,
+body.modo-miopia .sidebar-refresh-btn * { color: #16a34a !important; }
+body.modo-miopia .sidebar-refresh-btn:hover,
+body.modo-miopia .sidebar-refresh-btn:hover * { color: #15803d !important; }
+
+body.modo-miopia .sidebar-modo-toggle,
+body.modo-miopia .sidebar-modo-toggle * { color: #1a3a4a !important; }
+body.modo-miopia .sidebar-modo-toggle:hover,
+body.modo-miopia .sidebar-modo-toggle:hover * { color: #0c566c !important; }
+
+body.modo-miopia .sidebar-modo-trabajo-btn,
+body.modo-miopia .sidebar-modo-trabajo-btn * { color: #b45309 !important; }
+body.modo-miopia .sidebar-modo-trabajo-btn:hover,
+body.modo-miopia .sidebar-modo-trabajo-btn:hover * { color: #92400e !important; }
+
+body.modo-miopia .sidebar-logout,
+body.modo-miopia .sidebar-logout * { color: #dc2626 !important; }
+body.modo-miopia .sidebar-logout:hover,
+body.modo-miopia .sidebar-logout:hover * { color: #b91c1c !important; }
+
+/* ── Barras de acordeón y encabezado de carrito: fondo claro + texto negro ── */
+body.modo-miopia .acordeon-fecha {
+  background-color: #dce8ef !important;
+  color: #2d2d2d !important;
+}
+body.modo-miopia .acordeon-fecha * { color: #2d2d2d !important; }
+body.modo-miopia .acordeon-fecha:hover { background-color: #c8d9e4 !important; }
+body.modo-miopia .header-carrito {
+  background-color: #dce8ef !important;
+  color: #2d2d2d !important;
+}
+body.modo-miopia .header-carrito * { color: #2d2d2d !important; }
+
+/* ── Badges de estado de pedidos → color semántico ── */
+body.modo-miopia .estado-pagado,
+body.modo-miopia .estado-cancelado { color: #ffffff !important; }
+body.modo-miopia .estado-pendiente { color: #423000 !important; }
+body.modo-miopia .estado-despachado { color: #032b35 !important; }
+body.modo-miopia .estado-entregado { color: #00402e !important; }
+
+/* ── Ventas online: botones de filtro de estado (texto + icono) ── */
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado,
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado * {
+  color: #2d2d2d !important;
+  background: #ffffff !important;
+}
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado {
+  border-color: #000000 !important;
+}
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado:hover,
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado:hover *,
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado.activo,
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado.activo * {
+  background: #0c566c !important;
+  color: #ffffff !important;
+}
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado:hover,
+body.modo-miopia #pantalla-ventas-online .btn-filtro-estado.activo {
+  border-color: #0c566c !important;
+}
+
+/* ── Botón escanear código de barras: icono visible ── */
+body.modo-miopia #pantalla-INVENTARIO .btn-escanear,
+body.modo-miopia #pantalla-INVENTARIO .btn-escanear *,
+body.modo-miopia #pantalla-ventas-fisicas .btn-escanear,
+body.modo-miopia #pantalla-ventas-fisicas .btn-escanear * {
+  color: #1a1a2e !important;
+}
+
+/* ── Estadísticas: botones Hoy / Esta semana / Este mes visibles y sin solapar título ── */
+body.modo-miopia #pantalla-estadisticas .btn-period,
+body.modo-miopia #pantalla-estadisticas .btn-period *,
+body.modo-miopia #pantalla-estadisticas-online .btn-period-online,
+body.modo-miopia #pantalla-estadisticas-online .btn-period-online * {
+  color: #1a1a2e !important;
+  background: rgba(12,86,108,0.07) !important;
+  border-color: #0c566c !important;
+}
+body.modo-miopia #pantalla-estadisticas .btn-period:hover,
+body.modo-miopia #pantalla-estadisticas .btn-period.activo,
+body.modo-miopia #pantalla-estadisticas-online .btn-period-online:hover,
+body.modo-miopia #pantalla-estadisticas-online .btn-period-online.activo {
+  background: #0c566c !important;
+  color: #ffffff !important;
+}
+/* Selector de período: sacar del flujo absoluto para que quede bajo el título */
+body.modo-miopia #pantalla-estadisticas .stats-period-selector,
+body.modo-miopia #pantalla-estadisticas-online .stats-period-selector {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  margin-top: 1cm !important;
+}
+
+/* ── Flechas ▼ en botones toggle de acordeón: negro visible ── */
+/* Especificidad (1,3,1) supera la regla global de botones blancos (1,1,2) */
+body.modo-miopia #pantalla-historial-fisicas .btn-toggle-ventas-hoy .toggle-icono,
+body.modo-miopia #pantalla-historial-online .btn-toggle-ventas-hoy .toggle-icono,
+body.modo-miopia #pantalla-historial-combos .btn-toggle-ventas-hoy .toggle-icono {
+  color: #2d2d2d !important;
+}
+
+/* Acordeón de fechas (button.acordeon-fecha): texto e icono negro */
+/* Especificidad (1,2,1) supera la regla global de botones blancos (1,1,2) */
+body.modo-miopia #pantalla-historial-fisicas .acordeon-fecha,
+body.modo-miopia #pantalla-historial-fisicas .acordeon-fecha *,
+body.modo-miopia #pantalla-historial-online .acordeon-fecha,
+body.modo-miopia #pantalla-historial-online .acordeon-fecha *,
+body.modo-miopia #pantalla-historial-combos .acordeon-fecha,
+body.modo-miopia #pantalla-historial-combos .acordeon-fecha * {
+  color: #2d2d2d !important;
+}
+
+/* "Ver detalles ▼" dentro de tickets: negro + opacidad completa */
+body.modo-miopia .ticket-toggle-arrow {
+  color: #2d2d2d !important;
+  opacity: 1 !important;
+}
+
+/* Stats de producto seleccionado: negro en ambos modos */
+.stat-lbl,
+.stat-val,
+.producto-sel-nombre {
+  color: #2d2d2d;
+}
+
+/* ── Responsivo modo miopía ── */
+@media (max-width: 600px) {
+  body.modo-miopia .sidebar-modo-toggle { font-size: 11px; }
+}
+
+/* ================================================================
+   POS PANEL — Ventas Físicas rediseño estilo software de punto de venta
+   ================================================================ */
+
+/* Blindaje: ocultar SIEMPRE que no tenga .activa, sin importar otras reglas */
+#pantalla-ventas-fisicas:not(.activa) {
+  display: none !important;
+}
+
+/* Cuando está activa: flex column para centrar el panel dentro */
+#pantalla-ventas-fisicas.activa {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 40px;
+}
+
+.pos-panel {
+  width: 92%;
+  max-width: 1150px;
+  background: rgba(255,255,255,0.98);
+  border-radius: 16px;
+  box-shadow: 0 6px 40px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 8px auto 0;
+}
+
+/* ── Zona de entrada ── */
+.pos-entry-zone {
+  padding: 18px 22px 14px;
+  background: #f4f8fa;
+  border-bottom: 1px solid #dce8ed;
+}
+
+.pos-search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pos-search-icon {
+  color: #0c566c;
+  flex-shrink: 0;
+}
+
+.pos-search-input {
+  flex: 1;
+  border: 2px solid #c8dfe8;
+  border-radius: 10px;
+  padding: 11px 15px;
+  font-size: 1.1em;
+  background: #fff;
+  color: #1a1a2e;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+}
+
+/* Botón QR en ventas físicas: misma altura que la barra de búsqueda, un poco más ancho */
+#pantalla-ventas-fisicas .btn-escanear {
+  align-self: stretch;
+  padding: 0 22px;
+  font-size: 1.6em;
+  border-radius: 10px;
+  min-width: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #b0ccd4;
+}
+
+.pos-search-input:focus {
+  border-color: #0c566c;
+  box-shadow: 0 0 0 3px rgba(12,86,108,0.12);
+  outline: none;
+}
+
+/* ── Panel producto seleccionado ── */
+.pos-product-panel {
+  margin-top: 12px;
+  background: linear-gradient(135deg, #e4f4f8 0%, #ebf6eb 100%);
+  border: 1.5px solid #b0d8e4;
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.pos-sel-info-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pos-sel-img {
+  width: 46px;
+  height: 46px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #c0dce8;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.pos-sel-nombre {
+  font-size: 1.15em;
+  font-weight: 700;
+  color: #0c566c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pos-sel-detalles {
+  font-size: 1em;
+  color: #4a7a8a;
+  margin-top: 2px;
+}
+
+.pos-sel-cancel {
+  background: none;
+  border: 2px solid #cc0000;
+  color: #cc0000;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.95em;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(204,0,0,0.15);
+}
+.pos-sel-cancel:hover {
+  background: #cc0000;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(204,0,0,0.35);
+}
+
+/* Modo oscuro: el rojo aún más visible */
+body:not(.modo-miopia) .pos-sel-cancel {
+  border-color: #ff4444;
+  color: #ff4444;
+  box-shadow: 0 0 0 1px rgba(255,68,68,0.25);
+}
+body:not(.modo-miopia) .pos-sel-cancel:hover {
+  background: #ff4444;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(255,68,68,0.4);
+}
+
+.pos-qty-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.pos-qty-row label {
+  font-weight: 700;
+  color: #0c566c;
+  font-size: 0.95em;
+  white-space: nowrap;
+}
+
+.pos-qty-input {
+  width: 88px;
+  text-align: center;
+  border: 2px solid #0c566c;
+  border-radius: 8px;
+  padding: 9px 8px;
+  font-size: 1.25em;
+  font-weight: 700;
+  color: #0c566c;
+  font-family: inherit;
+  background: #fff;
+}
+.pos-qty-input:focus { outline: none; box-shadow: 0 0 0 3px rgba(12,86,108,0.15); }
+
+.btn-agregar-al-carrito {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* ── Ticket: tabla ── */
+.pos-ticket {
+  display: flex;
+  flex-direction: column;
+}
+
+.pos-ticket-header {
+  display: grid;
+  grid-template-columns: 130px 1fr 110px 70px 120px 38px;
+  background: #0c566c;
+  color: #fff;
+  padding: 12px 18px;
+  font-size: 0.92em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  gap: 8px;
+  align-items: center;
+}
+
+.pos-ticket-body {
+  min-height: 240px;
+  max-height: 370px;
+  overflow-y: auto;
+}
+
+.pos-ticket-body::-webkit-scrollbar { width: 6px; }
+.pos-ticket-body::-webkit-scrollbar-track { background: #f0f0f0; }
+.pos-ticket-body::-webkit-scrollbar-thumb { background: #b0ccd4; border-radius: 4px; }
+
+.pos-ticket-row {
+  display: grid;
+  grid-template-columns: 130px 1fr 110px 70px 120px 38px;
+  padding: 12px 18px;
+  border-bottom: 1px solid #edf2f4;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.07em;
+  transition: background 0.12s;
+}
+
+.pos-ticket-row:nth-child(even) { background: #f8fbfc; }
+.pos-ticket-row:hover { background: #e4f2f6; }
+
+.pos-ticket-row.pos-row-nuevo {
+  animation: pos-highlight 0.55s ease;
+}
+
+@keyframes pos-highlight {
+  0%   { background: #afe8d0; }
+  100% { background: transparent; }
+}
+
+.pos-ticket-row .ptc-cod {
+  font-family: 'Courier New', monospace;
+  font-size: 0.88em;
+  color: #789;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pos-ticket-row .ptc-desc {
+  font-weight: 600;
+  font-size: 1.05em;
+  color: #1a2a38;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pos-ticket-row .ptc-unit {
+  text-align: right;
+  color: #0c566c;
+  font-weight: 700;
+  font-size: 1.05em;
+}
+.pos-ticket-row .ptc-qty {
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.2em;
+  color: #1a2a38;
+}
+.pos-ticket-row .ptc-total {
+  text-align: right;
+  font-weight: 800;
+  color: #1a7a44;
+  font-size: 1.1em;
+}
+.pos-ticket-row .ptc-del { text-align: center; }
+
+.pos-ticket-row .pos-remover {
+  background: none;
+  border: none;
+  color: #cc4444;
+  cursor: pointer;
+  font-size: 1em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 0.12s;
+  line-height: 1;
+}
+.pos-ticket-row .pos-remover:hover { background: #ffeaea; }
+
+.pos-empty-msg {
+  text-align: center;
+  color: #aab5bb;
+  padding: 50px 0;
+  font-style: italic;
+  font-size: 0.95em;
+}
+
+/* ── Footer barra ── */
+.pos-footer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 22px;
+  background: #eef4f6;
+  border-top: 2px solid #c8dfe8;
+  flex-wrap: wrap;
+}
+
+.pos-total-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 160px;
+}
+
+.pos-total-label {
+  font-size: 0.88em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #5a7a88;
+  font-weight: 700;
+}
+
+.pos-total-amount {
+  font-size: 2.6em;
+  font-weight: 900;
+  color: #1a7a44;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+/* Modo oscuro: adaptaciones POS */
+body:not(.modo-miopia) .pos-panel { background: rgba(22,34,50,0.98); }
+body:not(.modo-miopia) .pos-entry-zone { background: #101d2e; border-bottom-color: #1e3a50; }
+body:not(.modo-miopia) .pos-search-input { background: #1a2b3c; border-color: #2a4a60; color: #e0eaf0; }
+body:not(.modo-miopia) .pos-search-input:focus { border-color: #4db8d4; }
+body:not(.modo-miopia) .pos-product-panel { background: linear-gradient(135deg,#102030,#112820); border-color: #1e4a5a; }
+body:not(.modo-miopia) .pos-sel-nombre { color: #7dd8e8; }
+body:not(.modo-miopia) .pos-sel-detalles { color: #6a9aaa; }
+body:not(.modo-miopia) .pos-qty-row label { color: #7dd8e8; }
+body:not(.modo-miopia) .pos-qty-input { background: #1a2b3c; border-color: #4db8d4; color: #7dd8e8; }
+body:not(.modo-miopia) .pos-ticket-header { background: #0a3a4c; }
+body:not(.modo-miopia) .pos-ticket-body { background: #0d1e2e; }
+body:not(.modo-miopia) .pos-ticket-row { border-bottom-color: #1a3040; }
+body:not(.modo-miopia) .pos-ticket-row:nth-child(even) { background: #111f2e; }
+body:not(.modo-miopia) .pos-ticket-row:hover { background: #1a3048; }
+body:not(.modo-miopia) .pos-ticket-row .ptc-desc { color: #d0e8f0; }
+body:not(.modo-miopia) .pos-ticket-row .ptc-qty { color: #d0e8f0; }
+body:not(.modo-miopia) .pos-footer-bar { background: #0d1e2e; border-top-color: #1e3a50; }
+body:not(.modo-miopia) .pos-total-label { color: #6a9aaa; }
+
+/* Responsivo POS */
+@media (max-width: 900px) {
+  .pos-panel { width: 97%; }
+  .pos-ticket-header,
+  .pos-ticket-row { grid-template-columns: 0 1fr 90px 55px 100px 34px; }
+  .pos-ticket-header .ptc-cod,
+  .pos-ticket-row .ptc-cod { display: none; }
+}
+
+@media (max-width: 600px) {
+  .pos-ticket-header,
+  .pos-ticket-row { grid-template-columns: 1fr 50px 90px 30px; }
+  .pos-ticket-header .ptc-cod,
+  .pos-ticket-row .ptc-cod,
+  .pos-ticket-header .ptc-unit,
+  .pos-ticket-row .ptc-unit { display: none; }
+  .pos-total-amount { font-size: 2em; }
+  .pos-footer-bar { flex-direction: column; align-items: stretch; text-align: center; }
+  .pos-total-display { flex-direction: row; justify-content: space-between; align-items: center; }
+  .pos-product-panel { flex-direction: column; align-items: flex-start; }
+  .pos-qty-row { width: 100%; }
+  .btn-agregar-al-carrito { flex: 1; justify-content: center; }
+}
+/* Iconos SVG inline en texto */
+.icon-inline { vertical-align: middle; }

@@ -1,0 +1,204 @@
+﻿/* =============================================
+   VARIABLES GLOBALES — PALETA Y TIPOGRAFÍA
+   ============================================= */
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --color-primary:       #0c566c;
+  --color-primary-hover: #0a4a5a;
+  --color-primary-light: rgba(12, 86, 108, 0.10);
+  --color-accent:        #7ae4d6;
+  --color-danger:        #dc3545;
+  --color-danger-hover:  #851924;
+  --color-success:       #28a745;
+  --color-success-hover: #1e7e34;
+  --color-neutral:       #6c757d;
+  --color-neutral-hover: #5a6268;
+  --color-surface:       #f9fafb;
+  --color-border:        #e0e0e0;
+  --color-text:          #1a1a2e;
+  --color-text-muted:    #6b7280;
+
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.12);
+  --shadow-lg:  0 8px 24px rgba(0,0,0,0.16);
+
+  --transition: 0.2s ease;
+}
+
+/* =============================================
+   SISTEMA DE PANTALLAS — UNA SOLA A LA VEZ
+   Cada div de pantalla ocupa exactamente el
+   viewport y hace su propio scroll interno.
+   ============================================= */
+
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Contenedor raíz que ocupa todo el viewport */
+#app-root {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ==============================
+   SIDEBAR GLOBAL — siempre visible cuando hay sesión
+   ============================== */
+#sidebar-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100%;
+  background: linear-gradient(180deg, #0d3347 0%, #163d52 55%, #0a2638 100%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-right: 1px solid rgba(122, 228, 214, 0.15);
+  display: none; /* oculto hasta que el usuario inicia sesión */
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 22px 0 24px 0;
+  box-sizing: border-box;
+  z-index: 200;
+  box-shadow: 6px 0 36px rgba(0,0,0,0.55);
+}
+
+/* El sidebar se muestra con clase .activo puesta por JS */
+#sidebar-menu.activo {
+  display: flex;
+}
+
+/* Marca el ítem activo en el sidebar */
+.sidebar-boton.sidebar-activo,
+.sidebar-boton-secondary.sidebar-activo {
+  color: #7ae4d6;
+}
+
+/* ======================================================
+   PANTALLAS — posicionamiento base
+   Todas arrancan ocultas, ocupan todo el app-root,
+   con scroll interno y SIN desbordamiento lateral.
+   ====================================================== */
+#pantalla-login,
+#pantalla-inicio,
+#pantalla-menu-ventas,
+#pantalla-INVENTARIO,
+#pantalla-ventas-fisicas,
+#pantalla-historial-fisicas,
+#pantalla-ventas-online,
+#pantalla-historial-online,
+#pantalla-estadisticas,
+#pantalla-estadisticas-online,
+#pantalla-combos,
+#pantalla-historial-combos {
+  position: fixed;   /* fixed en lugar de absolute para que se ancle al viewport */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  display: none; /* ocultas por defecto */
+  max-width: 100%;
+}
+
+/* ======================================================
+   PANTALLAS ACTIVAS CON SIDEBAR
+   left arranca después del menú (240px),
+   right se queda en 0 → el ancho real = viewport - 240px
+   ====================================================== */
+#pantalla-inicio.activa,
+#pantalla-menu-ventas.activa,
+#pantalla-INVENTARIO.activa,
+#pantalla-ventas-fisicas.activa,
+#pantalla-historial-fisicas.activa,
+#pantalla-ventas-online.activa,
+#pantalla-historial-online.activa,
+#pantalla-estadisticas.activa,
+#pantalla-estadisticas-online.activa,
+#pantalla-combos.activa,
+#pantalla-historial-combos.activa {
+  left: 240px;
+  right: 0;
+  width: auto;          /* dejamos que left+right definan el ancho exacto */
+  max-width: none;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Cuando JS pone display, usar flex o block según convenga */
+#pantalla-login.activa       { display: flex; }
+#pantalla-inicio.activa,
+#pantalla-menu-ventas.activa { display: flex; }
+
+#pantalla-INVENTARIO.activa,
+#pantalla-ventas-fisicas.activa,
+#pantalla-historial-fisicas.activa,
+#pantalla-ventas-online.activa,
+#pantalla-historial-online.activa,
+#pantalla-estadisticas.activa,
+#pantalla-estadisticas-online.activa,
+#pantalla-combos.activa,
+#pantalla-historial-combos.activa { display: block; }
+
+h1 {
+  font-size: 80px;
+  font-family:'Pacifico', cursive;
+  font-weight: bold;
+  font-style: italic;
+  color: #0c566c;
+  text-align: center;
+}
+
+#pantalla-inicio, #pantalla-menu-ventas {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://img.freepik.com/vector-premium/tecnologia-digital-compras-linea-icono-sobre-fondo-azul-marketing-tiendas-linea-comercio-electronico_252172-219.jpg);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    padding: 0;
+    box-sizing: border-box;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    /* position: relative eliminado — no debe sobreescribir el position: absolute global */
+}
+
+/* Logo SOFTVEN imagen — esquina superior derecha (fuera del sidebar) */
+#pantalla-inicio .softvent-logo-img {
+  position: absolute;
+  top: 22px;
+  right: 36px;
+  height: 128px;
+  width: auto;
+  pointer-events: none;
+  z-index: 10;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+
+/* Iconos SVG inline en texto */
+.icon-inline { vertical-align: middle; }

@@ -1,0 +1,529 @@
+﻿/* ================================================================
+   RESPONSIVE — Adaptación a todos los dispositivos
+   Breakpoints:
+     1200px → tablets grandes / laptops pequeñas
+      900px → tablets
+      600px → móviles grandes
+      400px → móviles pequeños
+   ================================================================ */
+
+/* ---------------------------------------------------------------
+   TABLET GRANDE / LAPTOP PEQUEÑA — max 1200px
+   --------------------------------------------------------------- */
+@media (max-width: 1200px) {
+
+    /* Títulos principales */
+    h1 { font-size: 60px; }
+
+    #pantalla-inicio .title,
+    #pantalla-menu-ventas .title { font-size: 60px; }
+
+    #pantalla-INVENTARIO h1,
+    #pantalla-ventas-fisicas h1,
+    #pantalla-ventas-online h1,
+    #pantalla-historial-online h1,
+    #pantalla-historial-fisicas h1 { font-size: 55px; }
+
+    #pantalla-INVENTARIO #inventory-products-title,
+    #pantalla-historial-fisicas h2,
+    #pantalla-ventas-online #online-pedidos-title,
+    #pantalla-historial-online #historial-online-title { font-size: 2em; }
+
+    /* Botones menú principal */
+    .boton { font-size: 28px; padding: 25px 20px; }
+
+    /* Login ring — card ya adaptada con clamp() en la definición base */
+
+    /* Tarjetas de producto */
+    .tarjeta-producto { width: 190px; }
+
+    /* Tarjetas de venta independientes */
+    .formulario-venta-flex { flex: 1 1 340px; min-width: 280px; }
+    .formulario-venta-flex-1-5 { flex: 1.5 1 500px; min-width: 280px; }
+}
+
+/* ---------------------------------------------------------------
+   TABLET — max 900px
+   --------------------------------------------------------------- */
+@media (max-width: 900px) {
+
+    /* Títulos */
+    h1 { font-size: 44px; }
+
+    #pantalla-inicio .title,
+    #pantalla-menu-ventas .title { font-size: 44px; margin-top: 1.5em; }
+
+    #pantalla-INVENTARIO h1,
+    #pantalla-ventas-fisicas h1,
+    #pantalla-ventas-online h1,
+    #pantalla-historial-online h1,
+    #pantalla-historial-fisicas h1 { font-size: 40px; }
+
+    #pantalla-INVENTARIO #inventory-products-title,
+    #pantalla-historial-fisicas h2,
+    #pantalla-ventas-online #online-pedidos-title,
+    #pantalla-historial-online #historial-online-title { font-size: 1.6em; }
+
+    /* Botones menú principal */
+    .boton { font-size: 22px; padding: 20px 18px; border-radius: 80px; }
+    .botones-container { gap: 20px; }
+
+    /* Login: card adaptada con clamp() base */
+
+    /* Inventario: header en columna */
+    .inventory-header { flex-direction: column; align-items: stretch; }
+    .inventory-actions-group { flex-direction: column; align-items: stretch; }
+    .tarjeta-input-producto { max-width: 100%; width: 100%; box-sizing: border-box; }
+    .tarjeta-input-producto input[type="text"],
+    .tarjeta-input-producto input[type="number"] { width: 100%; }
+    .search-summary-group { flex-direction: row; flex-wrap: wrap; }
+    .search-section { width: 100%; box-sizing: border-box; }
+
+    /* Productos en grid más pequeño */
+    .contenedor-productos { justify-content: center; }
+    .tarjeta-producto { width: 170px; }
+
+    /* Ventas físicas: columna */
+    .contenedor-ventas-independientes {
+        flex-direction: column;
+        align-items: center;
+        width: 98%;
+    }
+    .tarjeta-venta-independiente {
+        width: 100%;
+        max-width: 600px;
+        box-sizing: border-box;
+    }
+    .formulario-venta-flex,
+    .formulario-venta-flex-1-5 {
+        flex: none;
+        width: 100%;
+        min-width: unset;
+    }
+
+    /* Tarjeta ventas de hoy */
+    .tarjeta-ventas-hoy-independiente { width: 95%; padding: 20px; }
+
+    /* Historial acordeón */
+    #contenedorHistorialFisicas,
+    #contenedorHistorialOnline { flex-direction: column; }
+
+    /* Pedidos online */
+    #listaPedidosAdmin, .online-pedidos-lista { flex-direction: column; }
+    .pedido-admin-card { max-width: 100%; min-width: unset; width: 100%; }
+
+    /* Botón historial esquina */
+    .btn-historial-esquina-position { top: 10px; right: 10px; font-size: 28px; padding: 8px 10px; }
+
+    /* Filtros pedidos online */
+    .filtros-pedidos-wrap { gap: 6px; }
+    .btn-filtro-estado { font-size: 0.8em; padding: 6px 10px; }
+
+    /* Resumen pedidos */
+    .resumen-pedidos-grid { flex-direction: row; }
+    .tarjeta-resumen-online { min-width: 120px; }
+}
+
+/* ---------------------------------------------------------------
+   MÓVIL GRANDE — max 600px
+   --------------------------------------------------------------- */
+@media (max-width: 600px) {
+
+    /* Títulos */
+    h1 { font-size: 32px; }
+
+    #pantalla-inicio .title,
+    #pantalla-menu-ventas .title { font-size: 32px; margin-top: 1em; }
+
+    #pantalla-INVENTARIO h1,
+    #pantalla-ventas-fisicas h1,
+    #pantalla-ventas-online h1,
+    #pantalla-historial-online h1,
+    #pantalla-historial-fisicas h1 { font-size: 28px; margin-top: 15px; margin-bottom: 15px; }
+
+    #pantalla-INVENTARIO #inventory-products-title,
+    #pantalla-historial-fisicas h2,
+    #pantalla-ventas-online #online-pedidos-title,
+    #pantalla-historial-online #historial-online-title { font-size: 1.3em; }
+
+    /* Botones menú */
+    .boton { font-size: 18px; padding: 16px 14px; border-radius: 60px; width: 100%; max-width: 280px; }
+    .botones-container { flex-direction: column; align-items: center; gap: 15px; }
+
+    /* Botón volver */
+    .boton-volver { font-size: 15px; padding: 10px 16px; margin-top: 25px; width: 90%; max-width: 300px; }
+
+    /* Login — card adaptada con clamp() */
+    .btn-google { font-size: 13px; padding: 9px 12px; gap: 8px; }
+
+    /* Inventario */
+    #pantalla-INVENTARIO { padding: 12px 14px; }
+    #pantalla-INVENTARIO > h1 { padding-right: 150px; }
+    .btns-esquina-inventario { top: 10px; right: 10px; gap: 6px; }
+    .btn-exportar, .btn-importar { font-size: 0.82em; padding: 7px 11px; }
+    .inventory-header { padding: 8px; gap: 12px; }
+    .tarjeta-input-producto { padding: 15px; }
+    .tarjeta-input-producto h2 { font-size: 1.4em; }
+    .search-input-group { flex-direction: column; align-items: stretch; }
+    #inputBuscarProducto { width: 100%; box-sizing: border-box; }
+    .btn-buscar, .btn-limpiar-busqueda { width: 100%; }
+    .export-section { width: 100%; box-sizing: border-box; }
+
+    /* Tarjetas producto */
+    .contenedor-productos { gap: 12px; padding: 5px; }
+    .tarjeta-producto { width: calc(50% - 10px); min-width: 130px; }
+    .tarjeta-producto img { width: 110px; height: 110px; }
+
+    /* Ventas físicas */
+    #pantalla-ventas-fisicas { padding: 12px; }
+    #pantalla-ventas-fisicas h1 { font-size: 26px; margin-top: 40px; }
+    .tarjeta-venta-independiente { padding: 18px; border-radius: 10px; }
+    .tarjeta-venta-independiente h2 { font-size: 1.4em; }
+    .input-buscar-producto-venta,
+    .select-venta,
+    #inputCantidadVenta { font-size: 14px; padding: 10px; }
+    .btn-agregar-al-carrito { padding: 12px; font-size: 1em; }
+    .carrito-container { max-height: 180px; }
+    .botones-accion-venta { flex-direction: column; gap: 8px; }
+    .btn-limpiar-venta,
+    .btn-registrar-venta { width: 100%; }
+    .tarjeta-ventas-hoy-independiente { width: 100%; padding: 15px; margin-top: 15px; box-sizing: border-box; }
+    .titulo-ventas-hoy-independiente { font-size: 1.3em; }
+
+    /* Historial */
+    .acordeon-fecha { font-size: 0.9em; padding: 8px 12px; }
+    .lista-ventas-scroll { max-height: 300px; }
+    #pantalla-historial-fisicas { padding: 12px; }
+    #pantalla-historial-fisicas h1 { font-size: 28px; }
+
+    /* Ventas online */
+    #pantalla-ventas-online { padding: 12px; }
+    .btn-historial-esquina-position { top: 8px; right: 8px; font-size: 26px; padding: 6px 8px; }
+    .filtros-pedidos-wrap { gap: 5px; }
+    .btn-filtro-estado { font-size: 0.75em; padding: 5px 8px; }
+    .online-acciones-wrap { flex-direction: column; width: 100%; }
+    .btn-refrescar-online,
+    .btn-borrar-todas-canceladas { width: 100%; }
+    .pedido-admin-card { border-radius: 10px; }
+    .pedido-admin-acciones { flex-direction: column; }
+    .pedido-admin-acciones button { min-width: unset; width: 100%; }
+
+    /* Resumen pedidos */
+    .resumen-pedidos-grid { gap: 8px; }
+    .tarjeta-resumen-online { min-width: 90px; padding: 10px 12px; }
+    .tarjeta-resumen-online .num { font-size: 1.6em; }
+
+    /* Modal escáner */
+    .modal-contenido { width: 95%; padding: 15px; }
+}
+
+/* ---------------------------------------------------------------
+   MÓVIL PEQUEÑO — max 400px
+   --------------------------------------------------------------- */
+@media (max-width: 400px) {
+
+    /* Títulos */
+    #pantalla-inicio .title,
+    #pantalla-menu-ventas .title { font-size: 26px; }
+
+    #pantalla-INVENTARIO h1,
+    #pantalla-ventas-fisicas h1,
+    #pantalla-ventas-online h1,
+    #pantalla-historial-online h1,
+    #pantalla-historial-fisicas h1 { font-size: 22px; }
+
+    /* Login — card adaptada con clamp() */
+    .btn-google { font-size: 12px; padding: 8px 10px; }
+
+    /* Botones menú */
+    .boton { font-size: 16px; padding: 14px 12px; }
+
+    /* Tarjetas producto: 1 columna */
+    .tarjeta-producto { width: 100%; max-width: 280px; }
+    .tarjeta-producto img { width: 130px; height: 130px; }
+
+    /* Ventas */
+    .tarjeta-venta-independiente { padding: 14px; }
+    .total-venta-preview { flex-direction: column; align-items: flex-start; gap: 5px; }
+
+    /* Filtros online */
+    .btn-filtro-estado { font-size: 0.7em; padding: 4px 7px; }
+
+    /* Resumen */
+    .tarjeta-resumen-online { min-width: 70px; }
+    .tarjeta-resumen-online .num { font-size: 1.3em; }
+}
+/* ==========================================
+   GRID DE PRODUCTOS — VENTAS FÍSICAS
+   ========================================== */
+
+.categorias-venta-bar {
+    display: none; /* eliminado del punto de venta */
+}
+
+.btn-cat-venta {
+    background: #fff;
+    border: 2px solid #0c566c;
+    color: #0c566c;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 0.78em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.btn-cat-venta:hover { background: #0c566c; color: #fff; }
+.btn-cat-venta.activo { background: #0c566c; color: #fff; box-shadow: 0 2px 8px rgba(12,86,108,0.3); }
+
+.grid-productos-venta {
+    display: none; /* grid eliminado — se usa solo autocomplete */
+}
+
+.tarjeta-prod-venta {
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 10px 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    text-align: center;
+}
+
+.tarjeta-prod-venta:hover {
+    border-color: #0c566c;
+    box-shadow: 0 4px 12px rgba(12,86,108,0.2);
+    transform: translateY(-2px);
+}
+
+.tarjeta-prod-venta.seleccionada {
+    border-color: #28a745;
+    background: #f0fff4;
+    box-shadow: 0 4px 14px rgba(40,167,69,0.3);
+}
+
+.prod-venta-img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.prod-venta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.prod-venta-nombre {
+    font-size: 0.78em;
+    font-weight: 700;
+    color: #111;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.prod-venta-precio {
+    font-size: 0.82em;
+    color: #0c566c;
+    font-weight: 800;
+}
+
+.prod-venta-stock {
+    font-size: 0.72em;
+    color: #888;
+}
+
+.venta-grid-vacio {
+    grid-column: 1/-1;
+    text-align: center;
+    color: #888;
+    font-size: 0.9em;
+    padding: 20px 0;
+}
+
+/* Panel cantidad + producto seleccionado */
+.panel-cantidad-venta {
+    background: #f0fff4;
+    border: 2px solid #28a745;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 4px;
+    animation: fadeIn 0.2s ease;
+}
+
+.producto-seleccionado-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #28a745;
+}
+
+.producto-seleccionado-info img {
+    width: 52px;
+    height: 52px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    flex-shrink: 0;
+}
+
+/* ── Tarjeta producto seleccionado: layout con columnas de stats ── */
+.producto-sel-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.producto-sel-izq {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 6px;
+    min-width: 0;
+}
+
+.producto-sel-nombre {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: #111;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.producto-sel-stats {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.producto-sel-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 74px;
+    background: rgba(40,167,69,0.07);
+    border: 1px solid rgba(40,167,69,0.2);
+    border-radius: 8px;
+    padding: 6px 10px;
+}
+
+.stat-lbl {
+    font-size: 0.68em;
+    font-weight: 700;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    margin-bottom: 3px;
+}
+
+.stat-val {
+    font-size: 1.4em;
+    font-weight: 800;
+    color: #111;
+    line-height: 1.2;
+}
+
+@media (max-width: 600px) {
+    .grid-productos-venta {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        max-height: 240px;
+    }
+    .prod-venta-img { width: 56px; height: 56px; }
+    .categorias-venta-bar { gap: 5px; padding: 6px 8px; }
+    .btn-cat-venta { font-size: 0.7em; padding: 4px 9px; }
+}
+
+/* Ocultar grid de productos al hacer clic en "Todas" cuando ya está activo */
+#contenedorProductos.oculto-productos {
+    display: none;
+}
+
+/* Botón "Todas" atenuado mientras los productos están ocultos */
+.btn-categoria-filtro.atenuado {
+    opacity: 0.55;
+    background: #fff;
+    color: #0c566c;
+    box-shadow: none;
+}
+
+.categorias-filtro-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    padding: 12px 16px;
+    margin: 0 auto 16px auto;
+    max-width: 900px;
+    background: rgba(12, 86, 108, 0.05);
+    border-radius: 14px;
+    border: 1px solid rgba(12, 86, 108, 0.12);
+}
+
+.btn-categoria-filtro {
+    background: #fff;
+    border: 2px solid #0c566c;
+    color: #0c566c;
+    border-radius: 20px;
+    padding: 7px 16px;
+    font-size: 0.85em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s, transform 0.12s, box-shadow 0.18s;
+    white-space: nowrap;
+}
+
+.btn-categoria-filtro:hover {
+    background: #0c566c;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(12, 86, 108, 0.22);
+}
+
+.btn-categoria-filtro.activo {
+    background: #0c566c;
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(12, 86, 108, 0.28);
+}
+
+/* Badge de categoría en tarjeta de producto */
+.badge-categoria {
+    display: inline-block;
+    background: rgba(12, 86, 108, 0.1);
+    color: #222;
+    border-radius: 10px;
+    padding: 3px 12px;
+    font-size: 0.92em;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: 0.02em;
+}
+
+/* Select de categoría en formulario */
+.select-categoria-producto {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 0.95em;
+    background: #fff;
+    margin-bottom: 2px;
+    color: #333;
+}
+
+@media (max-width: 600px) {
+    .categorias-filtro-bar { gap: 6px; padding: 10px 10px; }
+    .btn-categoria-filtro { font-size: 0.75em; padding: 5px 11px; }
+}

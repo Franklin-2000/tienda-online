@@ -1,0 +1,124 @@
+﻿/* --- ESTILOS PANTALLAS DE VENTAS --- */
+#pantalla-ventas-fisicas {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://image.slidesdocs.com/responsive-images/background/website-mobile-app-explore-the-world-of-virtual-shopping-with-digital-marketing-powerpoint-background_bb972eee09__960_540.jpg);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#pantalla-ventas-fisicas h1 {
+    font-size: 80px;
+    color: #ffffff;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(12, 86, 108, 0.4);
+    margin-top: 20px;
+    margin-bottom: 25px;
+    font-family: 'Pacifico', cursive;
+    font-weight: bold;
+    font-style: italic;
+}
+
+/* --- NUEVOS ESTILOS: VENTAS FÍSICAS INDEPENDIENTES Y RESPONSIVES --- */
+
+.contenedor-ventas-independientes {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 30px; 
+    justify-content: center; 
+    align-items: flex-start; 
+    width: 100%;
+    max-width: 100%;
+    margin: 20px auto; 
+    box-sizing: border-box;
+    padding: 0 16px;
+}
+
+.tarjeta-venta-independiente {
+    background-color: rgba(255, 255, 255, 0.96); 
+    border-radius: 15px; 
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); 
+    padding: 30px; 
+    border: 1px solid #ccc;
+    box-sizing: border-box; 
+}
+
+.tarjeta-venta-independiente h2 {
+    color: #0c566c;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.formulario-venta-flex {
+    flex: 1 1 400px; 
+    min-width: 0; /* sin mínimo fijo: el flex puede achicarse sin romper el layout */
+}
+
+.formulario-venta-flex-1-5 {
+    flex: 1.5 1 600px; 
+    min-width: 0;
+}
+
+.panel-venta-seccion-transparent {
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+    text-align: left; 
+}
+
+.panel-venta-seccion-transparent-column {
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-align: left;
+}
+
+.input-buscar-producto-venta,
+.select-venta,
+#inputCantidadVenta {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #d0d5dd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    font-family: var(--font-sans);
+    margin-bottom: 15px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-buscar-producto-venta:focus,
+.select-venta:focus,
+#inputCantidadVenta:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(12, 86, 108, 0.12);
+}
+
+.btn-agregar-al-carrito {
+    width: 100%;
+    margin-top: 10px;
+    padding: 15px; 
+    font-size: 1.1em;
+}
+
+@media (max-width: 900px) {
+    .contenedor-ventas-independientes {
+        flex-direction: column; 
+        align-items: center; 
+    }
+
+    .tarjeta-venta-independiente {
+        width: 100%; 
+        max-width: 600px; 
+    }
+}
+

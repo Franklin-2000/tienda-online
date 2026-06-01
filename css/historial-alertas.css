@@ -1,0 +1,619 @@
+﻿/* --- ESTILOS PARA EL HISTORIAL ACORDEÓN Y TICKETS --- */
+.acordeon-fecha {
+    background-color: #0c566c;
+    color: white;
+    padding: 10px 15px;
+    margin-top: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.acordeon-fecha:hover {
+    background-color: #1a7b98;
+}
+
+.acordeon-contenido {
+    padding: 10px;
+    background-color: #f4f7f6;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+}
+
+.btn-eliminar-ticket {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85em;
+    margin-left: 10px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.btn-eliminar-ticket:hover {
+    background-color: #bd2130;
+}
+
+.resumen-pedidos-grid {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.tarjeta-resumen-online {
+    flex: 1;
+    min-width: 160px;
+    padding: 16px 18px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.tarjeta-resumen-online.amarilla { background:#fff3cd; border-left:4px solid #ffc107; }
+.tarjeta-resumen-online.verde    { background:#d1e7dd; border-left:4px solid #28a745; }
+.tarjeta-resumen-online.azul     { background:#cff4fc; border-left:4px solid #0dcaf0; }
+.tarjeta-resumen-online.roja     { background:#f8d7da; border-left:4px solid #dc3545; }
+.tarjeta-resumen-online strong   { font-size:0.85em; color:#353937; }
+.tarjeta-resumen-online .num     { font-size:2em; font-weight:900; color:#0c566c; line-height:1; }
+.tarjeta-resumen-online small    { font-size:0.8em; color:#555; }
+ 
+.filtros-pedidos-wrap {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* --- BOTONES DE FILTRO DE PEDIDOS --- */
+.btn-filtro-estado {
+    padding: 8px 16px;
+    border: 2px solid #0c566c;
+    background: #ffffff; 
+    color: #0c566c; 
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4); 
+}
+
+.btn-filtro-estado:hover {
+    background: #e0f4f4; 
+    transform: translateY(-2px);
+}
+
+.btn-filtro-estado.activo { 
+    background: #0c566c; 
+    color: #ffffff; 
+    border-color: #0c566c;
+    box-shadow: 0 4px 8px rgba(12, 86, 108, 0.6);
+}
+
+/* --- TARJETAS DE PEDIDOS (ADMIN CARDS) --- */
+.pedido-admin-card {
+    text-align: left !important;
+    padding: 0 !important;
+    margin-bottom: 16px;
+    overflow: visible;
+    box-sizing: border-box;
+    flex: 1 1 320px;
+    max-width: 420px;
+    min-width: 320px;
+    background-color: rgba(255, 255, 255, 0.96) !important; 
+    border: 1px solid #bbb !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
+    border-radius: 12px;
+}
+
+.pedido-admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #e2e8ea !important; 
+    padding: 12px 16px;
+    border-bottom: 1px solid #ccc;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pedido-admin-id {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.05em;
+    color: #0c566c;
+}
+.pedido-admin-total {
+    font-size: 1.2em;
+    font-weight: 800;
+    color: #0c566c;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.pedido-admin-total small { font-size:0.7em; font-weight:400; color:#555; }
+
+.pedido-admin-cliente {
+    padding: 12px 16px;
+    font-size: 0.9em;
+    line-height: 1.9;
+    color: #111111 !important; 
+    font-weight: 500;
+    border-bottom: 1px dashed #ccc;
+}
+
+.pedido-admin-fecha { color:#888; font-size:0.85em; margin-top:4px; }
+.pedido-admin-items {
+    padding: 12px 16px;
+    border-bottom: 1px dashed #e0e0e0;
+}
+.tabla-items-pedido {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88em;
+}
+
+.tabla-items-pedido th {
+    text-align: left;
+    padding: 5px 8px;
+    border-bottom: 2px solid #bbb;
+    color: #000000 !important; 
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.tabla-items-pedido td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #eaeaea;
+    color: #222222 !important; 
+}
+
+.pedido-admin-acciones {
+    padding: 12px 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    border-top: 1px solid #e0e0e0;
+    background: #f8f9fa;
+    border-radius: 0 0 12px 12px;
+}
+.pedido-admin-acciones button { flex:1; min-width:140px; margin:0 !important; font-size: 0.88em; padding: 10px 8px; }
+
+/* === AUTOCOMPLETE VENTAS FÍSICAS === */
+.autocomplete-wrapper {
+    position: relative;
+    width: 100%;
+}
+.autocomplete-sugerencias {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 2px solid #0c566c;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    z-index: 9999;
+    max-height: 260px;
+    overflow-y: auto;
+    display: none;
+}
+.autocomplete-sugerencias.visible {
+    display: block;
+}
+.autocomplete-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.12s;
+    text-align: left;
+}
+.autocomplete-item:last-child { border-bottom: none; }
+.autocomplete-item:hover,
+.autocomplete-item.activo {
+    background: #e8f5f8;
+}
+.autocomplete-item img {
+    width: 38px;
+    height: 38px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+    border: 1px solid #ddd;
+}
+.autocomplete-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+.autocomplete-item-nombre {
+    font-weight: 700;
+    font-size: 0.95em;
+    color: #0c566c;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.autocomplete-item-detalle {
+    font-size: 0.8em;
+    color: #666;
+}
+.autocomplete-item-precio {
+    font-weight: 700;
+    color: #1a8a4a;
+    font-size: 0.9em;
+    flex-shrink: 0;
+}
+ 
+/* --- ESTILO GENERAL DE LA ETIQUETA MEJORADO --- */
+.pedido-estado {
+    display: inline-block;
+    font-size: 0.85em;
+    font-weight: 900;
+    padding: 5px 12px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.pedido-badge-mixto {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78em;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #0c566c 0%, #48a4aa 100%);
+    color: #fff;
+    letter-spacing: 0.4px;
+}
+
+/* --- COLORES VIBRANTES CON ALTO CONTRASTE --- */
+.estado-pendiente  { 
+    background: #ffc107; 
+    color: #423000;      
+}
+.estado-pagado     { 
+    background: #198754; 
+    color: #ffffff;      
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); 
+}
+.estado-despachado { 
+    background: #0dcaf0; 
+    color: #032b35;      
+}
+.estado-entregado  { 
+    background: #20c997; 
+    color: #00402e;      
+}
+.estado-cancelado  { 
+    background: #dc3545; 
+    color: #ffffff;      
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+#listaPedidosAdmin {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    #listaPedidosAdmin,
+    .online-pedidos-lista {
+        flex-direction: column;
+    }
+}
+
+.contenedor-botones-login {
+    margin-top: 0;
+}
+
+.btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #dadce0;
+    border-radius: 24px;
+    font-family: 'Google Sans', arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3);
+    transition: background-color 0.2s;
+}
+
+.pantalla-display-none {
+    display: none;
+}
+
+.preview-producto-imagen {
+    display: none;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    margin-top: 10px;
+    margin-bottom: 6px;
+    border-radius: 10px;
+    border: 2px solid #48a4aa;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    align-self: center;
+}
+
+.preview-producto-imagen[src]:not([src=""]) {
+    display: block;
+}
+
+.flex-gap-5 {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.input-codigo-barras {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.btn-historial-esquina-position {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+}
+
+.btn-borrar-todas-canceladas {
+    display: none;
+    margin-left: 10px;
+}
+
+.seccion-historial-online {
+    display: none;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: left;
+    margin-top: 20px;
+}
+
+.h3-historial-entregas {
+    color: #0c566c;
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.lista-entregas-hoy {
+    margin-bottom: 20px;
+}
+
+.lista-historial-entregas-acordeon {
+    max-height: 500px;
+}
+
+.tarjeta-ventas-hoy-independiente {
+    width: 90%;
+    max-width: 1200px;
+    margin: 30px auto 0 auto;
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    padding: 25px 30px;
+    text-align: left;
+}
+
+.ventas-hoy-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    padding-bottom: 10px;
+    margin-bottom: 0;
+    user-select: none;
+}
+
+.titulo-ventas-hoy-independiente {
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 1.6em;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.btn-toggle-ventas-hoy {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s ease, transform 0.3s ease;
+}
+
+.btn-toggle-ventas-hoy:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.toggle-icono {
+    color: #0b2aa8;
+    font-size: 0.85em;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.ventas-hoy-lista {
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease;
+    max-height: 65vh;   /* ocupa hasta 65% de la pantalla y luego hace scroll */
+    opacity: 1;
+    margin-top: 15px;
+    scroll-behavior: smooth;
+    /* barra de scroll personalizada */
+    scrollbar-width: thin;
+    scrollbar-color: #0c566c rgba(255,255,255,0.1);
+}
+
+.ventas-hoy-lista::-webkit-scrollbar {
+    width: 7px;
+}
+.ventas-hoy-lista::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+}
+.ventas-hoy-lista::-webkit-scrollbar-thumb {
+    background: #0c566c;
+    border-radius: 10px;
+}
+.ventas-hoy-lista::-webkit-scrollbar-thumb:hover {
+    background: #1a7b98;
+}
+
+/* Listas de historial pueden ser más largas */
+.lista-historial-acordeon-max-height,
+.lista-historial-entregas-acordeon,
+.lista-entregas-hoy {
+    max-height: 65vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #0c566c rgba(255,255,255,0.1);
+}
+
+.lista-historial-acordeon-max-height::-webkit-scrollbar,
+.lista-historial-entregas-acordeon::-webkit-scrollbar,
+.lista-entregas-hoy::-webkit-scrollbar {
+    width: 7px;
+}
+.lista-historial-acordeon-max-height::-webkit-scrollbar-track,
+.lista-historial-entregas-acordeon::-webkit-scrollbar-track,
+.lista-entregas-hoy::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+}
+.lista-historial-acordeon-max-height::-webkit-scrollbar-thumb,
+.lista-historial-entregas-acordeon::-webkit-scrollbar-thumb,
+.lista-entregas-hoy::-webkit-scrollbar-thumb {
+    background: #0c566c;
+    border-radius: 10px;
+}
+.lista-historial-acordeon-max-height::-webkit-scrollbar-thumb:hover,
+.lista-historial-entregas-acordeon::-webkit-scrollbar-thumb:hover,
+.lista-entregas-hoy::-webkit-scrollbar-thumb:hover {
+    background: #1a7b98;
+}
+
+.ventas-hoy-lista.oculto {
+    max-height: 0 !important;
+    opacity: 0;
+    margin-top: 0;
+}
+
+.ventas-hoy-header.cerrado .toggle-icono {
+    transform: rotate(-90deg);
+}
+
+#pantalla-historial-fisicas {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://image.slidesdocs.com/responsive-images/background/website-mobile-app-explore-the-world-of-virtual-shopping-with-digital-marketing-powerpoint-background_bb972eee09__960_540.jpg);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#pantalla-historial-fisicas h1 {
+    font-size: 80px;
+    color: #ffffff;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    margin-top: 20px;
+    margin-bottom: 25px;
+    font-family: 'Pacifico', cursive;
+    font-weight: bold;
+    font-style: italic;
+    line-height: 1.2;
+}
+
+#pantalla-historial-fisicas h2 {
+    color: #0b2aa8;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    font-size: 3em;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+#pantalla-historial-fisicas .inventory-header {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(204, 204, 204, 0.7);
+}
+
+#pantalla-historial-fisicas .inventory-summary-card {
+    background-color: transparent;
+    border: none;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    border-radius: 15px;
+}
+
+#pantalla-historial-fisicas .inventory-summary-card h2 {
+    color: #eee2e2;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+    font-size: 1.8em;
+}
+
+#pantalla-historial-fisicas .boton-volver {
+    background-color: rgba(243, 107, 80, 0.85);
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+#pantalla-historial-fisicas .boton-volver:hover {
+    background-color: #e12020;
+}
+.producto-codigo-small {
+    font-size: 0.8em;
+    color: #555;
+    margin: 2px 0;
+}
+

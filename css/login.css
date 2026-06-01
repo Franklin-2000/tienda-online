@@ -1,0 +1,221 @@
+﻿/* --- ESTILOS PARA LA PANTALLA DE LOGIN --- */
+#pantalla-login {
+  justify-content: center;
+  align-items: center;
+  background: 
+    linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.00)),
+    url(https://preview.redd.it/futuristic-city-at-dusk-4k-v0-0l8pcbaab7n51.jpg?auto=webp&s=cd5621e05c5bbe95fb4e97f685f7dedae0e41d87) 
+    center/cover no-repeat;
+}
+
+/* =====================================================
+   ANILLO LOGIN — 100% RESPONSIVO CON CSS CUSTOM PROPS
+   Usa --ring-size para escalar todo desde un solo valor
+   ===================================================== */
+.login-ring-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Tamaño adaptable: 85% del lado más pequeño del viewport, máx 700px */
+  --ring-size: min(85vmin, 700px);
+  width: var(--ring-size);
+  height: var(--ring-size);
+  /* Asegura que siempre quepa en pantalla */
+  max-width: 100vw;
+  max-height: 100vh;
+  flex-shrink: 0;
+}
+
+.animated-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.animated-ring .bar {
+  position: absolute;
+  /* Radio = 46.4% del tamaño del contenedor (igual que 325/700) */
+  top: calc(50% - var(--ring-size) * 0.464);
+  left: calc(50% - 6px);
+  /* Barras proporcionales al tamaño */
+  width: clamp(10px, calc(var(--ring-size) * 0.026), 20px);
+  height: clamp(28px, calc(var(--ring-size) * 0.071), 55px);
+  border-radius: 5px;
+  transform-origin: 6px calc(var(--ring-size) * 0.464);
+  background-color: #0d2233;
+  animation: barGlow 10s ease-in-out infinite;
+}
+
+.animated-ring .bar:nth-child(1)  { transform: rotate(0deg);   animation-delay: -10.0s; }
+.animated-ring .bar:nth-child(2)  { transform: rotate(6deg);   animation-delay: -9.9s; }
+.animated-ring .bar:nth-child(3)  { transform: rotate(12deg);  animation-delay: -9.8s; }
+.animated-ring .bar:nth-child(4)  { transform: rotate(18deg);  animation-delay: -9.7s; }
+.animated-ring .bar:nth-child(5)  { transform: rotate(24deg);  animation-delay: -9.6s; }
+.animated-ring .bar:nth-child(6)  { transform: rotate(30deg);  animation-delay: -9.5s; }
+.animated-ring .bar:nth-child(7)  { transform: rotate(36deg);  animation-delay: -9.4s; }
+.animated-ring .bar:nth-child(8)  { transform: rotate(42deg);  animation-delay: -9.3s; }
+.animated-ring .bar:nth-child(9)  { transform: rotate(48deg);  animation-delay: -9.2s; }
+.animated-ring .bar:nth-child(10) { transform: rotate(54deg);  animation-delay: -9.1s; }
+.animated-ring .bar:nth-child(11) { transform: rotate(60deg);  animation-delay: -9.0s; }
+.animated-ring .bar:nth-child(12) { transform: rotate(66deg);  animation-delay: -8.9s; }
+.animated-ring .bar:nth-child(13) { transform: rotate(72deg);  animation-delay: -8.8s; }
+.animated-ring .bar:nth-child(14) { transform: rotate(78deg);  animation-delay: -8.7s; }
+.animated-ring .bar:nth-child(15) { transform: rotate(84deg);  animation-delay: -8.6s; }
+.animated-ring .bar:nth-child(16) { transform: rotate(90deg);  animation-delay: -8.5s; }
+.animated-ring .bar:nth-child(17) { transform: rotate(96deg);  animation-delay: -8.4s; }
+.animated-ring .bar:nth-child(18) { transform: rotate(102deg); animation-delay: -8.3s; }
+.animated-ring .bar:nth-child(19) { transform: rotate(108deg); animation-delay: -8.2s; }
+.animated-ring .bar:nth-child(20) { transform: rotate(114deg); animation-delay: -8.1s; }
+.animated-ring .bar:nth-child(21) { transform: rotate(120deg); animation-delay: -8.0s; }
+.animated-ring .bar:nth-child(22) { transform: rotate(126deg); animation-delay: -7.9s; }
+.animated-ring .bar:nth-child(23) { transform: rotate(132deg); animation-delay: -7.8s; }
+.animated-ring .bar:nth-child(24) { transform: rotate(138deg); animation-delay: -7.7s; }
+.animated-ring .bar:nth-child(25) { transform: rotate(144deg); animation-delay: -7.6s; }
+.animated-ring .bar:nth-child(26) { transform: rotate(150deg); animation-delay: -7.5s; }
+.animated-ring .bar:nth-child(27) { transform: rotate(156deg); animation-delay: -7.4s; }
+.animated-ring .bar:nth-child(28) { transform: rotate(162deg); animation-delay: -7.3s; }
+.animated-ring .bar:nth-child(29) { transform: rotate(168deg); animation-delay: -7.2s; }
+.animated-ring .bar:nth-child(30) { transform: rotate(174deg); animation-delay: -7.1s; }
+.animated-ring .bar:nth-child(31) { transform: rotate(180deg); animation-delay: -7.0s; }
+.animated-ring .bar:nth-child(32) { transform: rotate(186deg); animation-delay: -6.9s; }
+.animated-ring .bar:nth-child(33) { transform: rotate(192deg); animation-delay: -6.8s; }
+.animated-ring .bar:nth-child(34) { transform: rotate(198deg); animation-delay: -6.7s; }
+.animated-ring .bar:nth-child(35) { transform: rotate(204deg); animation-delay: -6.6s; }
+.animated-ring .bar:nth-child(36) { transform: rotate(210deg); animation-delay: -6.5s; }
+.animated-ring .bar:nth-child(37) { transform: rotate(216deg); animation-delay: -6.4s; }
+.animated-ring .bar:nth-child(38) { transform: rotate(222deg); animation-delay: -6.3s; }
+.animated-ring .bar:nth-child(39) { transform: rotate(228deg); animation-delay: -6.2s; }
+.animated-ring .bar:nth-child(40) { transform: rotate(234deg); animation-delay: -6.1s; }
+.animated-ring .bar:nth-child(41) { transform: rotate(240deg); animation-delay: -6.0s; }
+.animated-ring .bar:nth-child(42) { transform: rotate(246deg); animation-delay: -5.9s; }
+.animated-ring .bar:nth-child(43) { transform: rotate(252deg); animation-delay: -5.8s; }
+.animated-ring .bar:nth-child(44) { transform: rotate(258deg); animation-delay: -5.7s; }
+.animated-ring .bar:nth-child(45) { transform: rotate(264deg); animation-delay: -5.6s; }
+.animated-ring .bar:nth-child(46) { transform: rotate(270deg); animation-delay: -5.5s; }
+.animated-ring .bar:nth-child(47) { transform: rotate(276deg); animation-delay: -5.4s; }
+.animated-ring .bar:nth-child(48) { transform: rotate(282deg); animation-delay: -5.3s; }
+.animated-ring .bar:nth-child(49) { transform: rotate(288deg); animation-delay: -5.2s; }
+.animated-ring .bar:nth-child(50) { transform: rotate(294deg); animation-delay: -5.1s; }
+.animated-ring .bar:nth-child(51) { transform: rotate(300deg); animation-delay: -5.0s; }
+.animated-ring .bar:nth-child(52) { transform: rotate(306deg); animation-delay: -4.9s; }
+.animated-ring .bar:nth-child(53) { transform: rotate(312deg); animation-delay: -4.8s; }
+.animated-ring .bar:nth-child(54) { transform: rotate(318deg); animation-delay: -4.7s; }
+.animated-ring .bar:nth-child(55) { transform: rotate(324deg); animation-delay: -4.6s; }
+.animated-ring .bar:nth-child(56) { transform: rotate(330deg); animation-delay: -4.5s; }
+.animated-ring .bar:nth-child(57) { transform: rotate(336deg); animation-delay: -4.4s; }
+.animated-ring .bar:nth-child(58) { transform: rotate(342deg); animation-delay: -4.3s; }
+.animated-ring .bar:nth-child(59) { transform: rotate(348deg); animation-delay: -4.2s; }
+.animated-ring .bar:nth-child(60) { transform: rotate(354deg); animation-delay: -4.1s; }
+
+@keyframes barGlow {
+  0%   { background-color: #0d2233; box-shadow: none; }
+  25%  { background-color: #00e5ff; box-shadow: 0 0 12px #00e5ff, 0 0 28px #00bcd4; }
+  50%  { background-color: #0d2233; box-shadow: none; }
+  75%  { background-color: #00e5ff; box-shadow: 0 0 12px #00e5ff, 0 0 28px #00bcd4; }
+  100% { background-color: #0d2233; box-shadow: none; }
+}
+
+.login-card {
+  position: relative;
+  z-index: 10;
+  /* La tarjeta ocupa ~55% del anillo (proporcional) */
+  width: clamp(180px, calc(var(--ring-size, min(85vmin, 700px)) * 0.52), 360px);
+  min-height: clamp(170px, calc(var(--ring-size, min(85vmin, 700px)) * 0.38), 280px);
+  padding: clamp(14px, 3vw, 24px) clamp(14px, 4vw, 35px) clamp(22px, 4vw, 38px);
+  border-radius: 16px;
+  box-shadow: 0 0 40px rgba(0, 229, 255, 0.15), 0 4px 30px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 12px;
+  text-align: center;
+  animation: slideIn 0.5s ease;
+  background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.00)),
+    url(https://w0.peakpx.com/wallpaper/1011/312/HD-wallpaper-welcome-card-word-blue-black.jpg) 
+    center/cover no-repeat;
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  color: #fbfafc;
+  box-sizing: border-box;
+}
+
+.login-card h1 {
+  display: none;
+}
+
+.login-card input {
+  padding: 12px 15px;
+  border: 1px solid #f8f9f9;
+  border-radius: 5px;
+  font-size: 1em;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.login-card input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+
+.btn-auth {
+  background-color: #051a31;
+  color: rgb(253, 250, 250);
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: bold;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-auth:hover {
+  background-color: #1b528d;
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.1);
+}
+
+.btn-auth:active {
+  transform: translateY(2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  filter: brightness(0.95);
+}
+
+.auth-message {
+  margin-top: 15px;
+  font-size: 0.9em;
+  color: #dc3545;
+  animation: fadeIn 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.auth-message.success {
+    color: #28a745;
+}
+
+.auth-message.error {
+    color: #dc3545;
+}
+
+#btnLogout {
+    background: transparent;
+    color: #ff4757;
+    border: none;
+    box-shadow: none;
+}
+
+#pantalla-registro {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);
+}
+

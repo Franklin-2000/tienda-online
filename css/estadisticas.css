@@ -1,0 +1,453 @@
+﻿/* ============================================================
+   PANTALLA ESTADÍSTICAS — Rediseño limpio y profesional
+   ============================================================ */
+#pantalla-estadisticas {
+  background: #080f1a;
+  padding: 0;
+  color: #e2eaf5;
+}
+
+/* Estadísticas Online — mismo fondo y tipografía que físicas */
+#pantalla-estadisticas-online {
+  background: #080f1a;
+  padding: 0;
+  color: #e2eaf5;
+}
+
+/* Botones de período para la pantalla online (mismos estilos que .btn-period) */
+.btn-period-online {
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(122,228,214,0.18);
+  background: rgba(122,228,214,0.05);
+  color: #ffffff;
+  font-size: 0.95em;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+}
+.btn-period-online:hover {
+  background: rgba(122,228,214,0.12);
+  border-color: rgba(122,228,214,0.45);
+  color: #e0f7f4;
+}
+.btn-period-online.activo {
+  background: rgba(122,228,214,0.15);
+  border-color: #7ae4d6;
+  color: #7ae4d6;
+  box-shadow: 0 0 12px rgba(122,228,214,0.18);
+}
+
+/* — Header — */
+.stats-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 32px 36px 24px 36px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  background: linear-gradient(180deg, rgba(10,22,45,0.95) 0%, transparent 100%);
+}
+
+/* Variante centrada para ambos apartados de estadísticas */
+.stats-header-centrado {
+  position: relative !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  gap: 10px !important;
+  padding-top: 28px !important;
+}
+.stats-header-centrado .stats-header-left {
+  align-items: center !important;
+  width: 100% !important;
+}
+.stats-header-centrado .stats-title {
+  font-size: 70px !important;
+  text-align: center !important;
+}
+.stats-header-centrado .stats-subtitle {
+  font-size: 1.25em !important;
+  text-align: center !important;
+}
+/* Selector posicionado en esquina superior izquierda */
+.stats-header-centrado .stats-period-selector {
+  position: absolute !important;
+  top: 28px !important;
+  left: 36px !important;
+  justify-content: flex-start !important;
+}
+
+.stats-header-left { display: flex; flex-direction: column; gap: 3px; }
+
+.stats-title {
+  font-family: 'Pacifico', cursive;
+  font-size: 70px !important;
+  color: #7ae4d6 !important;
+  text-shadow: 0 0 30px rgba(122,228,214,0.3) !important;
+  margin: 0 !important;
+  text-align: left !important;
+  line-height: 1 !important;
+}
+
+.stats-subtitle {
+  font-size: 1.05em;
+  color: rgba(255,255,255,0.80);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+/* — Selector de período — */
+.stats-period-selector {
+  display: flex;
+  gap: 6px;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.btn-period {
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(122,228,214,0.18);
+  background: rgba(122,228,214,0.05);
+  color: #ffffff;
+  font-size: 0.95em;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+}
+
+.btn-period:hover {
+  background: rgba(122,228,214,0.12);
+  border-color: rgba(122,228,214,0.45);
+  color: #e0f7f4;
+}
+
+.btn-period.activo {
+  background: rgba(122,228,214,0.15);
+  border-color: #7ae4d6;
+  color: #7ae4d6;
+  font-weight: 700;
+}
+
+/* — KPI Cards — */
+.stats-kpi-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 16px;
+  padding: 24px 36px;
+}
+
+.stats-kpi-card {
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 22px 26px 18px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.stats-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(122,228,214,0.6), rgba(122,228,214,0.1));
+  border-radius: 14px 14px 0 0;
+}
+
+.stats-kpi-card:hover {
+  border-color: rgba(122,228,214,0.25);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+}
+
+.stats-kpi-primary {
+  background: rgba(122,228,214,0.06);
+  border-color: rgba(122,228,214,0.2);
+}
+
+.stats-kpi-primary::before {
+  background: linear-gradient(90deg, #7ae4d6, rgba(122,228,214,0.2));
+}
+
+.kpi-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.kpi-label {
+  font-size: 1.15em;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 700;
+}
+
+.kpi-trend {
+  font-size: 0.92em;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.06);
+  color: #ffffff;
+}
+
+.kpi-trend.positivo {
+  background: rgba(52,211,153,0.12);
+  color: #34d399;
+}
+
+.kpi-trend.negativo {
+  background: rgba(248,113,113,0.12);
+  color: #f87171;
+}
+
+.kpi-value {
+  font-size: 2.2em;
+  font-weight: 800;
+  color: #e2eaf5;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.stats-kpi-primary .kpi-value {
+  font-size: 2.7em;
+  color: #7ae4d6;
+}
+
+.kpi-compare {
+  font-size: 0.92em;
+  color: rgba(255,255,255,0.75);
+  margin-top: 4px;
+}
+
+/* — Grid de gráficos — */
+.stats-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 0 36px 24px 36px;
+}
+
+.stats-chart-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 22px 24px 20px 24px;
+  transition: border-color 0.2s;
+}
+
+.stats-chart-card:hover {
+  border-color: rgba(122,228,214,0.18);
+}
+
+.stats-chart-wide {
+  grid-column: 1 / -1;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.chart-title {
+  font-size: 1.05em;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.chart-badge {
+  font-size: 0.94em;
+  padding: 4px 14px;
+  border-radius: 20px;
+  background: rgba(122,228,214,0.08);
+  border: 1px solid rgba(122,228,214,0.18);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 260px;
+}
+
+.chart-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* — Tabla de productos — */
+.stats-tabla-section {
+  margin: 0 36px 36px 36px;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.025);
+}
+
+.stats-tabla-titulo {
+  font-size: 1.05em;
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+}
+
+.stats-tabla-wrap {
+  overflow-x: auto;
+}
+
+.stats-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.05em;
+}
+
+.stats-tabla thead th {
+  padding: 13px 20px;
+  text-align: left;
+  font-size: 0.92em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  white-space: nowrap;
+}
+
+.stats-tabla thead th:first-child { width: 40px; text-align: center; }
+.stats-tabla thead th:nth-child(3),
+.stats-tabla thead th:nth-child(4),
+.stats-tabla thead th:nth-child(5) { text-align: right; }
+
+.stats-tabla tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.15s;
+}
+
+.stats-tabla tbody tr:last-child { border-bottom: none; }
+
+.stats-tabla tbody tr:hover {
+  background: rgba(122,228,214,0.04);
+}
+
+.stats-tabla tbody td {
+  padding: 14px 20px;
+  color: #ffffff;
+  vertical-align: middle;
+}
+
+.stats-tabla tbody td:first-child {
+  text-align: center;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.95em;
+  font-weight: 700;
+}
+
+.stats-tabla tbody td:nth-child(3),
+.stats-tabla tbody td:nth-child(4),
+.stats-tabla tbody td:nth-child(5) { text-align: right; }
+
+.stats-tabla tbody td:nth-child(4) {
+  font-weight: 700;
+  color: #7ae4d6;
+  font-size: 1.05em;
+}
+
+/* Barra de porcentaje dentro de la celda */
+.stats-pct-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.stats-pct-num {
+  font-size: 1.05em;
+  font-weight: 800;
+  color: #7ae4d6;
+  min-width: 42px;
+  text-align: right;
+  letter-spacing: 0.02em;
+}
+
+.stats-pct-track {
+  width: 130px;
+  height: 12px;
+  background: rgba(255,255,255,0.10);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.stats-pct-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7ae4d6, rgba(122,228,214,0.55));
+  border-radius: 8px;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 0 8px rgba(122,228,214,0.4);
+}
+
+.stats-tabla-empty {
+  text-align: center !important;
+  color: rgba(160,200,210,0.25) !important;
+  font-size: 0.85em;
+  padding: 28px !important;
+}
+
+/* — Botón volver — */
+#btnVolverDesdeEstadisticas {
+  display: none; /* botón volver oculto — el sidebar ya hace esa función */
+}
+
+/* — Responsive — */
+@media (max-width: 900px) {
+  .stats-kpi-row {
+    grid-template-columns: 1fr 1fr;
+    padding: 16px;
+    gap: 10px;
+  }
+  .stats-charts-grid {
+    grid-template-columns: 1fr;
+    padding: 0 16px 16px 16px;
+    gap: 12px;
+  }
+  .stats-chart-wide { grid-column: 1; }
+  .stats-header { padding: 20px 16px 16px 16px; }
+  .stats-title { font-size: 30px !important; }
+  .stats-tabla-section { margin: 0 16px 24px 16px; }
+}
+
+@media (max-width: 600px) {
+  .stats-kpi-row { grid-template-columns: 1fr 1fr; }
+  .stats-kpi-primary { grid-column: 1 / -1; }
+  .kpi-value { font-size: 1.6em; }
+  .stats-kpi-primary .kpi-value { font-size: 2em; }
+  .stats-header { flex-direction: column; align-items: flex-start; }
+  .stats-period-selector { width: 100%; }
+  .btn-period { flex: 1; text-align: center; }
+  .btn-period-online { flex: 1; text-align: center; }
+}
+
