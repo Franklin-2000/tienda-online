@@ -198,7 +198,7 @@ export async function saveCombo(combo) {
     if (err1) throw err1;
 
     if (combo.productos && combo.productos.length > 0) {
-        const prods = combo.productos.map(p => ({ combo_id: comboInsertado.id, producto_id: p.id, nombre: p.nombre, precio: p.precio, cantidad: p.cantidad || 1 }));
+        const prods = combo.productos.map(p => ({ combo_id: comboInsertado.id, product_id: String(p.id), nombre: p.nombre, precio: p.precio, cantidad: p.cantidad || 1 }));
         const { error: err2 } = await supabaseClient.from('combo_productos').insert(prods);
         if (err2) throw err2;
     }
@@ -220,7 +220,7 @@ export async function cargarPedidosAdmin() {
         .select(`
             id, estado, total, metodo_pago, fecha, fecha_confirmacion,
             cliente_nombre, cliente_email, cliente_tel, direccion, notas,
-            items_pedido(id, producto_id, combo_id, nombre, cantidad, precio, subtotal)
+            items_pedido(id, product_id, combo_id, nombre, cantidad, precio, subtotal)
         `)
         .order('id', { ascending: false });
 
