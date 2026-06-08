@@ -136,11 +136,14 @@
 .modal-pago-card {
     background: #0d1e2e;
     border: 1px solid #1e3a50;
-    border-radius: 16px;
-    padding: 28px 30px 30px;
-    width: min(500px, 94vw);
+    border-radius: 20px;
+    padding: 36px 38px 32px;
+    width: min(640px, 96vw);
     box-shadow: 0 24px 64px rgba(0,0,0,0.55);
     animation: mpSlideUp 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 @keyframes mpSlideUp {
@@ -153,51 +156,39 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 14px;
-    margin-bottom: 22px;
 }
 
-.modal-pago-info { display: flex; flex-direction: column; gap: 4px; }
+.modal-pago-info { display: flex; flex-direction: column; gap: 6px; }
 
 .modal-pago-titulo {
     margin: 0;
-    font-size: 1.2em;
+    font-size: 2.2em;
     font-weight: 700;
-    color: #d0e8f0;
+    color: #ffffff;
 }
 
 .modal-pago-total-label {
-    font-size: 0.98em;
-    color: #8ab4c8;
+    font-size: 1.8em;
+    color: #a8d4e0;
 }
 
 .modal-pago-total-label strong {
-    color: #48a4aa;
+    color: #5ecfda;
     font-size: 1.1em;
-}
-
-.modal-pago-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
-}
-
-.modal-btn-registrar {
-    padding: 10px 18px !important;
-    font-size: 0.9em !important;
-    white-space: nowrap;
+    font-weight: 800;
 }
 
 .modal-pago-close {
     background: none;
     border: none;
     color: #6a9aaa;
-    font-size: 1.25em;
+    font-size: 2em;
     cursor: pointer;
-    padding: 6px 9px;
+    padding: 4px 10px;
     border-radius: 8px;
     line-height: 1;
     transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
 }
 
 .modal-pago-close:hover {
@@ -205,14 +196,14 @@
     background: rgba(255,255,255,0.1);
 }
 
-.modal-pago-body { display: flex; flex-direction: column; gap: 12px; }
+.modal-pago-body { display: flex; flex-direction: column; gap: 14px; }
 
 .modal-pago-label {
-    font-size: 0.82em;
+    font-size: 1.5em;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: #8ab4c8;
+    color: #a8d4e0;
 }
 
 .modal-pago-input-row {
@@ -220,7 +211,7 @@
     align-items: center;
     background: #0f2133;
     border: 2px solid #1e3a50;
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
     transition: border-color 0.15s;
 }
@@ -228,8 +219,8 @@
 .modal-pago-input-row:focus-within { border-color: #48a4aa; }
 
 .modal-pago-currency {
-    padding: 0 14px;
-    font-size: 1.6em;
+    padding: 0 18px;
+    font-size: 3em;
     font-weight: 700;
     color: #48a4aa;
     user-select: none;
@@ -240,10 +231,10 @@
     background: none;
     border: none;
     outline: none;
-    font-size: 2.2em;
+    font-size: 3.6em;
     font-weight: 700;
     color: #fff;
-    padding: 14px 14px 14px 0;
+    padding: 16px 16px 16px 0;
     font-family: inherit;
     width: 0;
 }
@@ -256,9 +247,9 @@
 .modal-pago-input { -moz-appearance: textfield; appearance: textfield; }
 
 .modal-pago-cambio-display {
-    min-height: 62px;
-    border-radius: 10px;
-    padding: 0 16px;
+    min-height: 80px;
+    border-radius: 12px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
     transition: background 0.2s, border 0.2s;
@@ -277,25 +268,38 @@
 .cambio-info { display: flex; flex-direction: column; gap: 2px; }
 
 .cambio-etiqueta {
-    font-size: 0.78em;
+    font-size: 1.5em;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
-.cambio-ok-wrap .cambio-etiqueta   { color: #4ade80; }
+.cambio-ok-wrap .cambio-etiqueta    { color: #4ade80; }
 .cambio-insuf-wrap .cambio-etiqueta { color: #f87171; }
 
 .cambio-valor {
-    font-size: 2em;
+    font-size: 3.6em;
     font-weight: 900;
     color: #4ade80;
+    line-height: 1.1;
 }
 
 .cambio-falta {
-    font-size: 0.88em;
+    font-size: 1.6em;
     color: #f87171;
-    opacity: 0.85;
+    opacity: 0.9;
+}
+
+.modal-pago-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 4px;
+}
+
+.modal-btn-registrar {
+    padding: 16px 32px !important;
+    font-size: 1.15em !important;
+    white-space: nowrap;
 }
 
 @media (max-width: 900px) {

@@ -400,10 +400,7 @@ function abrirModalPago() {
                     <h3 class="modal-pago-titulo">Pago en Efectivo</h3>
                     <span class="modal-pago-total-label">Total: <strong>$${total.toLocaleString('es-CO')}</strong></span>
                 </div>
-                <div class="modal-pago-actions">
-                    <button id="btnConfirmarRegistrarVenta" class="btn-añadir modal-btn-registrar" disabled>${ICO_REGISTRAR}</button>
-                    <button class="modal-pago-close" id="btnCerrarModalPago" title="Cerrar (Esc)">✕</button>
-                </div>
+                <button class="modal-pago-close" id="btnCerrarModalPago" title="Cerrar (Esc)">✕</button>
             </div>
             <div class="modal-pago-body">
                 <label class="modal-pago-label">Efectivo recibido del cliente</label>
@@ -413,6 +410,9 @@ function abrirModalPago() {
                            placeholder="0" min="0" step="1000" inputmode="numeric">
                 </div>
                 <div id="modalPagoCambio" class="modal-pago-cambio-display"></div>
+            </div>
+            <div class="modal-pago-footer">
+                <button id="btnConfirmarRegistrarVenta" class="btn-añadir modal-btn-registrar" disabled>${ICO_REGISTRAR}</button>
             </div>
         </div>`;
     document.body.appendChild(overlay);

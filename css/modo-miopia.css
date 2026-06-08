@@ -1001,18 +1001,19 @@ body.modo-miopia #pantalla-ventas-fisicas .pos-sel-cancel:hover {
 /* ── Modal de Pago — overrides modo claro ── */
 body.modo-miopia .modal-pago-card {
   background: #ffffff;
-  border-color: #d8e3ea;
+  border-color: #c0d4de;
   box-shadow: 0 20px 60px rgba(0,0,0,0.18);
 }
-body.modo-miopia .modal-pago-titulo  { color: #1a3a4a; }
-body.modo-miopia .modal-pago-total-label { color: #5a7a8a; }
-body.modo-miopia .modal-pago-label   { color: #5a7a8a; }
+body.modo-miopia .modal-pago-titulo      { color: #0a2a38; }
+body.modo-miopia .modal-pago-total-label { color: #1a3a4a; font-weight: 600; }
+body.modo-miopia .modal-pago-total-label strong { color: #0c566c; }
+body.modo-miopia .modal-pago-label       { color: #1a3a4a; }
 body.modo-miopia .modal-pago-input-row {
-  background: #f4f8fa;
-  border-color: #c8d8e0;
+  background: #f0f6f9;
+  border-color: #b0c8d4;
 }
-body.modo-miopia .modal-pago-input   { color: #1a3a4a; }
-body.modo-miopia .modal-pago-input::placeholder { color: #c8d8e0; }
-body.modo-miopia .modal-pago-currency { color: #0c566c; }
-body.modo-miopia .modal-pago-close   { color: #5a7a8a; }
-body.modo-miopia .modal-pago-close:hover { color: #1a3a4a; background: rgba(0,0,0,0.06); }
+body.modo-miopia .modal-pago-input         { color: #0a2a38; }
+body.modo-miopia .modal-pago-input::placeholder { color: #b0c8d4; }
+body.modo-miopia .modal-pago-currency      { color: #0c566c; }
+body.modo-miopia .modal-pago-close         { color: #3a6a7a; }
+body.modo-miopia .modal-pago-close:hover   { color: #0a2a38; background: rgba(0,0,0,0.06); }
