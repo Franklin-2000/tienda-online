@@ -17,6 +17,17 @@ function escHtml(str) {
 // ── Tickets anti-duplicado ────────────────────────────────────
 const _ticketsPedidosConfirmados = new Set();
 
+// ── Badge de pedidos sin confirmar en el sidebar ─────────────
+export function actualizarBadgePedidos() {
+    const badge = document.getElementById('badgePedidosOnline');
+    if (!badge) return;
+    const count = state.pedidosAdmin.filter(p =>
+        ['pendiente', 'esperando_pago', 'pago_confirmado'].includes(p.estado)
+    ).length;
+    badge.textContent = count > 99 ? '99+' : String(count);
+    badge.style.display = count > 0 ? 'flex' : 'none';
+}
+
 // ── Resumen ──────────────────────────────────────────────────
 export function renderResumenAdmin() {
     const el = document.getElementById('resumenPedidosAdmin');
@@ -32,6 +43,7 @@ export function renderResumenAdmin() {
         <div class="tarjeta-resumen-online amarilla"><strong>Por atender</strong><span class="num">${c.pendiente + c.esperando_pago}</span><small>$${totalPorCobrar.toLocaleString('es-CO')} por cobrar</small></div>
         <div class="tarjeta-resumen-online verde"><strong>Confirmados + Entregados</strong><span class="num">${c.pago_confirmado + c.despachado + c.entregado}</span><small>$${totalCobrado.toLocaleString('es-CO')} cobrado</small></div>
         <div class="tarjeta-resumen-online roja"><strong>Fallidos / Cancelados</strong><span class="num">${c.pago_fallido + c.cancelado}</span></div>`;
+    actualizarBadgePedidos();
 }
 
 // ── Lista de pedidos ─────────────────────────────────────────
@@ -328,6 +340,25 @@ export async function initVentasOnline() {
         });
     });
 
-    state.onCargarPedidosAdmin   = async () => { await cargarPedidosAdmin(); renderResumenAdmin(); renderPedidosAdmin(state.filtroEstadoAdmin); };
+    state.onCargarPedidosAdmin    = async () => { await cargarPedidosAdmin(); renderResumenAdmin(); renderPedidosAdmin(state.filtroEstadoAdmin); };
     state.onRenderHistorialOnline = renderHistorialOnline;
+    state.onPedidosCargados       = actualizarBadgePedidos;
+
+    // Suscripción en tiempo real: actualiza el badge y la lista cuando llega un pedido nuevo
+    let _debounceRealtime = null;
+    supabaseClient
+        .channel('pedidos-realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => {
+            clearTimeout(_debounceRealtime);
+            _debounceRealtime = setTimeout(async () => {
+                await cargarPedidosAdmin();
+                actualizarBadgePedidos();
+                const pantallaActiva = document.getElementById('pantalla-ventas-online');
+                if (pantallaActiva?.classList.contains('activa')) {
+                    renderResumenAdmin();
+                    renderPedidosAdmin(state.filtroEstadoAdmin);
+                }
+            }, 600);
+        })
+        .subscribe();
 }

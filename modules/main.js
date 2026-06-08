@@ -8,7 +8,7 @@ import { checkAuthStatus, initAuth } from './auth.js';
 import { showScreen } from './navegacion.js';
 import { initInventario, renderProducts, updateProductCount } from './inventario.js';
 import { initVentasFisicas, updateSalesDropdown } from './ventas-fisicas.js';
-import { initVentasOnline, renderResumenAdmin, renderPedidosAdmin } from './ventas-online.js';
+import { initVentasOnline, renderResumenAdmin, renderPedidosAdmin, actualizarBadgePedidos } from './ventas-online.js';
 import { initCombos, renderTarjetasCombos, renderHistorialCombos } from './combos.js';
 import { initEstadisticas, initEstadisticasOnline } from './estadisticas.js';
 import { initOffline } from './offline.js';

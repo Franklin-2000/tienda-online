@@ -58,4 +58,5 @@ export const state = {
     onGuardarVentaOffline:    null,  // offline.js → guardarVentaOffline
     onRenderProducts:         null,  // inventario.js → renderProducts
     onUpdateProductCount:     null,  // inventario.js → updateProductCount
+    onPedidosCargados:        null,  // ventas-online.js → actualizarBadgePedidos
 };

@@ -5,7 +5,7 @@ import { supabaseClient } from './config.js';
 import { state } from './state.js';
 import { mostrarAlerta } from './alertas.js';
 import { showScreen } from './navegacion.js';
-import { loadInventory, loadSales, loadCombos } from './db.js';
+import { loadInventory, loadSales, loadCombos, cargarPedidosAdmin } from './db.js';
 
 /**
  * Verifica la sesión activa y navega a la pantalla correcta.
@@ -33,7 +33,8 @@ export async function checkAuthStatus(pushToHistory = true) {
             try { history.replaceState({ screen: 'pantalla-inicio' }, '', '#pantalla-inicio'); } catch (e) {}
         }
         showScreen('pantalla-inicio', false);
-        await Promise.all([loadInventory(), loadSales(), loadCombos()]);
+        await Promise.all([loadInventory(), loadSales(), loadCombos(), cargarPedidosAdmin()]);
+        if (state.onPedidosCargados) state.onPedidosCargados();
     } else {
         state.currentLoggedInUserEmail = null;
         state.currentUserId            = null;
