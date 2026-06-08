@@ -946,6 +946,7 @@ body:not(.modo-miopia) .pos-ticket-row .ptc-desc { color: #d0e8f0; }
 body:not(.modo-miopia) .pos-ticket-row .ptc-qty { color: #d0e8f0; }
 body:not(.modo-miopia) .pos-footer-bar { background: #0d1e2e; border-top-color: #1e3a50; }
 body:not(.modo-miopia) .pos-total-label { color: #6a9aaa; }
+body:not(.modo-miopia) .pos-total-amount { color: #ffffff; }
 
 /* Modo claro: botones btn-añadir en hover — texto oscuro sobre fondo celeste claro */
 body.modo-miopia #pantalla-ventas-fisicas .btn-añadir:hover,
