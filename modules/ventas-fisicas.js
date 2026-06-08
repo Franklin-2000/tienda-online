@@ -120,7 +120,7 @@ export function seleccionarProductoVenta(productId) {
         document.getElementById('btnEliminarSeleccion')?.addEventListener('click', limpiarProductoSeleccionado);
     }
     const inputCant = document.getElementById('inputCantidadVenta');
-    if (inputCant) { inputCant.value = '1'; inputCant.focus(); }
+    if (inputCant) { inputCant.value = '1'; inputCant.focus(); inputCant.select(); }
 }
 
 function limpiarProductoSeleccionado() {
