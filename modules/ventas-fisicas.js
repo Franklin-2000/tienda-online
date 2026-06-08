@@ -381,11 +381,18 @@ function inicializarAutocomplete() {
 // ── Modal de pago en efectivo ────────────────────────────────
 function cerrarModalPago() {
     document.getElementById('modalPagoOverlay')?.remove();
-    document.removeEventListener('keydown', _escapeModalPago);
+    document.removeEventListener('keydown', _trapModalKeys, true);
 }
 
-function _escapeModalPago(e) {
-    if (e.key === 'Escape') cerrarModalPago();
+// Bloquea TODOS los atajos de teclado mientras el modal está abierto.
+// Se registra en fase de captura (antes que cualquier otro listener).
+// Solo permite: Escape (cerrar) y teclas dentro del propio modal.
+function _trapModalKeys(e) {
+    const modal = document.getElementById('modalPagoOverlay');
+    if (!modal) { document.removeEventListener('keydown', _trapModalKeys, true); return; }
+    if (modal.contains(e.target)) return;   // tecla dentro del modal → pasar
+    if (e.key === 'Escape') { cerrarModalPago(); return; }
+    e.stopImmediatePropagation();           // bloquear todo lo demás
 }
 
 function abrirModalPago() {
@@ -447,7 +454,7 @@ function abrirModalPago() {
     inputEfectivo?.addEventListener('keydown', e => {
         if (e.key === 'Enter' && !btnConfirmar.disabled) btnConfirmar.click();
     });
-    document.addEventListener('keydown', _escapeModalPago);
+    document.addEventListener('keydown', _trapModalKeys, true);
 }
 
 async function _ejecutarRegistroVenta(btnConfirmar) {
@@ -546,9 +553,12 @@ export function initVentasFisicas() {
         });
     }
 
-    // Shift → Ir a Pagar (abre modal de pago, solo en pantalla ventas físicas)
+    // Shift → Ir a Pagar (abre modal; no actúa si el modal ya está abierto)
     document.addEventListener('keydown', e => {
-        if (e.key === 'Shift' && !e.repeat && pantallaVentasFisicas?.classList.contains('activa') && btnRegistrarVenta && !btnRegistrarVenta.disabled) {
+        if (e.key === 'Shift' && !e.repeat
+            && pantallaVentasFisicas?.classList.contains('activa')
+            && btnRegistrarVenta && !btnRegistrarVenta.disabled
+            && !document.getElementById('modalPagoOverlay')) {
             btnRegistrarVenta.click();
         }
     });
