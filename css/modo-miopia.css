@@ -957,15 +957,17 @@ body.modo-miopia #pantalla-historial-online .btn-añadir:hover * {
   color: #0c566c !important;
 }
 
-/* Modo claro: botón Quitar con texto e icono rojos bien visibles */
+/* Modo claro: botón Quitar con texto e icono rojos bien visibles
+   Necesita !important para ganar sobre la regla global
+   body.modo-miopia #pantalla-ventas-fisicas button { color:#fff !important } */
 body.modo-miopia .pos-sel-cancel {
-  color: #cc0000;
-  border-color: #cc0000;
-  background: rgba(204, 0, 0, 0.06);
+  color: #cc0000 !important;
+  border-color: #cc0000 !important;
+  background: rgba(204, 0, 0, 0.06) !important;
 }
 body.modo-miopia .pos-sel-cancel:hover {
-  background: #cc0000;
-  color: #fff;
+  background: #cc0000 !important;
+  color: #fff !important;
   box-shadow: 0 2px 8px rgba(204, 0, 0, 0.35);
 }
 
