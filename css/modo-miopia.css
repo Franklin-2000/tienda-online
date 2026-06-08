@@ -997,3 +997,22 @@ body.modo-miopia #pantalla-ventas-fisicas .pos-sel-cancel:hover {
 }
 /* Iconos SVG inline en texto */
 .icon-inline { vertical-align: middle; }
+
+/* ── Modal de Pago — overrides modo claro ── */
+body.modo-miopia .modal-pago-card {
+  background: #ffffff;
+  border-color: #d8e3ea;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+}
+body.modo-miopia .modal-pago-titulo  { color: #1a3a4a; }
+body.modo-miopia .modal-pago-total-label { color: #5a7a8a; }
+body.modo-miopia .modal-pago-label   { color: #5a7a8a; }
+body.modo-miopia .modal-pago-input-row {
+  background: #f4f8fa;
+  border-color: #c8d8e0;
+}
+body.modo-miopia .modal-pago-input   { color: #1a3a4a; }
+body.modo-miopia .modal-pago-input::placeholder { color: #c8d8e0; }
+body.modo-miopia .modal-pago-currency { color: #0c566c; }
+body.modo-miopia .modal-pago-close   { color: #5a7a8a; }
+body.modo-miopia .modal-pago-close:hover { color: #1a3a4a; background: rgba(0,0,0,0.06); }

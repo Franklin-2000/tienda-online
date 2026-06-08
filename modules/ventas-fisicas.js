@@ -21,7 +21,8 @@ const btnRegistrarVenta       = document.getElementById('btnRegistrarVenta');
 const btnVerHistorial         = document.getElementById('btnVerHistorial');
 const btnEscanearVenta        = document.getElementById('btnEscanearVenta');
 
-const ICO_REGISTRAR = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Registrar Venta`;
+const ICO_REGISTRAR   = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Registrar Venta`;
+const ICO_IR_A_PAGAR  = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Ir a Pagar`;
 
 // ── Persistencia del carrito en localStorage ─────────────────
 const CART_DRAFT_KEY = 'softven_cart_draft';
@@ -377,6 +378,127 @@ function inicializarAutocomplete() {
     });
 }
 
+// ── Modal de pago en efectivo ────────────────────────────────
+function cerrarModalPago() {
+    document.getElementById('modalPagoOverlay')?.remove();
+    document.removeEventListener('keydown', _escapeModalPago);
+}
+
+function _escapeModalPago(e) {
+    if (e.key === 'Escape') cerrarModalPago();
+}
+
+function abrirModalPago() {
+    const total = state.currentCart.reduce((s, i) => s + i.qty * i.price, 0);
+    const overlay = document.createElement('div');
+    overlay.id = 'modalPagoOverlay';
+    overlay.className = 'modal-pago-overlay';
+    overlay.innerHTML = `
+        <div class="modal-pago-card">
+            <div class="modal-pago-header">
+                <div class="modal-pago-info">
+                    <h3 class="modal-pago-titulo">Pago en Efectivo</h3>
+                    <span class="modal-pago-total-label">Total: <strong>$${total.toLocaleString('es-CO')}</strong></span>
+                </div>
+                <div class="modal-pago-actions">
+                    <button id="btnConfirmarRegistrarVenta" class="btn-añadir modal-btn-registrar" disabled>${ICO_REGISTRAR}</button>
+                    <button class="modal-pago-close" id="btnCerrarModalPago" title="Cerrar (Esc)">✕</button>
+                </div>
+            </div>
+            <div class="modal-pago-body">
+                <label class="modal-pago-label">Efectivo recibido del cliente</label>
+                <div class="modal-pago-input-row">
+                    <span class="modal-pago-currency">$</span>
+                    <input type="number" id="inputEfectivoCliente" class="modal-pago-input"
+                           placeholder="0" min="0" step="1000" inputmode="numeric">
+                </div>
+                <div id="modalPagoCambio" class="modal-pago-cambio-display"></div>
+            </div>
+        </div>`;
+    document.body.appendChild(overlay);
+
+    const inputEfectivo = document.getElementById('inputEfectivoCliente');
+    const cambioEl      = document.getElementById('modalPagoCambio');
+    const btnConfirmar  = document.getElementById('btnConfirmarRegistrarVenta');
+
+    setTimeout(() => inputEfectivo?.focus(), 60);
+
+    inputEfectivo?.addEventListener('input', () => {
+        const efectivo = parseFloat(inputEfectivo.value) || 0;
+        if (efectivo >= total) {
+            const cambio = efectivo - total;
+            cambioEl.className = 'modal-pago-cambio-display cambio-ok-wrap';
+            cambioEl.innerHTML = `<div class="cambio-info"><span class="cambio-etiqueta">Cambio a devolver</span><strong class="cambio-valor">$${cambio.toLocaleString('es-CO')}</strong></div>`;
+            btnConfirmar.disabled = false;
+        } else if (efectivo > 0) {
+            cambioEl.className = 'modal-pago-cambio-display cambio-insuf-wrap';
+            cambioEl.innerHTML = `<div class="cambio-info"><span class="cambio-etiqueta">⚠ Efectivo insuficiente</span><small class="cambio-falta">Faltan $${(total - efectivo).toLocaleString('es-CO')}</small></div>`;
+            btnConfirmar.disabled = true;
+        } else {
+            cambioEl.className = 'modal-pago-cambio-display';
+            cambioEl.innerHTML = '';
+            btnConfirmar.disabled = true;
+        }
+    });
+
+    document.getElementById('btnCerrarModalPago')?.addEventListener('click', cerrarModalPago);
+    overlay.addEventListener('click', e => { if (e.target === overlay) cerrarModalPago(); });
+    btnConfirmar?.addEventListener('click', () => _ejecutarRegistroVenta(btnConfirmar));
+    inputEfectivo?.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !btnConfirmar.disabled) btnConfirmar.click();
+    });
+    document.addEventListener('keydown', _escapeModalPago);
+}
+
+async function _ejecutarRegistroVenta(btnConfirmar) {
+    if (btnConfirmar) { btnConfirmar.disabled = true; btnConfirmar.innerHTML = 'Registrando...'; }
+    try {
+        const now       = new Date();
+        const cartItems = state.currentCart.map(item => ({ productId: item.id, name: item.name, qty: item.qty, price: item.price, subtotal: item.qty * item.price }));
+        const totalSale = cartItems.reduce((s, i) => s + i.subtotal, 0);
+
+        state.currentCart.forEach(item => {
+            const prod = state.inventory.find(p => p.id.toString() === item.id.toString());
+            if (prod) prod.cantidad -= item.qty;
+        });
+        updateSalesDropdown();
+
+        let numeroTicket;
+        if (state.modoOffline) {
+            const hhmm = String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0');
+            numeroTicket = 'OFF-' + hhmm + '-' + String(Date.now()).slice(-4);
+        } else {
+            numeroTicket = await generarNumeroTicket();
+        }
+
+        const newSale = { globalId: Date.now(), id: `V-${numeroTicket}`, total: totalSale, date: now.toLocaleString(), fechaLimpia: now.toLocaleDateString(), items: cartItems };
+
+        if (state.modoOffline) {
+            if (state.onGuardarVentaOffline) await state.onGuardarVentaOffline(newSale);
+            state.sales.unshift(newSale);
+            renderSalesHistory();
+            cerrarModalPago();
+            if (await mostrarConfirm('¿Imprimir factura?', 'info')) imprimirFacturaTicket(newSale);
+            limpiarTodaLaVenta();
+            await mostrarAlerta(`Venta guardada localmente.\nTicket #${newSale.id} por $${totalSale.toLocaleString('es-CO')}`, 'success');
+        } else {
+            const guardada = await saveSale(newSale);
+            newSale.supabaseId = guardada.id;
+            state.sales.unshift(newSale);
+            await loadInventory();
+            renderSalesHistory();
+            cerrarModalPago();
+            if (await mostrarConfirm('¿Imprimir factura?', 'info')) imprimirFacturaTicket(newSale);
+            limpiarTodaLaVenta();
+            if (inputBuscarProductVenta) inputBuscarProductVenta.focus();
+            await mostrarAlerta(`¡Venta registrada!\nTicket #${newSale.id} por $${totalSale.toLocaleString('es-CO')}`, 'success');
+        }
+    } catch (err) {
+        await mostrarAlerta('Error al registrar la venta. Intenta de nuevo.', 'error');
+        if (btnConfirmar) { btnConfirmar.disabled = false; btnConfirmar.innerHTML = ICO_REGISTRAR; }
+    }
+}
+
 // ── Init ─────────────────────────────────────────────────────
 export function initVentasFisicas() {
     restoreCartDraft();
@@ -419,59 +541,12 @@ export function initVentasFisicas() {
 
     if (btnRegistrarVenta) {
         btnRegistrarVenta.addEventListener('click', async () => {
-            if (state.currentCart.length === 0) { await mostrarAlerta('Añade al menos un producto antes de registrar.', 'warn'); return; }
-            btnRegistrarVenta.disabled = true;
-            btnRegistrarVenta.innerHTML = 'Registrando...';
-            try {
-                const now         = new Date();
-                const cartItems   = state.currentCart.map(item => ({ productId: item.id, name: item.name, qty: item.qty, price: item.price, subtotal: item.qty * item.price }));
-                const totalSale   = cartItems.reduce((s, i) => s + i.subtotal, 0);
-
-                // Descuento visual inmediato
-                state.currentCart.forEach(item => {
-                    const prod = state.inventory.find(p => p.id.toString() === item.id.toString());
-                    if (prod) prod.cantidad -= item.qty;
-                });
-                updateSalesDropdown();
-
-                let numeroTicket;
-                if (state.modoOffline) {
-                    const hhmm = String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0');
-                    numeroTicket = 'OFF-' + hhmm + '-' + String(Date.now()).slice(-4);
-                } else {
-                    numeroTicket = await generarNumeroTicket();
-                }
-
-                const newSale = { globalId: Date.now(), id: `V-${numeroTicket}`, total: totalSale, date: now.toLocaleString(), fechaLimpia: now.toLocaleDateString(), items: cartItems };
-
-                if (state.modoOffline) {
-                    if (state.onGuardarVentaOffline) await state.onGuardarVentaOffline(newSale);
-                    state.sales.unshift(newSale);
-                    renderSalesHistory();
-                    if (await mostrarConfirm('¿Imprimir factura?', 'info')) imprimirFacturaTicket(newSale);
-                    limpiarTodaLaVenta();
-                    await mostrarAlerta(`Venta guardada localmente.\nTicket #${newSale.id} por $${totalSale.toLocaleString('es-CO')}`, 'success');
-                } else {
-                    const guardada = await saveSale(newSale);
-                    newSale.supabaseId = guardada.id;
-                    state.sales.unshift(newSale);
-                    await loadInventory();
-                    renderSalesHistory();
-                    if (await mostrarConfirm('¿Imprimir factura?', 'info')) imprimirFacturaTicket(newSale);
-                    limpiarTodaLaVenta();
-                    if (inputBuscarProductVenta) inputBuscarProductVenta.focus();
-                    await mostrarAlerta(`¡Venta registrada!\nTicket #${newSale.id} por $${totalSale.toLocaleString('es-CO')}`, 'success');
-                }
-            } catch (err) {
-                await mostrarAlerta('Error al registrar la venta. Intenta de nuevo.', 'error');
-            } finally {
-                btnRegistrarVenta.disabled = false;
-                btnRegistrarVenta.innerHTML = ICO_REGISTRAR;
-            }
+            if (state.currentCart.length === 0) { await mostrarAlerta('Añade al menos un producto antes de pagar.', 'warn'); return; }
+            abrirModalPago();
         });
     }
 
-    // Shift → Registrar Venta (solo en pantalla ventas físicas)
+    // Shift → Ir a Pagar (abre modal de pago, solo en pantalla ventas físicas)
     document.addEventListener('keydown', e => {
         if (e.key === 'Shift' && !e.repeat && pantallaVentasFisicas?.classList.contains('activa') && btnRegistrarVenta && !btnRegistrarVenta.disabled) {
             btnRegistrarVenta.click();
