@@ -23,6 +23,35 @@ const btnEscanearVenta        = document.getElementById('btnEscanearVenta');
 
 const ICO_REGISTRAR = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Registrar Venta`;
 
+// ── Persistencia del carrito en localStorage ─────────────────
+const CART_DRAFT_KEY = 'softven_cart_draft';
+
+function saveCartDraft() {
+    if (state.currentCart.length > 0) {
+        localStorage.setItem(CART_DRAFT_KEY, JSON.stringify(state.currentCart));
+    } else {
+        localStorage.removeItem(CART_DRAFT_KEY);
+    }
+}
+
+function clearCartDraft() {
+    localStorage.removeItem(CART_DRAFT_KEY);
+}
+
+function restoreCartDraft() {
+    try {
+        const raw = localStorage.getItem(CART_DRAFT_KEY);
+        if (!raw) return;
+        const items = JSON.parse(raw);
+        if (Array.isArray(items) && items.length > 0) {
+            state.currentCart = items;
+            updateCartUI();
+        }
+    } catch (e) {
+        localStorage.removeItem(CART_DRAFT_KEY);
+    }
+}
+
 // ── Carrito UI ───────────────────────────────────────────────
 export function updateCartUI() {
     if (!listaCarrito) return;
@@ -51,6 +80,7 @@ export function updateCartUI() {
         listaCarrito.appendChild(row);
     });
     if (totalCarritoPreview) totalCarritoPreview.textContent = Number(total).toLocaleString('es-CO');
+    saveCartDraft();
 }
 
 window.removeFromCart = function(index) {
@@ -117,6 +147,7 @@ export function updateSalesDropdown(searchTerm = '') {
 // ── Limpiar venta ─────────────────────────────────────────────
 export function limpiarTodaLaVenta() {
     state.currentCart = [];
+    clearCartDraft();
     updateCartUI();
     if (inputBuscarProductVenta) inputBuscarProductVenta.value = '';
     if (selectProductoVenta)     selectProductoVenta.value     = '';
@@ -348,6 +379,7 @@ function inicializarAutocomplete() {
 
 // ── Init ─────────────────────────────────────────────────────
 export function initVentasFisicas() {
+    restoreCartDraft();
     inicializarAutocomplete();
 
     if (btnLimpiarVenta)  btnLimpiarVenta.addEventListener('click', limpiarTodaLaVenta);
