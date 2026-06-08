@@ -947,6 +947,18 @@ body:not(.modo-miopia) .pos-ticket-row .ptc-qty { color: #d0e8f0; }
 body:not(.modo-miopia) .pos-footer-bar { background: #0d1e2e; border-top-color: #1e3a50; }
 body:not(.modo-miopia) .pos-total-label { color: #6a9aaa; }
 
+/* Modo claro: botón Quitar con texto e icono rojos bien visibles */
+body.modo-miopia .pos-sel-cancel {
+  color: #cc0000;
+  border-color: #cc0000;
+  background: rgba(204, 0, 0, 0.06);
+}
+body.modo-miopia .pos-sel-cancel:hover {
+  background: #cc0000;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(204, 0, 0, 0.35);
+}
+
 /* Responsivo POS */
 @media (max-width: 900px) {
   .pos-panel { width: 97%; }
