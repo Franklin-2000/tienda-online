@@ -497,15 +497,6 @@ export function initInventario() {
         }
     });
 
-    // Shift → guardar producto (solo si modal está abierto y enfocado en inventario)
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Shift' && !e.repeat
-            && pantallaInventario?.classList.contains('activa')
-            && modalProductoOverlay?.style.display === 'flex'
-            && btnGuardarProducto && !btnGuardarProducto.disabled) {
-            btnGuardarProducto.click();
-        }
-    });
 
     // Delegación de clicks en tarjetas de productos (editar / borrar)
     if (contenedorProductos) {
