@@ -159,37 +159,10 @@
     <div class="inventory-header">
         <div class="inventory-actions-group">
             <div class="formulario-producto-nuevo">
-              <div class="tarjeta-input-producto">
-                <h2>Añadir Nuevo Producto</h2>
-                <input type="file" accept="image/*" id="inputProductoImagen" style="display:none">
-                <button class="btn-seleccionar-imagen" id="btnSeleccionarImagen"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Seleccionar Imagen</button>
-                <img id="previewProductoImagen" src="" alt="Vista previa de la imagen" class="preview-producto-imagen">
-                <label for="inputCodigoBarras">Código de Barras:</label>
-                <div class="flex-gap-5">
-                    <input type="text" id="inputCodigoBarras" placeholder="Ej: 123456789" class="input-codigo-barras">
-                    <button id="btnEscanearInventario" class="btn-escanear" title="Escanear Código"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="8" x2="7" y2="16"/><line x1="10" y1="8" x2="10" y2="16"/><line x1="13" y1="8" x2="13" y2="16"/><line x1="16" y1="8" x2="16" y2="16"/></svg></button>
-                </div>
-                <label for="inputNombreProducto">Nombre:</label>
-                <input type="text" id="inputNombreProducto" placeholder="Nombre del Producto">
-                <label for="inputPrecioProducto">Precio:</label>
-                <input type="number" id="inputPrecioProducto" placeholder="$ 0" min="0" step="1">
-                <label for="inputCategoriaProducto">Categoría:</label>
-                <select id="inputCategoriaProducto" class="select-categoria-producto">
-                  <option value="">-- Selecciona una categoría --</option>
-                  <option value="Perecederos">Perecederos (Frescos)</option>
-                  <option value="Abarrotes">Abarrotes / Despensa (Secos)</option>
-                  <option value="Bebidas">Bebidas</option>
-                  <option value="Congelados">Congelados</option>
-                  <option value="Hogar">Cuidado del Hogar y Limpieza</option>
-                  <option value="Higiene">Cuidado Personal / Higiene</option>
-                  <option value="Otras">Otras categorías</option>
-                </select>
-                
-                <label for="inputCantidadProducto">Cantidad:</label>
-                <input type="number" id="inputCantidadProducto" placeholder="Ej: 1" min="1" step="1">
-                <button class="btn-añadir btn-limpiar-formulario" id="btnLimpiarFormulario">Limpiar</button>
-                <button class="btn-añadir" id="btnGuardarProducto">Añadir Producto</button>
-              </div>
+              <button class="btn-nuevo-producto" id="btnAbrirModalProducto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nuevo Producto
+              </button>
             </div>
             <div class="search-summary-group">
                 <div class="search-section">
@@ -219,6 +192,68 @@
       <button class="btn-categoria-filtro" data-categoria="Otras"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg> Otras</button>
     </div>
     <div class="contenedor-productos" id="contenedorProductos"></div>
+
+    <!-- ── Modal Añadir / Editar Producto ── -->
+    <div class="modal-producto-overlay" id="modalProductoOverlay" style="display:none">
+      <div class="modal-producto-card">
+        <div class="modal-producto-header">
+          <h2 class="modal-producto-titulo" id="modalProductoTitulo">Nuevo Producto</h2>
+          <button class="modal-producto-cerrar" id="btnCerrarModalProducto" aria-label="Cerrar" type="button">&#x2715;</button>
+        </div>
+        <div class="modal-producto-body">
+          <!-- Zona de imagen con drag & drop -->
+          <div class="modal-producto-imgzone" id="imgDropZone" role="button" tabindex="0" aria-label="Zona de imagen">
+            <input type="file" accept="image/*" id="inputProductoImagen" style="display:none">
+            <img id="previewProductoImagen" src="" alt="Vista previa" class="mpiz-preview" style="display:none">
+            <div class="imgzone-placeholder" id="imgzonePlaceholder">
+              <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <span>Arrastra o haz clic para añadir imagen</span>
+              <small>JPG · PNG · WEBP · máx. 2 MB</small>
+            </div>
+            <button class="imgzone-remove" id="btnQuitarImagen" type="button" style="display:none">&#x2715; Quitar</button>
+          </div>
+          <!-- Grid de campos -->
+          <div class="modal-producto-grid">
+            <div class="mpg-campo mpg-ancho">
+              <label for="inputNombreProducto">Nombre del producto <span class="req">*</span></label>
+              <input type="text" id="inputNombreProducto" placeholder="Ej: Leche entera 1 L" autocomplete="off">
+            </div>
+            <div class="mpg-campo">
+              <label for="inputPrecioProducto">Precio ($) <span class="req">*</span></label>
+              <input type="number" id="inputPrecioProducto" placeholder="0" min="0" step="1">
+            </div>
+            <div class="mpg-campo">
+              <label for="inputCantidadProducto">Cantidad <span class="req">*</span></label>
+              <input type="number" id="inputCantidadProducto" placeholder="1" min="1" step="1">
+            </div>
+            <div class="mpg-campo mpg-ancho">
+              <label for="inputCategoriaProducto">Categoría <span class="req">*</span></label>
+              <select id="inputCategoriaProducto" class="select-categoria-producto">
+                <option value="">-- Selecciona una categoría --</option>
+                <option value="Perecederos">Perecederos (Frescos)</option>
+                <option value="Abarrotes">Abarrotes / Despensa (Secos)</option>
+                <option value="Bebidas">Bebidas</option>
+                <option value="Congelados">Congelados</option>
+                <option value="Hogar">Cuidado del Hogar y Limpieza</option>
+                <option value="Higiene">Cuidado Personal / Higiene</option>
+                <option value="Otras">Otras categorías</option>
+              </select>
+            </div>
+            <div class="mpg-campo mpg-ancho">
+              <label for="inputCodigoBarras">Código de barras <span class="optional">(opcional)</span></label>
+              <div class="flex-gap-5">
+                <input type="text" id="inputCodigoBarras" placeholder="Ej: 7702001522408" class="input-codigo-barras" autocomplete="off">
+                <button id="btnEscanearInventario" class="btn-escanear" title="Escanear Código" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="8" x2="7" y2="16"/><line x1="10" y1="8" x2="10" y2="16"/><line x1="13" y1="8" x2="13" y2="16"/><line x1="16" y1="8" x2="16" y2="16"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-producto-footer">
+          <button class="mpf-btn-cancelar" id="btnLimpiarFormulario" type="button">Cancelar</button>
+          <button class="mpf-btn-guardar" id="btnGuardarProducto" type="button">Añadir Producto</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="pantalla-ventas-fisicas">

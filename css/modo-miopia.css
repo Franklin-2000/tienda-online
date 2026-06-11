@@ -1017,3 +1017,41 @@ body.modo-miopia .modal-pago-input::placeholder { color: #b0c8d4; }
 body.modo-miopia .modal-pago-currency      { color: #0c566c; }
 body.modo-miopia .modal-pago-close         { color: #3a6a7a; }
 body.modo-miopia .modal-pago-close:hover   { color: #0a2a38; background: rgba(0,0,0,0.06); }
+
+/* ── Modal Añadir/Editar Producto — overrides modo claro ── */
+body.modo-miopia .modal-producto-card {
+  background: #ffffff;
+  border-color: #ccd8e0;
+  box-shadow: 0 20px 56px rgba(0,0,0,0.14);
+}
+body.modo-miopia .modal-producto-titulo { color: #0a2a38; }
+body.modo-miopia .modal-producto-header { border-bottom-color: #d8e3ea; }
+body.modo-miopia .modal-producto-cerrar { color: #3a6a7a; background: rgba(0,0,0,0.05); border-color: #d0dce4; }
+body.modo-miopia .modal-producto-cerrar:hover { color: #0a2a38; background: rgba(0,0,0,0.09); }
+body.modo-miopia .modal-producto-imgzone { border-color: rgba(12,86,108,0.22); }
+body.modo-miopia .modal-producto-imgzone:hover { border-color: rgba(12,86,108,0.48); background: rgba(12,86,108,0.03); }
+body.modo-miopia .modal-producto-imgzone.drag-over { border-color: #0c566c; background: rgba(12,86,108,0.06); }
+body.modo-miopia .imgzone-placeholder { color: rgba(12,86,108,0.42); }
+body.modo-miopia .mpg-campo label { color: #3a6a7a; }
+body.modo-miopia .optional { color: #8aacbc; }
+body.modo-miopia .mpg-campo input[type="text"],
+body.modo-miopia .mpg-campo input[type="number"],
+body.modo-miopia .mpg-campo select,
+body.modo-miopia .mpg-campo .input-codigo-barras {
+  background: #f5f9fb;
+  border-color: #c8d8e2;
+  color: #0a2a38;
+}
+body.modo-miopia .mpg-campo input[type="text"]:focus,
+body.modo-miopia .mpg-campo input[type="number"]:focus,
+body.modo-miopia .mpg-campo select:focus,
+body.modo-miopia .mpg-campo .input-codigo-barras:focus {
+  border-color: #0c566c;
+  background: #f0f7fa;
+  box-shadow: 0 0 0 3px rgba(12,86,108,0.12);
+}
+body.modo-miopia .mpg-campo input::placeholder { color: #a8c0cc; }
+body.modo-miopia .mpg-campo select option { background: #ffffff; color: #0a2a38; }
+body.modo-miopia .modal-producto-footer { border-top-color: #d8e3ea; }
+body.modo-miopia .mpf-btn-cancelar { border-color: #c8d8e2; color: #3a6a7a; }
+body.modo-miopia .mpf-btn-cancelar:hover { background: rgba(0,0,0,0.04); color: #0a2a38; }

@@ -16,7 +16,13 @@ const totalProductosCountEl    = document.getElementById('totalProductosCount');
 
 const inputProductoImagen      = document.getElementById('inputProductoImagen');
 const previewProductoImagen    = document.getElementById('previewProductoImagen');
-const btnSeleccionarImagen     = document.getElementById('btnSeleccionarImagen');
+const imgDropZone              = document.getElementById('imgDropZone');
+const imgzonePlaceholder       = document.getElementById('imgzonePlaceholder');
+const btnQuitarImagen          = document.getElementById('btnQuitarImagen');
+const modalProductoOverlay     = document.getElementById('modalProductoOverlay');
+const modalProductoTitulo      = document.getElementById('modalProductoTitulo');
+const btnAbrirModalProducto    = document.getElementById('btnAbrirModalProducto');
+const btnCerrarModalProducto   = document.getElementById('btnCerrarModalProducto');
 const inputCodigoBarras        = document.getElementById('inputCodigoBarras');
 const inputNombreProducto      = document.getElementById('inputNombreProducto');
 const inputPrecioProducto      = document.getElementById('inputPrecioProducto');
@@ -24,13 +30,13 @@ const inputCantidadProducto    = document.getElementById('inputCantidadProducto'
 const inputCategoriaProducto   = document.getElementById('inputCategoriaProducto');
 const btnGuardarProducto       = document.getElementById('btnGuardarProducto');
 const btnLimpiarFormulario     = document.getElementById('btnLimpiarFormulario');
+const btnEscanearInventario    = document.getElementById('btnEscanearInventario');
 const inputBuscarProducto      = document.getElementById('inputBuscarProducto');
 const btnBuscarProducto        = document.getElementById('btnBuscarProducto');
 const btnLimpiarBusqueda       = document.getElementById('btnLimpiarBusqueda');
 const btnExportarDatos         = document.getElementById('btnExportarDatos');
 const btnImportarDatos         = document.getElementById('btnImportarDatos');
 const inputImportarDatos       = document.getElementById('inputImportarDatos');
-const btnEscanearInventario    = document.getElementById('btnEscanearInventario');
 
 const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES  = ['image/jpeg', 'image/png', 'image/webp'];
@@ -111,6 +117,24 @@ export async function compressImageFile(file, maxWidth = 600, maxHeight = 600, q
 function handleImageSelection(event) {
     const archivo = event.target.files[0];
     if (!archivo) { clearImagePreview(); return; }
+    handleImageFile(archivo);
+}
+
+function clearImagePreview() {
+    if (previewProductoImagen) { previewProductoImagen.src = ''; previewProductoImagen.style.display = 'none'; }
+    if (inputProductoImagen)   inputProductoImagen.value = '';
+    if (btnQuitarImagen)       btnQuitarImagen.style.display = 'none';
+    if (imgzonePlaceholder)    imgzonePlaceholder.style.display = 'flex';
+    state.archivoImagenFisico = null;
+}
+
+function _showImagePreview(dataUrl) {
+    if (previewProductoImagen) { previewProductoImagen.src = dataUrl; previewProductoImagen.style.display = 'block'; }
+    if (btnQuitarImagen)       btnQuitarImagen.style.display = 'inline-flex';
+    if (imgzonePlaceholder)    imgzonePlaceholder.style.display = 'none';
+}
+
+function handleImageFile(archivo) {
     if (!ALLOWED_IMAGE_TYPES.includes(archivo.type)) {
         mostrarAlerta('El archivo debe ser una imagen JPG, PNG o WEBP.', 'warn');
         clearImagePreview(); return;
@@ -121,19 +145,20 @@ function handleImageSelection(event) {
     }
     state.archivoImagenFisico = archivo;
     const reader = new FileReader();
-    reader.onload = e => {
-        previewProductoImagen.src = e.target.result;
-        previewProductoImagen.style.display = 'block';
-        inputCodigoBarras.focus();
-    };
+    reader.onload  = e => _showImagePreview(e.target.result);
     reader.onerror = () => { mostrarAlerta('No se pudo leer el archivo.', 'error'); clearImagePreview(); };
     reader.readAsDataURL(archivo);
 }
 
-function clearImagePreview() {
-    if (previewProductoImagen) { previewProductoImagen.src = ''; previewProductoImagen.style.display = 'none'; }
-    if (inputProductoImagen)   inputProductoImagen.value = '';
-    state.archivoImagenFisico = null;
+// ── Modal ────────────────────────────────────────────────────
+function abrirModalProducto(titulo = 'Nuevo Producto') {
+    if (modalProductoTitulo) modalProductoTitulo.textContent = titulo;
+    if (modalProductoOverlay) modalProductoOverlay.style.display = 'flex';
+    setTimeout(() => inputNombreProducto?.focus(), 80);
+}
+
+function cerrarModalProducto() {
+    if (modalProductoOverlay) modalProductoOverlay.style.display = 'none';
 }
 
 // ── Formulario ───────────────────────────────────────────────
@@ -146,7 +171,7 @@ export function resetFormAndMode() {
     clearImagePreview();
     state.editingProductId = null;
     if (btnGuardarProducto)   btnGuardarProducto.textContent  = 'Añadir Producto';
-    if (btnLimpiarFormulario) btnLimpiarFormulario.textContent = 'Limpiar';
+    if (btnLimpiarFormulario) btnLimpiarFormulario.textContent = 'Cancelar';
 }
 
 let _guardandoProducto = false;
@@ -179,7 +204,7 @@ async function handleSaveProduct() {
             urlImagen = prod?.imagen || '';
         }
         await state.onGuardarProductoOffline({ codigoBarras: codigo, nombre, precio, cantidad, imagen: urlImagen, categoria });
-        resetFormAndMode();
+        resetFormAndMode(); cerrarModalProducto();
         _guardandoProducto = false;
         await mostrarAlerta(`Producto "${nombre}" guardado localmente.\nSe subirá a Supabase al sincronizar.`, 'success');
         return;
@@ -228,7 +253,7 @@ async function handleSaveProduct() {
             await mostrarAlerta(`¡Producto "${nombre}" añadido!`, 'success');
         }
 
-        resetFormAndMode();
+        resetFormAndMode(); cerrarModalProducto();
         await loadInventory();
     } catch (err) {
         const msg = err?.message || err?.details || JSON.stringify(err);
@@ -250,10 +275,12 @@ function editProduct(productId) {
     if (inputCantidadProducto) inputCantidadProducto.value = p.cantidad;
     if (inputCategoriaProducto) inputCategoriaProducto.value = p.categoria || '';
     if (previewProductoImagen) { previewProductoImagen.src = p.imagen; previewProductoImagen.style.display = 'block'; }
+    if (btnQuitarImagen)       btnQuitarImagen.style.display = 'inline-flex';
+    if (imgzonePlaceholder)    imgzonePlaceholder.style.display = 'none';
     state.imagenProductoActual = p.imagen;
     if (btnGuardarProducto)   btnGuardarProducto.textContent  = 'Guardar Cambios';
-    if (btnLimpiarFormulario) btnLimpiarFormulario.textContent = 'Cancelar Edición';
-    pantallaInventario?.querySelector('.formulario-producto-nuevo')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (btnLimpiarFormulario) btnLimpiarFormulario.textContent = 'Cancelar';
+    abrirModalProducto('Editar Producto');
 }
 window.editarProducto = editProduct;
 
@@ -389,18 +416,41 @@ async function importarInventarioDesdeExcel(file) {
 // ── Event listeners del módulo ───────────────────────────────
 export function initInventario() {
     if (inputProductoImagen)  inputProductoImagen.addEventListener('change', handleImageSelection);
-    if (btnSeleccionarImagen) btnSeleccionarImagen.addEventListener('click', e => { e.preventDefault(); inputProductoImagen.click(); });
     if (btnGuardarProducto)   btnGuardarProducto.addEventListener('click', handleSaveProduct);
     if (btnExportarDatos)     btnExportarDatos.addEventListener('click', exportInventoryToExcel);
     if (btnImportarDatos)     btnImportarDatos.addEventListener('click', () => inputImportarDatos.click());
     if (inputImportarDatos)   inputImportarDatos.addEventListener('change', e => { importarInventarioDesdeExcel(e.target.files[0]); inputImportarDatos.value = ''; });
     if (btnEscanearInventario) btnEscanearInventario.addEventListener('click', e => { e.preventDefault(); iniciarEscaner('inventario'); });
 
+    // ── Modal producto ──
+    if (btnAbrirModalProducto) btnAbrirModalProducto.addEventListener('click', () => abrirModalProducto());
+    if (btnCerrarModalProducto) btnCerrarModalProducto.addEventListener('click', () => { resetFormAndMode(); cerrarModalProducto(); });
+    if (modalProductoOverlay) {
+        modalProductoOverlay.addEventListener('click', e => {
+            if (e.target === modalProductoOverlay) { resetFormAndMode(); cerrarModalProducto(); }
+        });
+    }
+
+    // ── Zona de imagen (drag & drop + click) ──
+    if (imgDropZone) {
+        imgDropZone.addEventListener('dragover', e => { e.preventDefault(); imgDropZone.classList.add('drag-over'); });
+        imgDropZone.addEventListener('dragleave', () => imgDropZone.classList.remove('drag-over'));
+        imgDropZone.addEventListener('drop', e => {
+            e.preventDefault(); imgDropZone.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0]; if (file) handleImageFile(file);
+        });
+        imgDropZone.addEventListener('click', e => {
+            if (e.target === btnQuitarImagen || btnQuitarImagen?.contains(e.target)) return;
+            inputProductoImagen?.click();
+        });
+        imgDropZone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inputProductoImagen?.click(); } });
+    }
+    if (btnQuitarImagen) btnQuitarImagen.addEventListener('click', e => { e.stopPropagation(); clearImagePreview(); });
+
     if (btnLimpiarFormulario) {
         btnLimpiarFormulario.addEventListener('click', () => {
             if (state.editingProductId !== null) mostrarAlerta('Edición cancelada.', 'info');
-            else clearSearch();
-            resetFormAndMode();
+            resetFormAndMode(); cerrarModalProducto();
         });
     }
 
@@ -430,9 +480,19 @@ export function initInventario() {
         });
     }
 
-    // Shift → guardar producto desde inventario
+    // Escape → cerrar modal si está abierto
     document.addEventListener('keydown', e => {
-        if (e.key === 'Shift' && !e.repeat && pantallaInventario?.classList.contains('activa') && btnGuardarProducto && !btnGuardarProducto.disabled) {
+        if (e.key === 'Escape' && modalProductoOverlay?.style.display === 'flex') {
+            resetFormAndMode(); cerrarModalProducto();
+        }
+    });
+
+    // Shift → guardar producto (solo si modal está abierto y enfocado en inventario)
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Shift' && !e.repeat
+            && pantallaInventario?.classList.contains('activa')
+            && modalProductoOverlay?.style.display === 'flex'
+            && btnGuardarProducto && !btnGuardarProducto.disabled) {
             btnGuardarProducto.click();
         }
     });
@@ -448,7 +508,7 @@ export function initInventario() {
                 if (!await mostrarConfirm('¿Eliminar este producto?', 'danger')) return;
                 const { error } = await supabaseClient.from('productos').delete().eq('id', productId);
                 if (!error) {
-                    if (productId === state.editingProductId) resetFormAndMode();
+                    if (productId === state.editingProductId) { resetFormAndMode(); cerrarModalProducto(); }
                     await mostrarAlerta('Producto eliminado.', 'success');
                     await loadInventory();
                 } else {
