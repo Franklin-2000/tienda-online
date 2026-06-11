@@ -132,6 +132,7 @@ function _showImagePreview(dataUrl) {
     if (previewProductoImagen) { previewProductoImagen.src = dataUrl; previewProductoImagen.style.display = 'block'; }
     if (btnQuitarImagen)       btnQuitarImagen.style.display = 'inline-flex';
     if (imgzonePlaceholder)    imgzonePlaceholder.style.display = 'none';
+    setTimeout(() => inputNombreProducto?.focus(), 60);
 }
 
 function handleImageFile(archivo) {
@@ -466,17 +467,26 @@ export function initInventario() {
         });
     }
 
-    // Atajos de teclado en formulario
+    // Atajos de teclado en modal — solo activos con modal abierto
+    const modalActivo = () => modalProductoOverlay?.style.display === 'flex';
     const nextFocus = (from, to) => from?.addEventListener('keydown', e => {
-        if (e.key === 'Enter' && pantallaInventario?.classList.contains('activa')) { e.preventDefault(); to?.focus(); }
+        if (e.key === 'Enter' && modalActivo()) { e.preventDefault(); to?.focus(); }
     });
-    nextFocus(inputCodigoBarras,   inputNombreProducto);
-    nextFocus(inputNombreProducto, inputPrecioProducto);
-    nextFocus(inputPrecioProducto, inputCategoriaProducto || inputCantidadProducto);
-    if (inputCategoriaProducto) nextFocus(inputCategoriaProducto, inputCantidadProducto);
-    if (inputCantidadProducto) {
-        inputCantidadProducto.addEventListener('keydown', e => {
-            if (e.key === 'Enter' && pantallaInventario?.classList.contains('activa')) { e.preventDefault(); if (!btnGuardarProducto.disabled) btnGuardarProducto.click(); }
+    // Cadena: nombre → precio → cantidad → (categoria via change) → código → guardar
+    nextFocus(inputNombreProducto,   inputPrecioProducto);
+    nextFocus(inputPrecioProducto,   inputCantidadProducto);
+    nextFocus(inputCantidadProducto, inputCategoriaProducto);
+    if (inputCategoriaProducto) {
+        // Al seleccionar categoría, avanza automáticamente al código
+        inputCategoriaProducto.addEventListener('change', () => {
+            if (modalActivo()) inputCodigoBarras?.focus();
+        });
+        // Enter en select cerrado también avanza
+        nextFocus(inputCategoriaProducto, inputCodigoBarras);
+    }
+    if (inputCodigoBarras) {
+        inputCodigoBarras.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && modalActivo()) { e.preventDefault(); if (!btnGuardarProducto?.disabled) btnGuardarProducto.click(); }
         });
     }
 

@@ -1026,8 +1026,8 @@ body.modo-miopia .modal-producto-card {
 }
 body.modo-miopia .modal-producto-titulo { color: #0a2a38; }
 body.modo-miopia .modal-producto-header { border-bottom-color: #d8e3ea; }
-body.modo-miopia .modal-producto-cerrar { color: #3a6a7a; background: rgba(0,0,0,0.05); border-color: #d0dce4; }
-body.modo-miopia .modal-producto-cerrar:hover { color: #0a2a38; background: rgba(0,0,0,0.09); }
+body.modo-miopia .modal-producto-cerrar { color: #cc0000; background: rgba(204,0,0,0.06); border-color: #cc0000; }
+body.modo-miopia .modal-producto-cerrar:hover { color: #990000; background: rgba(204,0,0,0.12); border-color: #990000; }
 body.modo-miopia .modal-producto-imgzone { border-color: rgba(12,86,108,0.22); }
 body.modo-miopia .modal-producto-imgzone:hover { border-color: rgba(12,86,108,0.48); background: rgba(12,86,108,0.03); }
 body.modo-miopia .modal-producto-imgzone.drag-over { border-color: #0c566c; background: rgba(12,86,108,0.06); }
@@ -1053,5 +1053,5 @@ body.modo-miopia .mpg-campo .input-codigo-barras:focus {
 body.modo-miopia .mpg-campo input::placeholder { color: #a8c0cc; }
 body.modo-miopia .mpg-campo select option { background: #ffffff; color: #0a2a38; }
 body.modo-miopia .modal-producto-footer { border-top-color: #d8e3ea; }
-body.modo-miopia .mpf-btn-cancelar { border-color: #c8d8e2; color: #3a6a7a; }
-body.modo-miopia .mpf-btn-cancelar:hover { background: rgba(0,0,0,0.04); color: #0a2a38; }
+body.modo-miopia .mpf-btn-cancelar { border-color: #cc0000; color: #cc0000; }
+body.modo-miopia .mpf-btn-cancelar:hover { background: rgba(204,0,0,0.06); color: #990000; border-color: #990000; }

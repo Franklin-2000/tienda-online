@@ -492,9 +492,11 @@ input[type="file"] {
 
 .search-summary-group {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 20px;
     align-self: flex-start;
+    align-items: flex-start;
 }
 
 .search-section {
