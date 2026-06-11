@@ -59,4 +59,9 @@ export const state = {
     onRenderProducts:         null,  // inventario.js → renderProducts
     onUpdateProductCount:     null,  // inventario.js → updateProductCount
     onPedidosCargados:        null,  // ventas-online.js → actualizarBadgePedidos
+
+    // ── Suscripción realtime de pedidos (para poder limpiarla al logout) ──
+    pedidosRealtimeChannel:    null,
+    onLimpiarRealtimePedidos:  null,  // ventas-online.js → quitarSuscripcionPedidos
+    onSuscribirRealtimePedidos: null, // ventas-online.js → suscribirRealtimePedidos
 };

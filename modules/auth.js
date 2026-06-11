@@ -35,6 +35,7 @@ export async function checkAuthStatus(pushToHistory = true) {
         showScreen('pantalla-inicio', false);
         await Promise.all([loadInventory(), loadSales(), loadCombos(), cargarPedidosAdmin()]);
         if (state.onPedidosCargados) state.onPedidosCargados();
+        if (state.onSuscribirRealtimePedidos) state.onSuscribirRealtimePedidos();
     } else {
         state.currentLoggedInUserEmail = null;
         state.currentUserId            = null;
@@ -64,12 +65,14 @@ export async function loginConGoogle() {
 export async function logout() {
     const { error } = await supabaseClient.auth.signOut();
     if (error) { await mostrarAlerta('Error al cerrar sesión: ' + error.message, 'error'); return; }
+    if (state.onLimpiarRealtimePedidos) state.onLimpiarRealtimePedidos();
     state.currentLoggedInUserEmail = null;
     state.currentUserId            = null;
     state.inventory                = [];
     state.sales                    = [];
     state.currentCart              = [];
     state.combos                   = [];
+    state.pedidosAdmin             = [];
     showScreen('pantalla-login', false);
 }
 

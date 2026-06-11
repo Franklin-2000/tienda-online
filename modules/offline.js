@@ -179,12 +179,14 @@ async function sincronizarConSupabase() {
 
         await loadInventory(); await loadSales(); await guardarInventarioCache(); await actualizarUIOffline();
         if (errores === 0) await mostrarAlerta('Sincronización completada. Todos los datos están en Supabase.', 'success');
-        else await mostrarAlerta(`Sincronización parcial. ${errores} elemento(s) no se pudieron subir.`, 'warn');
+        else await mostrarAlerta(`Sincronización parcial. ${errores} elemento(s) no se pudieron subir.\nSeguirás en modo local para no perderlos.`, 'warn');
     } catch(e) {
         await mostrarAlerta('Error durante la sincronización:\n' + e.message, 'error');
+        errores++;
     } finally {
         if (syncBtn) { syncBtn.disabled = false; syncBtn.textContent = 'Sincronizar con Supabase'; }
     }
+    return errores;
 }
 
 async function manejarCambioSwitch(queremosSupabase) {
@@ -192,8 +194,10 @@ async function manejarCambioSwitch(queremosSupabase) {
         const n = await contarPendientes();
         if (n > 0) {
             const ok = await mostrarConfirm(`Hay ${n} operación(es) guardada(s) localmente.\n¿Sincronizar con Supabase antes de volver al modo en línea?`, 'warn');
-            if (ok) { await sincronizarConSupabase(); }
-            else { const toggle = document.getElementById('offlineToggle'); if (toggle) toggle.checked = false; await actualizarUIOffline(); return; }
+            if (!ok) { const toggle = document.getElementById('offlineToggle'); if (toggle) toggle.checked = false; await actualizarUIOffline(); return; }
+            const errores = await sincronizarConSupabase();
+            // Si la sincronización falló parcialmente, permanecer en modo local
+            if (errores > 0) { const toggle = document.getElementById('offlineToggle'); if (toggle) toggle.checked = false; await actualizarUIOffline(); return; }
         } else {
             await loadInventory(); await loadSales(); await guardarInventarioCache();
         }
@@ -221,7 +225,7 @@ async function manejarRecuperacionInternet() {
     if (panel && !panel.classList.contains('abierto')) panel.classList.add('abierto');
     if (n > 0) {
         const ok = await mostrarConfirm(`¡Volvió el internet!\nHay ${n} operación(es) sin sincronizar. ¿Sincronizar ahora?`, 'warn');
-        if (ok) { await sincronizarConSupabase(); state.modoOffline = false; }
+        if (ok) { const errores = await sincronizarConSupabase(); if (errores === 0) state.modoOffline = false; }
     } else {
         state.modoOffline = false;
         await loadInventory(); await loadSales(); await guardarInventarioCache();

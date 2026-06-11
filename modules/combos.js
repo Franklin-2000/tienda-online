@@ -1,7 +1,7 @@
 // ============================================================
 // combos.js — Gestión y venta de combos
 // ============================================================
-import { supabaseClient } from './config.js';
+import { supabaseClient, IMG_PLACEHOLDER } from './config.js';
 import { state } from './state.js';
 import { mostrarAlerta, mostrarConfirm } from './alertas.js';
 import { loadCombos, saveSale, generarNumeroTicket } from './db.js';
@@ -41,7 +41,7 @@ function actualizarChipsCombo() {
     }
     contenedor.innerHTML = state.productosEnComboActual.map((p, idx) => `
         <div class="combo-chip" data-idx="${idx}">
-            <img src="${p.imagen || 'https://via.placeholder.com/26'}" alt="">
+            <img src="${p.imagen || IMG_PLACEHOLDER}" alt="">
             <span class="combo-chip-nombre">${p.nombre}</span>
             <div class="combo-chip-cantidad-wrap">
                 <label class="combo-chip-qty-label">Cant:</label>
@@ -181,7 +181,7 @@ export function renderTarjetasCombos() {
 
     contenedor.innerHTML = state.combos.map((combo, comboIdx) => {
         const prods    = combo.combo_productos || [];
-        const miniImgs = prods.map(p => `<div class="combo-mini-producto"><img class="combo-mini-img" src="${p.imagen || 'https://via.placeholder.com/48'}" alt="${p.nombre||''}"><span class="combo-mini-nombre">${p.cantidad||1}u. ${p.nombre||''}</span></div>`).join('');
+        const miniImgs = prods.map(p => `<div class="combo-mini-producto"><img class="combo-mini-img" src="${p.imagen || IMG_PLACEHOLDER}" alt="${p.nombre||''}"><span class="combo-mini-nombre">${p.cantidad||1}u. ${p.nombre||''}</span></div>`).join('');
         const precioOrig = combo.precio_suma && combo.precio_suma !== combo.precio ? `<div class="combo-card-precio-orig">Valor individual: $${Math.round(combo.precio_suma).toLocaleString('es-CO')}</div>` : '';
         const stockBadge = combo.stock > 0 ? `<div class="combo-card-stock">${combo.stock} disponible${combo.stock!==1?'s':''}</div>` : combo.stock === 0 ? `<div class="combo-card-stock combo-card-stock--agotado">Agotado</div>` : '';
         return `<div class="tarjeta-combo tarjeta-producto">
@@ -353,7 +353,7 @@ export function renderCombos() {
             res.forEach(p => {
                 const item = document.createElement('div'); item.className = 'combo-auto-item';
                 const disp = p.cantidad ?? 0;
-                item.innerHTML = `<img class="combo-auto-thumb" src="${p.imagen||'https://via.placeholder.com/34'}" alt=""><div class="combo-auto-info"><span class="combo-auto-nombre">${p.nombre}</span><span class="combo-auto-precio">$${(p.precio||0).toLocaleString('es-CO')}</span><span class="combo-auto-stock" style="font-size:0.78em;font-weight:700;color:${disp>0?'#2e7d32':'#c62828'}">${disp>0?disp+' disponibles':'Sin stock'}</span></div>`;
+                item.innerHTML = `<img class="combo-auto-thumb" src="${p.imagen||IMG_PLACEHOLDER}" alt=""><div class="combo-auto-info"><span class="combo-auto-nombre">${p.nombre}</span><span class="combo-auto-precio">$${(p.precio||0).toLocaleString('es-CO')}</span><span class="combo-auto-stock" style="font-size:0.78em;font-weight:700;color:${disp>0?'#2e7d32':'#c62828'}">${disp>0?disp+' disponibles':'Sin stock'}</span></div>`;
                 item.onclick = () => { agregarProductoAlCombo({ id: p.id, nombre: p.nombre, precio: p.precio||0, imagen: p.imagen||'' }); inputBuscar.value = ''; autoList?.classList.remove('visible'); };
                 autoList?.appendChild(item);
             });

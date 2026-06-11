@@ -2,6 +2,7 @@
 // ventas-fisicas.js — Carrito, registro de venta, historial físico
 // ============================================================
 import { state } from './state.js';
+import { IMG_PLACEHOLDER } from './config.js';
 import { mostrarAlerta, mostrarConfirm } from './alertas.js';
 import { saveSale, loadInventory, deleteSaleFromSupabase, generarNumeroTicket } from './db.js';
 import { showScreen } from './navegacion.js';
@@ -349,7 +350,7 @@ function inicializarAutocomplete() {
         sugerenciasActuales.forEach((p, i) => {
             const item = document.createElement('div');
             item.className = 'autocomplete-item'; item.dataset.idx = i;
-            item.innerHTML = `<img src="${p.imagen || 'https://via.placeholder.com/38'}" alt="${p.nombre}"><div class="autocomplete-item-info"><span class="autocomplete-item-nombre">${p.nombre}</span><span class="autocomplete-item-detalle">Disp: ${p.cantidad}${p.codigoBarras ? ' · Cód: '+p.codigoBarras : ''}</span></div><span class="autocomplete-item-precio">$${Number(p.precio).toLocaleString('es-CO')}</span>`;
+            item.innerHTML = `<img src="${p.imagen || IMG_PLACEHOLDER}" alt="${p.nombre}"><div class="autocomplete-item-info"><span class="autocomplete-item-nombre">${p.nombre}</span><span class="autocomplete-item-detalle">Disp: ${p.cantidad}${p.codigoBarras ? ' · Cód: '+p.codigoBarras : ''}</span></div><span class="autocomplete-item-precio">$${Number(p.precio).toLocaleString('es-CO')}</span>`;
             item.addEventListener('mousedown', e => { e.preventDefault(); seleccionarDesdeSugerencia(p); });
             listaSugerencias.appendChild(item);
         });

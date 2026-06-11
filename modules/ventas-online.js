@@ -14,15 +14,24 @@ function escHtml(str) {
     return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
+// Formatea una fecha de forma segura: devuelve '—' si la fecha es nula o inválida
+function fmtFecha(valor, opts) {
+    if (!valor) return '—';
+    const d = new Date(valor);
+    if (isNaN(d.getTime())) return '—';
+    return opts === 'short' ? d.toLocaleDateString('es-CO') : d.toLocaleString('es-CO');
+}
+
 // ── Tickets anti-duplicado ────────────────────────────────────
 const _ticketsPedidosConfirmados = new Set();
 
 // ── Badge de pedidos sin confirmar en el sidebar ─────────────
+// "Sin confirmar" = pedidos cuyo pago aún no ha sido confirmado por el admin.
 export function actualizarBadgePedidos() {
     const badge = document.getElementById('badgePedidosOnline');
     if (!badge) return;
     const count = state.pedidosAdmin.filter(p =>
-        ['pendiente', 'esperando_pago', 'pago_confirmado'].includes(p.estado)
+        ['pendiente', 'esperando_pago'].includes(p.estado)
     ).length;
     badge.textContent = count > 99 ? '99+' : String(count);
     badge.style.display = count > 0 ? 'flex' : 'none';
@@ -77,7 +86,7 @@ export function renderPedidosAdmin(estadoFiltro = 'todos') {
     el.innerHTML = '';
     lista.forEach(pedido => {
         const etq  = etqMap[pedido.estado] || { texto: pedido.estado, clase: '' };
-        const fecha = new Date(pedido.fecha).toLocaleString('es-CO');
+        const fecha = fmtFecha(pedido.fecha);
         const todos = pedido.items_pedido || [];
         const _itemsCombo = todos.filter(i => i.combo_id || String(i.nombre||'').startsWith('Combo: '));
         const _itemsProds = todos.filter(i => !i.combo_id && !String(i.nombre||'').startsWith('Combo: '));
@@ -256,7 +265,7 @@ function _buildTicketOnlineCard(pedido) {
     const div = document.createElement('div');
     div.className = 'venta-ticket venta-ticket-online';
     const totalFmt = Number(pedido.total).toLocaleString('es-CO');
-    const fecha    = new Date(pedido.fecha).toLocaleString('es-CO');
+    const fecha    = fmtFecha(pedido.fecha);
     div.innerHTML = `
         <div class="venta-ticket-header">
             <div class="ticket-header-left">
@@ -295,7 +304,7 @@ export function renderHistorialOnline() {
     const hoyList = [], pasados = {};
 
     entregados.forEach(p => {
-        const fecha = p.fecha_confirmacion ? new Date(p.fecha_confirmacion).toLocaleDateString('es-CO') : new Date(p.fecha).toLocaleDateString('es-CO');
+        const fecha = fmtFecha(p.fecha_confirmacion || p.fecha, 'short');
         if (fecha === hoy) hoyList.push(p);
         else { if (!pasados[fecha]) pasados[fecha] = []; pasados[fecha].push(p); }
     });
@@ -343,10 +352,20 @@ export async function initVentasOnline() {
     state.onCargarPedidosAdmin    = async () => { await cargarPedidosAdmin(); renderResumenAdmin(); renderPedidosAdmin(state.filtroEstadoAdmin); };
     state.onRenderHistorialOnline = renderHistorialOnline;
     state.onPedidosCargados       = actualizarBadgePedidos;
+    state.onLimpiarRealtimePedidos  = quitarSuscripcionPedidos;
+    state.onSuscribirRealtimePedidos = suscribirRealtimePedidos;
 
-    // Suscripción en tiempo real: actualiza el badge y la lista cuando llega un pedido nuevo
-    let _debounceRealtime = null;
-    supabaseClient
+    suscribirRealtimePedidos();
+}
+
+// ── Suscripción en tiempo real a la tabla pedidos ─────────────
+let _debounceRealtime = null;
+
+function suscribirRealtimePedidos() {
+    // Evita suscripciones duplicadas si initVentasOnline se ejecuta más de una vez
+    if (state.pedidosRealtimeChannel) return;
+
+    state.pedidosRealtimeChannel = supabaseClient
         .channel('pedidos-realtime')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => {
             clearTimeout(_debounceRealtime);
@@ -361,4 +380,14 @@ export async function initVentasOnline() {
             }, 600);
         })
         .subscribe();
+}
+
+// Elimina el canal realtime y limpia el Set anti-duplicado (llamar al cerrar sesión)
+export function quitarSuscripcionPedidos() {
+    clearTimeout(_debounceRealtime);
+    if (state.pedidosRealtimeChannel) {
+        supabaseClient.removeChannel(state.pedidosRealtimeChannel);
+        state.pedidosRealtimeChannel = null;
+    }
+    _ticketsPedidosConfirmados.clear();
 }

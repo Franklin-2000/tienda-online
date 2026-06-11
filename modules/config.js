@@ -7,6 +7,12 @@ export const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 // window.supabase es el global inyectado por el CDN de Supabase en index.html
 export const supabaseClient = window.supabase.createClient(SB_URL, SB_KEY);
 
+// Placeholder local (data URI SVG) para productos sin imagen.
+// Reemplaza a via.placeholder.com, que dejó de funcionar. Nunca se rompe ni
+// requiere internet, así también sirve en modo offline.
+export const IMG_PLACEHOLDER = 'data:image/svg+xml;charset=UTF-8,'
+    + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" fill="#e2e8ec"/><path d="M14 32l7-8 5 6 4-5 5 7z" fill="#aebfc9"/><circle cx="18" cy="17" r="3.2" fill="#aebfc9"/></svg>');
+
 // Detecta si la app corre dentro de un iframe previsualizador externo
 export const EN_IFRAME_PREVIEW = (() => {
     try {
